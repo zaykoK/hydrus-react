@@ -131,7 +131,7 @@ export function SearchPage(props) {
       let sortedTags = []
       for (let tag in tags) {
         let s = tags[tag].split(' OR ')
-        if (sortedTags.length === 0) {
+        if (s.length === 0) {
           sortedTags.push(s[0])
         }
         else {
