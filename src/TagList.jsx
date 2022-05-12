@@ -7,10 +7,9 @@ export function TagList(props) {
     const tagListStyle = {
         padding: '5px',
         margin: '5px',
-        overflow: 'scroll',
         minHeight: '50vh',
         maxHeight: '97vh',
-        overflowY: 'scroll',
+        overflowY: 'auto',
         overflowX: 'hidden'
     }
     const navigate = useNavigate();
@@ -39,7 +38,7 @@ export function TagList(props) {
     }
 
     function clickHandler(arg) {
-        if (props.clickFunction != undefined){
+        if (props.clickFunction != undefined) {
             return props.clickFunction(arg)
         }
         return searchTag(arg)
@@ -48,18 +47,20 @@ export function TagList(props) {
     function createTagList(args) {
         let tagList = []
         for (let element in args.tags) {
-            tagList.push(
-                <p
-                    onClick={() => { clickHandler(displayTagString(args.tags[element])) }}
-                    key={displayTagString(args.tags[element])}
-                    style={TagTools.getTagTextStyle(args.tags[element].namespace)} >
-                    {displayTagString(args.tags[element])}
-                </p>);
+            if (!args.blacklist.includes(args.tags[element].namespace)) {
+                tagList.push(
+                    <p
+                        onClick={() => { clickHandler(displayTagString(args.tags[element])) }}
+                        key={displayTagString(args.tags[element])}
+                        style={TagTools.getTagTextStyle(args.tags[element].namespace)} >
+                        {displayTagString(args.tags[element])}
+                    </p>);
+            }
         }
         return tagList;
     }
     useEffect(() => {
-        setTags(createTagList({ tags: props.tags }))
+        setTags(createTagList({ blacklist: props.blacklist, tags: props.tags }))
     }, [props])
 
     return (

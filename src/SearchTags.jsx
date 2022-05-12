@@ -27,8 +27,7 @@ export function SearchTags(props) {
     event.preventDefault(); //necessary to not reload page after submit
 
     let split = tag.split(' OR ')
-    console.log(split)
-    if (split.length > 1) {
+    if (split.length > 0) {
       let inside = []
       for (let i = 0; i < split.length; i++) {
         inside.push(split[i])

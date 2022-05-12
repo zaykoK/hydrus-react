@@ -64,7 +64,7 @@ export function FilePage() {
     <div style={contentStyle}>
       <div>
         <div style={relatedSwitchStyle} onClick={() => { setRelateVisible(!relatedVisible) }}>R</div>
-        {(tags != undefined) && <TagList tags={tags} />}
+        {(tags != undefined) && <TagList tags={tags} blacklist={[]} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
 
       </div>

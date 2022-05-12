@@ -240,12 +240,14 @@ export function SearchPage(props) {
     gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
   }
 
+  const tagBlacklist = ['filename','title','page',,'doujin-title','kemono-title','pixiv-title','last','slast']
+
   return <>
     <div style={{ height: '36px' }}><TagDisplay key={tags} removeTag={removeTag} tags={tags} /></div>
     <SearchTags addTag={addTag} />
     <div style={contentStyle}>
 
-      {(fileTags != undefined) &&<TagList tags={fileTags} scrollable={true} clickFunction={addTag} />}
+      {(fileTags != undefined) &&<TagList tags={fileTags} blacklist={tagBlacklist} scrollable={true} clickFunction={addTag} />}
       <ImageWall addTag={addTag} type={props.type} page={params.page} hashes={hashes} changePage={changePage} />
     </div>
   </>;
