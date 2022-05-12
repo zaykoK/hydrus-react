@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as API from './hydrus-backend.js';
+import * as TagTools from './TagTools'
 
 
 export function SearchTags(props) {
@@ -8,7 +9,11 @@ export function SearchTags(props) {
 
   const searchStyle = {
     textAlign: 'center',
-    fontSize: 'larger'
+    fontSize: 'larger',
+    display:'flex',
+    justifyContent: 'center',
+    gap:'5px',
+
   }
 
   const searchBarStyle = {
@@ -20,7 +25,8 @@ export function SearchTags(props) {
     border: 'none',
     borderRadius: '5px',
     textAlign: 'center',
-    fontSize: 'larger'
+    fontSize: 'larger',
+    flexGrow: '3'
   }
 
   function submitTag(event) {
@@ -51,10 +57,15 @@ export function SearchTags(props) {
 
   }
 
+  function GroupButton(props){
+    return <button style={{...TagTools.getTagButtonStyle(),height:'inherit'}} onClick={() => {props.clickAction()}}  >Group images</button>
+  }
+  
+
 
   function TagInput() {
-    return <form onSubmit={submitTag}>
-      <label>
+    return <form onSubmit={submitTag} style={searchBarStyle}>
+      <label style={{width:'inherit'}}>
         <input style={searchBarStyle}
           type="text"
           value={tag}
@@ -64,5 +75,5 @@ export function SearchTags(props) {
     </form>;
   }
 
-  return <div style={searchStyle}>{TagInput()}</div>;
+  return <div style={searchStyle}><GroupButton clickAction={props.groupAction} />{TagInput()}</div>;
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as API from './hydrus-backend.js';
+import * as TagTools from './TagTools'
 
 //Really crude but get things done, its supposed to just assign localStorage items anyways
 
@@ -60,7 +61,7 @@ export function SettingsPage() {
     }
 
 
-    return <div><button key='test api button' onClick={() => {buttonClick()}} >Test Api Connection</button>{message}</div>
+    return <div><button style={TagTools.getTagButtonStyle()} key='test api button' onClick={() => {buttonClick()}} >Test Api Connection</button>{message}</div>
   }
 
   function ApiMaxResultsInput() {
@@ -137,11 +138,40 @@ export function SettingsPage() {
     return <div>{KeyInput()}</div>
   }
 
+  function GroupNamespaceInput() {
+    const [groupNamespace,setGroupNamespace] = useState(localStorage.getItem('group-namespace'));
+    function submitKey(event){
+      event.preventDefault();
+      localStorage.setItem('group-namespace',groupNamespace)
+      if (groupNamespace === ''){
+        localStorage.removeItem('group-namespace')
+      }
+      
+    }
+
+    function KeyInput() {
+      return <form onSubmit={submitKey}>
+        <label>
+          Input comic-title namespace:
+          <input
+            style={SettingsBarStyle}
+            type="text"
+            value={groupNamespace}
+            placeholder='group-title'
+            onChange={(e) => setGroupNamespace(e.target.value)} />
+        </label>
+      </form>;
+    }
+    return <div>{KeyInput()}</div>
+  }
+
+
   return <>
     <div style={settingsStyle}>
     <ApiServerInput />
     <ApiKeyInput />
     <ComicsNamespaceInput />
+    <GroupNamespaceInput />
     <ApiMaxResultsInput />
     <ApiTestButton />
     </div>

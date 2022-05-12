@@ -11,9 +11,11 @@ import { TagList } from './TagList';
 export function SearchPage(props) {
   const [tags, setTags] = useState();
   const [hashes, setHashes] = useState([])
+  const [ungroupedHashes, setUngroupedHashes] = useState([])
   const [lastSearch, setLastSearch] = useState()
   const [params, setParams] = useState({ tags: undefined, page: undefined })
   const [fileTags, setFileTags] = useState()
+  const [groupFiles, setGroupFiles] = useState(getGroupingToggle())
   const { parm } = useParams()
 
   const navigate = useNavigate();
@@ -24,59 +26,112 @@ export function SearchPage(props) {
     setPageTitle(t, p)
     setParams({ tags: t, page: p })
     setTags(t)
-
   }
 
-  function groupImages() {
-    //1.Get all searched tags metadata
-    //2.Move all tags with same 
-
+  function changeGrouping() {
+    localStorage.setItem('group-toggle', !groupFiles)
+    setGroupFiles(!groupFiles)
   }
 
-  async function grabMetaData(){
+  function groupImages(responses, hashes, groupNamespace = 'group-title') {
+    //Super inefficient way to group images together, to optimize later
+
+    let tMap = new Map()
+    for (let element in responses) {
+      let filterTags = TagTools.transformIntoTuple(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]).filter((element) => element["namespace"] === groupNamespace)
+      if (filterTags.length !== 0) {
+        tMap.set(
+          responses[element].hash,
+          filterTags
+        )
+      }
+    }
+    let hMap = new Map()
+    tMap.forEach((value, key, map) => {
+      let groupTitle = value[0].value
+      if (hMap.has(groupTitle)) {
+        let v = hMap.get(groupTitle)
+        hMap.set(groupTitle, [...v, key])
+      }
+      else {
+        hMap.set(groupTitle, [key])
+      }
+    })
+    let hashesCopy = hashes.slice()
+
+    hMap.forEach((value, key, map) => {
+      for (let v in value.slice(1)) {
+        hashesCopy.splice(hashesCopy.indexOf(value[v]), 1)
+      }
+    })
+    return hashesCopy
+  }
+
+  function getGroupingToggle() {
+    if (localStorage.getItem('group-toggle') === null) {
+      return false
+    }
+    //because of string conversion, check on string is done first
+    if (localStorage.getItem('group-toggle') === 'true') { return true }
+    return false
+  }
+
+  function getGroupNamespace() {
+    if (localStorage.getItem('group-namespace') === null) {
+      return 'group-title'
+    }
+    return localStorage.getItem('group-namespace')
+  }
+
+  async function Search() {
+    //If there is nothing to search for or search is identical to previous don't do anything
+    if (tags === undefined || JSON.stringify(tags) === JSON.stringify(lastSearch)) { return }
+    setLastSearch(tags.slice())
+
+    let response = await API.api_get_files_search_files({ tags: tags, return_hashes: true, return_file_ids: false });
+    let responseHashes = response.data.hashes
+
+    setUngroupedHashes(responseHashes) //For use later with grouping
+    grabMetaData(responseHashes)
+  }
+
+  async function grabMetaData(hashes) {
     let step = 100
     let responses = []
     if (hashes.length > 0) {
-      
-      for (let i=0;i<Math.min(i+step,hashes.length);i+=step){
-        let response = await API.api_get_file_metadata({hashes: hashes.slice(i,Math.min(i+step,hashes.length)), hide_service_names_tags: true})
+
+      for (let i = 0; i < Math.min(i + step, hashes.length); i += step) {
+        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + step, hashes.length)), hide_service_names_tags: true })
         responses.push(response.data.metadata)
       }
       responses = responses.flat()
-      //console.log(responses)
-      
+
+
       joinMetaTags(responses)
+      let h = hashes
+      if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
+
+      setHashes(h)
 
     }
-    //return responses
   }
 
   function joinMetaTags(responses) {
-    console.time('metajoin')
+    //console.time('metajoin')
     let merged = []
-    //let setApproach = new Set()
-    console.log(responses)
-    for (let element in responses){
+    for (let element in responses) {
       merged.push(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
     }
-    
+
     merged = TagTools.transformIntoTuple([...new Set(merged.flat())])
-    //for (let item in merged){
-    //  setApproach.add(merged[item])
-    //}
     merged.sort((a, b) => TagTools.compareNamespaces(a, b))
-    console.timeEnd('metajoin')
-    console.log(merged)
+    //console.timeEnd('metajoin')
     setFileTags(merged)
   }
 
-  useEffect (() => {
-    grabMetaData()
-  },[hashes])
-
   function setPageTitle(tags, page) {
     if (tags.length === 0) {
-      switch(props.type){
+      switch (props.type) {
         case 'image':
           document.title = 'search page ' + page
           break
@@ -88,7 +143,7 @@ export function SearchPage(props) {
       }
     }
     else {
-      switch(props.type){
+      switch (props.type) {
         case 'image':
           document.title = tags + ', page ' + page
           break
@@ -98,21 +153,21 @@ export function SearchPage(props) {
         default:
           document.title = 'comics: ' + tags + ', page ' + page
       }
-      
+
     }
   }
 
-  function returnComicNamespace(){
+  function returnComicNamespace() {
     if (localStorage.getItem('comic-namespace') != undefined) {
       return localStorage.getItem('comic-namespace')
     }
-    else{
+    else {
       return 'doujin-title'
     }
   }
 
   function setDefaultSearch() {
-    switch (props.type){
+    switch (props.type) {
       case 'image':
         return []
       case 'comic':
@@ -147,28 +202,16 @@ export function SearchPage(props) {
   }
 
   useEffect(() => {
-    //pulls session key if abstinent
-    //API.sessionKeyRoutine();
+    grabMetaData(ungroupedHashes)
+  }, [groupFiles])
+
+  useEffect(() => {
     let [t, p] = readParams(parm)
 
     setPageTitle(t, p)
     setParams({ tags: t, page: p })
     setTags(t)
   }, [])
-
-  async function Search() {
-    //If there is nothing to search for or search is identical to previous don't do anything
-    if (tags === undefined || JSON.stringify(tags) === JSON.stringify(lastSearch)) { return }
-    setLastSearch(tags.slice())
-
-    let response = await API.api_get_files_search_files({ tags:tags, return_hashes: true, return_file_ids: false });
-    setHashes(response.data.hashes)
-  }
-
-  function changePage(newPage) {
-    let par = generateSearchURL(tags,newPage)
-    navigateTo(par)
-  }
 
   useEffect(() => {
     refreshParams()
@@ -178,8 +221,16 @@ export function SearchPage(props) {
     Search()
   }, [tags])
 
-  function navigateTo(parameters){
-    switch (props.type){
+
+
+  function changePage(newPage) {
+    let par = generateSearchURL(tags, newPage)
+    navigateTo(par)
+  }
+
+
+  function navigateTo(parameters) {
+    switch (props.type) {
       case 'image':
         navigate('/search/' + parameters)
         break
@@ -240,15 +291,15 @@ export function SearchPage(props) {
     gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
   }
 
-  const tagBlacklist = ['filename','title','page',,'doujin-title','kemono-title','pixiv-title','last','slast']
+  const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
 
   return <>
     <div style={{ height: '36px' }}><TagDisplay key={tags} removeTag={removeTag} tags={tags} /></div>
-    <SearchTags addTag={addTag} />
+    <SearchTags groupAction={changeGrouping} addTag={addTag} />
     <div style={contentStyle}>
 
-      {(fileTags != undefined) &&<TagList tags={fileTags} blacklist={tagBlacklist} scrollable={true} clickFunction={addTag} />}
-      <ImageWall addTag={addTag} type={props.type} page={params.page} hashes={hashes} changePage={changePage} />
+      {(fileTags != undefined) && <TagList tags={fileTags} blacklist={tagBlacklist} scrollable={true} clickFunction={addTag} />}
+      <ImageWall grouping={groupFiles} addTag={addTag} type={props.type} page={params.page} hashes={hashes} changePage={changePage} />
     </div>
   </>;
 }

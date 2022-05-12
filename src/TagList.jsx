@@ -47,6 +47,7 @@ export function TagList(props) {
     function createTagList(args) {
         let tagList = []
         for (let element in args.tags) {
+            //Don't display tags in certain namespaces like titles,page etc on overall list
             if (!args.blacklist.includes(args.tags[element].namespace)) {
                 tagList.push(
                     <p
