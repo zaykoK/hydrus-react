@@ -1,12 +1,10 @@
 import * as API from './hydrus-backend';
 import { ImageThumbnail } from './ImageThumbnail';
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export function RelatedFiles(props) {
-    let imageGroupSpaces = ['group-title', 'pixiv-title', 'doujin-title']
     const [relatedHashes, setRelatedHashes] = useState([])
     const [thumbs, setThumbs] = useState()
-    const [currentThumb, setCurrentThumb] = useState()
 
     async function Search() {
         let list = props.tags
@@ -26,47 +24,42 @@ export function RelatedFiles(props) {
         Search()
     }, [])
 
+    function returnCurrentImage(hash) {
+        if (props.currentHash === hash) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+
     useEffect(() => {
         if (relatedHashes.length > 1) {
             let temp = []
             for (let hash in relatedHashes) {
-                if (props.currentHash === relatedHashes[hash]) {
-                    temp.push(
-                        <ImageThumbnail
-                            loading='lazy'
-                            currentImage={true}
-                            elementId={relatedHashes[hash]}
-                            replace={true}
-                            type='image'
-                            key={relatedHashes[hash]}
-                            hash={relatedHashes[hash]}
-                            loadMeta={false}
-                        />)
-                }
-                else {
-                    temp.push(
-                        <ImageThumbnail
-                            loading='lazy'
-                            elementId={relatedHashes[hash]}
-                            replace={true}
-                            type='image'
-                            key={relatedHashes[hash]}
-                            hash={relatedHashes[hash]}
-                            loadMeta={false}
-                        />)
-                }
+                temp.push(
+                    <ImageThumbnail
+                        loading='lazy'
+                        currentImage={returnCurrentImage(relatedHashes[hash])}
+                        elementId={relatedHashes[hash]}
+                        replace={true}
+                        type='image'
+                        key={relatedHashes[hash]}
+                        hash={relatedHashes[hash]}
+                        loadMeta={false}
+                    />)
             }
-            setThumbs(temp)
-        }
-    }, [relatedHashes,props])
-
-    const relatedThumbsStyle = {
-        display: 'flex',
-        gap: '5px',
-        flexDirection: 'column-reverse'
+        setThumbs(temp)
     }
+    }, [relatedHashes, props])
 
-    return <>{
-        (thumbs != undefined) &&
-        (<><p>Related Files for {props.space}</p> <div style={relatedThumbsStyle}>{thumbs}</div></>)}</>
+const relatedThumbsStyle = {
+    display: 'flex',
+    gap: '5px',
+    flexDirection: 'column-reverse'
+}
+
+return <>{
+    (thumbs != undefined) &&
+    (<><p>Related Files for {props.space}</p> <div style={relatedThumbsStyle}>{thumbs}</div></>)}</>
 }
