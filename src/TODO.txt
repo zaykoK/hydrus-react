@@ -1,0 +1,16 @@
+multipage/view thing
+-artist page /artist/[artist-name]
+-file page /file/[file-hash]
+-comic page /comic/[comic-title?]
+-etc 
+
+Some way to streamline styling
+
+changePage to starting hash, this way i can do dynamic result number etc.
+
+Caching of content
+
+Redo Tag Buttons so OR queries are two buttons that change into normal tag query when one is removed
+
+
+Modularize stuff
