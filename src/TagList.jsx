@@ -8,7 +8,8 @@ export function TagList(props) {
         padding: '5px',
         margin: '5px',
         overflow: 'scroll',
-        height: '97vh',
+        minHeight: '50vh',
+        maxHeight: '97vh',
         overflowY: 'scroll',
         overflowX: 'hidden'
     }
