@@ -12,6 +12,14 @@ export function api_version_clear() {
   sessionStorage.removeItem('hydrus-client-version');
 }
 
+export async function api_verify_access_key() {
+  return axios.get(server_address + '/verify_access_key', {
+    params: {
+      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
+    }
+  })
+}
+
 export function api_version() {
   const API_TARGET = 31
   axios.get(server_address + '/api_version', {
@@ -114,10 +122,13 @@ export async function api_get_clean_tags(search) {
 export async function api_get_files_search_files(props) {
   let sentTags
   if (localStorage.getItem('hydrus-max-results') != undefined) {
-    console.log(localStorage.getItem('hydrus-max-results'))
+    //console.log(localStorage.getItem('hydrus-max-results'))
     sentTags = props.tags.slice()
     sentTags.push('system:limit='+localStorage.getItem('hydrus-max-results'))
-    
+  }
+  else {
+    sentTags = props.tags.slice()
+    sentTags.push('system:limit=5000')
   }
 
   return axios.get(server_address + '/get_files/search_files', {

@@ -50,6 +50,19 @@ export function SettingsPage() {
     return <div>{KeyInput()}</div>
   }
 
+  function ApiTestButton() {
+    const [message,setMessage] = useState('')
+
+    async function buttonClick(){
+      let response = await API.api_verify_access_key()
+      console.log(response.data.human_description)
+      setMessage(response.data.human_description)
+    }
+
+
+    return <div><button key='test api button' onClick={() => {buttonClick()}} >Test Api Connection</button>{message}</div>
+  }
+
   function ApiMaxResultsInput() {
     const [apiMaxResults,setApiMaxResults] = useState(localStorage.getItem('hydrus-max-results'));
     function submitKey(event){
@@ -130,6 +143,7 @@ export function SettingsPage() {
     <ApiKeyInput />
     <ComicsNamespaceInput />
     <ApiMaxResultsInput />
+    <ApiTestButton />
     </div>
     </>;
 }
