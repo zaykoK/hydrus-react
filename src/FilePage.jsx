@@ -18,10 +18,6 @@ export function FilePage() {
     display: "grid",
     gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
   }
-  //Make sure that session key is present
-  useEffect(() => {
-    //API.sessionKeyRoutine()
-  }, [])
   //If file hash changes reload tags
   useEffect(() => {
     loadTags();
@@ -33,6 +29,7 @@ export function FilePage() {
     let responseTags = response.data.metadata[0].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]
     let tagTuples = TagTools.transformIntoTuple(responseTags)
     tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
+    //console.log(response.data.metadata[0])
     setMetaData(response.data.metadata[0])
     setTags(tagTuples)
   }

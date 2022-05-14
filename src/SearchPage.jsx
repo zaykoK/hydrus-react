@@ -36,6 +36,7 @@ export function SearchPage(props) {
   function groupImages(responses, hashes, groupNamespace = 'group-title') {
     //Super inefficient way to group images together, to optimize later
 
+    //Map response into hash => file tags
     let tMap = new Map()
     for (let element in responses) {
       let filterTags = TagTools.transformIntoTuple(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]).filter((element) => element["namespace"] === groupNamespace)
@@ -46,19 +47,25 @@ export function SearchPage(props) {
         )
       }
     }
+    //Map files into tag => hashes with that tag format
     let hMap = new Map()
     tMap.forEach((value, key, map) => {
       let groupTitle = value[0].value
       if (hMap.has(groupTitle)) {
         let v = hMap.get(groupTitle)
-        hMap.set(groupTitle, [...v, key])
+        hMap.set(groupTitle, [...v, key]) //can't use push with maps so that's what I do
       }
       else {
         hMap.set(groupTitle, [key])
       }
     })
-    let hashesCopy = hashes.slice()
+    //TODO
+    //Sort tags in groups according to page(or some other) order
+    //Add option to use oldest file in group as representant
 
+    //Grab a copy of all search hashes
+    let hashesCopy = hashes.slice()
+    //Remove hashes from grouped up files except for first one(seems to always be the newest file in group)
     hMap.forEach((value, key, map) => {
       for (let v in value.slice(1)) {
         hashesCopy.splice(hashesCopy.indexOf(value[v]), 1)
@@ -107,7 +114,7 @@ export function SearchPage(props) {
       responses = responses.flat()
 
 
-      joinMetaTags(responses)
+      createListOfUniqueTags(responses)
       let h = hashes
       if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
 
@@ -116,7 +123,7 @@ export function SearchPage(props) {
     }
   }
 
-  function joinMetaTags(responses) {
+  function createListOfUniqueTags(responses) {
     //console.time('metajoin')
     let merged = []
     for (let element in responses) {
@@ -290,7 +297,7 @@ export function SearchPage(props) {
     height: 'fit-content',
     gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
   }
-
+  //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
 
   return <>

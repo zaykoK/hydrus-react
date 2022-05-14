@@ -21,7 +21,7 @@ const elementStyle = {
   minHeight:'100%'
 }
 
-console.log('index')
+//console.log('index')
 API.sessionKeyRoutine()
 
 
