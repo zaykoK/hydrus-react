@@ -18,14 +18,14 @@ export function SearchTags(props) {
 
   const searchBarStyle = {
     background: '#ffffff',
-    boxShadow: '0 0 0 0 grey',
+    boxShadow: '0 0 5px 0 black',
     height: '35px',
     minWidth: '40%',
-    maxWidth: '90vw',
+    maxWidth: '80vw',
     border: 'none',
     borderRadius: '5px',
-    textAlign: 'center',
-    fontSize: 'larger',
+    textAlign: 'left',
+    fontSize: '12px',
     flexGrow: '3'
   }
 
@@ -36,7 +36,7 @@ export function SearchTags(props) {
     if (split.length > 0) {
       let inside = []
       for (let i = 0; i < split.length; i++) {
-        inside.push(split[i])
+        inside.push(split[i].toLowerCase())
       }
       props.addTag(inside)
     }
@@ -58,15 +58,15 @@ export function SearchTags(props) {
   }
 
   function GroupButton(props){
-    return <button style={{...TagTools.getTagButtonStyle(),height:'inherit'}} onClick={() => {props.clickAction()}}  >Group images</button>
+    return <button style={{...TagTools.getTagButtonStyle(),height:'35px',fontSize:'auto',maxWidth:'15%'}} onClick={() => {props.clickAction()}}  >Group images</button>
   }
   
 
 
   function TagInput() {
     return <form onSubmit={submitTag} style={searchBarStyle}>
-      <label style={{width:'inherit'}}>
-        <input style={searchBarStyle}
+      <label style={{width:'fit-content'}}>
+        <input style={{...searchBarStyle,width:'-webkit-fill-available'}}
           type="text"
           value={tag}
           placeholder="Search tags"
