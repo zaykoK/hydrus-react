@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import * as API from './hydrus-backend';
 import { useNavigate } from "react-router-dom";
 import * as TagTools from './TagTools'
+import IconImage from './assets/filetype-picture.svg'
+import IconVideo from './assets/filetype-video.svg'
+import IconOther from './assets/filetype-unknown.svg'
 
 export const ImageThumbnail = React.memo((props) => {
   const [thumbnail, setThumbnail] = useState(API.api_get_file_thumbnail_address(props.hash));
@@ -23,7 +26,7 @@ export const ImageThumbnail = React.memo((props) => {
     background: '#1e1e1e',
     borderRadius: '15px',
     overflow: 'hidden',
-    boxShadow: '0px 0px 0px 0px lightblue',
+    boxShadow: '0px 0px 5px 0px black',
     height:'200px',
     width:'200px'
   }
@@ -175,6 +178,38 @@ export const ImageThumbnail = React.memo((props) => {
   const thumbnailTopTags = ['creator', 'series']
   const thumbnailBottomTags = []
 
+  function ContentTypeIcon(props) {
+    //console.log(props.metadata.mime)
+    if (props === undefined) {return}
+    //console.log(props.metadata.mime)
+
+    const iconStyle = {
+      position:'absolute',
+      bottom:'0px',
+      left:'0px',
+      background:'#000000d1',
+      padding:'3px',
+      borderRadius:'0px 10px 0px 0px',
+      opacity:'0.6'
+    }
+    const svgStyle = {
+      width:'20px',
+      height:'20px'
+    }
+
+
+    if (props.metadata?.mime.includes('video')){
+      return <div style={iconStyle}><img src={IconVideo} style={svgStyle} /></div>
+    }
+    if (props.metadata?.mime.includes('image')){
+      return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
+    }
+    if (props.metadata?.mime.includes('application')){
+      return <div style={iconStyle}><img src={IconOther} style={svgStyle} /></div>
+    }
+    return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
+  }
+
 
   return (
     <div className='Thumbnail' key={"thumb-" + props.hash} style={returnThumbStyle(props.type)[1]} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
@@ -182,6 +217,7 @@ export const ImageThumbnail = React.memo((props) => {
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
       </div>
       <div className='bottomTags' style={metaStyleBottom}>
+        <ContentTypeIcon metadata={metadata} />
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags }))}
       </div>
       <ThumbContent
