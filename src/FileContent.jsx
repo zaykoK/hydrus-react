@@ -42,13 +42,15 @@ export const FileContent = React.memo((props) => {
       console.log(style)
       switch (state) {
         case 'fit':
-          changeState('full')
+          changeState('zoom')
           changeStyle({
             padding: '0px',
+            height: '100%',
+            width: '100%',
             objectFit: 'fit',
             background: '#1e1e1e',
             imageRendering: '-webkit-optimize-contrast',
-            cursor:'zoom-in'
+            cursor:'zoom-out'
           });
           break;
         case 'full':
