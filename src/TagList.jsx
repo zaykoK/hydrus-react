@@ -2,7 +2,10 @@ import * as TagTools from './TagTools'
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
+//Props
+//Blacklist - tag namespaces to skip
+//Tags - tag list
+//clickFunction - function to run on clicking tag
 export function TagList(props) {
     const tagListStyle = {
         padding: '5px',
@@ -10,7 +13,8 @@ export function TagList(props) {
         minHeight: '50vh',
         maxHeight: '97vh',
         overflowY: 'auto',
-        overflowX: 'hidden'
+        overflowX: 'hidden',
+        fontSize: '12px'
     }
     const navigate = useNavigate();
 
