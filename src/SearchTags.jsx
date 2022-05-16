@@ -126,7 +126,7 @@ export function SearchTags(props) {
           <input style={inputStyle}
             type="text"
             value={tag}
-            placeholder="Search tags"
+            placeholder="Search tags, -tag excludes, tag1 OR tag2 for alternative"
             onChange={(e) => searchTag(e.target.value)} />
         </label>
       </form>
