@@ -269,6 +269,7 @@ export function SearchPage(props) {
 
 
   function addTag(tag) {
+    console.log('adding tag:' + tag)
     if (tag === '') { return; }
     let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
     //If tag exists in array don't add it
@@ -281,9 +282,13 @@ export function SearchPage(props) {
   }
 
   function removeTag(tag) {
+    console.log('removing')
+    console.log(tags)
     let i = tags.indexOf(tag);
     let afterRemove = tags.slice();
     afterRemove.splice(i, 1);
+    console.log('after remove')
+    console.log(afterRemove)
 
     let par = generateSearchURL(afterRemove, 1)
     navigateTo(par)
@@ -313,10 +318,11 @@ export function SearchPage(props) {
     const contentStyle = {
       display: "grid",
       height: 'fit-content',
-      gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
+      gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)',
+      margin:'0px 0px 0px 0px'
     }
 
-    console.log(width)
+    //console.log(width)
     if (width <= 450) {
       console.log('mobile')
       return {
@@ -326,7 +332,7 @@ export function SearchPage(props) {
     }
     
 
-    console.log('desktop')
+    //console.log('desktop')
     return contentStyle
   }
 
@@ -335,10 +341,8 @@ export function SearchPage(props) {
   const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
 
   return <>
-    <div style={{ height: '36px' }}><TagDisplay key={tags} removeTag={removeTag} tags={tags} /></div>
-    <SearchTags groupAction={changeGrouping} addTag={addTag} />
+    <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />
     <div style={getContentStyle(width)}>
-
       {(fileTags != undefined) && <TagList tags={fileTags} blacklist={tagBlacklist} scrollable={true} clickFunction={addTag} />}
       <ImageWall grouping={groupFiles} addTag={addTag} type={props.type} page={params.page} hashes={hashes} changePage={changePage} />
     </div>

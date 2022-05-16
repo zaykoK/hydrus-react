@@ -14,27 +14,29 @@ export function getTagTextStyle(style) {
 }
 
 export function getTagButtonStyle(style) {
+  if (style === '') { style = 'unnamedspaced' }
   const cssStyleCommon = {
     borderRadius: '5px',
     border: 'none',
-    height: '30px',
-    fontSize: 'larger',
+    height: 'inherit',
+    fontSize: '12px',
     background: (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']),
     color: (TagColor.buttonTextColors[style] !== undefined ? TagColor.buttonTextColors[style] : 'white')
   }
-
-  //console.log(style)
-  if (style === undefined) {return}
-  if (style === '') { style = 'unnamedspaced' }
+  if (style === undefined) { return cssStyleCommon }
+ 
   let exclude = false
-  if (style.charAt(0) === '-') {style = style.substring(1); exclude = true}
+  if (style.charAt(0) === '-') {
+    style = style.substring(1); exclude = true
+  }
   if (exclude) {
     let gradient = 'linear-gradient(270deg,' + (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']) + ' , #020024)'
     return {
       ...cssStyleCommon,
-      background: gradient,
-      border: 'solid',
-      borderColor: 'black'
+      background: TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other'],
+      boxShadow: '0px 0px 7px 0px black',
+      //border: 'solid',
+      //borderColor: 'black'
     }
   }
   

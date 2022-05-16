@@ -42,7 +42,7 @@ export function ImageWall(props) {
     padding: '15px',
     gap: '15px',
     borderRadius: '15px',
-    justifyContent: 'space-evenly'
+    //justifyContent: 'space-evenly'
   };
 
   function returnPageCount() {
@@ -59,7 +59,8 @@ export function ImageWall(props) {
   const imageWallStyle = {
     background: '#252526',
     height: 'fit-content',
-    gridColumn: '2'
+    gridColumn: '2',
+    margin:'0px 0px 30px 0px'
   }
 
   return (

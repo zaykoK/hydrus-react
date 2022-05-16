@@ -16,7 +16,7 @@ export const FileContent = React.memo((props) => {
   const wrapperStyle = {
     position: 'relative',
     background: '#1e1e1e',
-    minHeight: '97vh',
+    minHeight: '99vh',
     height: 'auto',
     overflow: 'hidden',
   }
@@ -26,10 +26,10 @@ export const FileContent = React.memo((props) => {
   }, [props]);
 
   function Content(props) {
-    const [state, changeState] = useState('fit')
+    const [state, changeState] = useState('fit-height')
     const [style, changeStyle] = useState({
       padding: '0px',
-      height: '97vh',
+      height: '99.5vh',
       maxWidth: '75vw',
       objectFit: 'contain',
       background: '#1e1e1e',
@@ -41,8 +41,8 @@ export const FileContent = React.memo((props) => {
       console.log('switching state: ' + state)
       console.log(style)
       switch (state) {
-        case 'fit':
-          changeState('zoom')
+        case 'fit-height':
+          changeState('fit-width')
           changeStyle({
             padding: '0px',
             height: '100%',
@@ -53,23 +53,11 @@ export const FileContent = React.memo((props) => {
             cursor:'zoom-out'
           });
           break;
-        case 'full':
-          changeState('zoom')
+        case 'fit-width':
+          changeState('fit-height')
           changeStyle({
             padding: '0px',
-            height: '100%',
-            width: '100%',
-            objectFit: 'fit',
-            background: '#1e1e1e',
-            imageRendering: '-webkit-optimize-contrast',
-            cursor:'zoom-out'
-          });
-          break;
-        case 'zoom':
-          changeState('fit')
-          changeStyle({
-            padding: '0px',
-            height: '97vh',
+            height: '99.5vh',
             maxWidth: '75vw',
             objectFit: 'contain',
             background: '#1e1e1e',
@@ -78,7 +66,7 @@ export const FileContent = React.memo((props) => {
           });
           break;
         default:
-          changeState('fit')
+          changeState('fit-height')
       }
     }
 

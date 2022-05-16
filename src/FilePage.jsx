@@ -51,9 +51,12 @@ export function FilePage() {
     borderRadius: '10px',
     position: 'fixed',
     right: '0px',
-    height: '96vh',
+    height: '99vh',
+    maxWidth:'27vh',
     overflowY: 'scroll',
-    overflowX: 'hidden'
+    overflowX: 'hidden',
+    boxShadow: '0 0 5px 0 black',
+    fontSize:'1em'
   }
 
   const relatedSwitchStyle = {
@@ -63,13 +66,23 @@ export function FilePage() {
     margin: '5px',
     padding: '5px',
     borderRadius: '10px',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    opacity:'0.7'
+  }
+
+  const barStyle = {
+    display:'flex',
+    flexFlow:'rows',
+    fontSize:'larger',
+    background:'#333333',
+    height:'49px',
+    boxShadow: '0 0 5px 0 black',
   }
 
   return <>
     <div style={contentStyle}>
       <div>
-        <div style={{display:'flex',flexFlow:'rows',fontSize:'larger'}}>
+        <div style={barStyle}>
           <div id='home-button-padding' style={relatedSwitchStyle} />
           <img src={IconRelated} style={relatedSwitchStyle} onClick={() => { setRelateVisible(!relatedVisible) }} />
         </div>

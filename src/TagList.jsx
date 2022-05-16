@@ -11,7 +11,7 @@ export function TagList(props) {
         padding: '5px',
         margin: '5px',
         minHeight: '50vh',
-        maxHeight: '97vh',
+        maxHeight: '92vh',
         overflowY: 'auto',
         overflowX: 'hidden',
         fontSize: '12px'

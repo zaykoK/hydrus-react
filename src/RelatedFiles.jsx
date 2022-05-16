@@ -58,8 +58,11 @@ const relatedThumbsStyle = {
     gap: '5px',
     flexDirection: 'column-reverse'
 }
+const relatedTextStyle = {
+    fontSize:'1em'
+}
 
 return <>{
     (thumbs != undefined) &&
-    (<><p>Related Files for {props.space}</p> <div style={relatedThumbsStyle}>{thumbs}</div></>)}</>
+    (<><p style={relatedTextStyle}>Related Files for {props.space}</p> <div style={relatedThumbsStyle}>{thumbs}</div></>)}</>
 }

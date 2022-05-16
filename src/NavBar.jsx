@@ -1,4 +1,4 @@
-import {React, useState }from "react";
+import { React, useState } from "react";
 import { NavLink } from "react-router-dom";
 import IconHome from './assets/menu-home.svg'
 import IconComics from './assets/filetype-picture.svg'
@@ -13,22 +13,26 @@ const linkStyle = {
   color: 'white',
   textDecoration: 'none',
   fontSize: 'larger',
+  display: 'flex',
+  flexFlow: 'rows'
 
 }
 
 const barStyle = {
-  position:'absolute',
-  top:'2px',
-  left:'2px',
+  position: 'absolute',
+  top: '0px',
+  left: '0px',
   background: '#333333',
   display: 'flex',
-  flexFlow:'column',
+  flexFlow: 'column',
   gridTemplateColumns: 'auto auto auto',
   justifyItems: 'left',
-  borderRadius:'10px',
-  boxShadow: '0px 0px 7px 0px black',
-  overflow:'hidden',
-  height:'50px'
+  borderRadius: '0px 0px 10px 0px',
+  boxShadow: '0px 0px 0px 0px black',
+  overflow: 'hidden',
+  height: '49px',
+  width: '49px',
+  zIndex: '50'
 }
 
 const ButtonStyle = {
@@ -37,19 +41,26 @@ const ButtonStyle = {
   background: '#1e1e1e',
   margin: '5px',
   padding: '5px',
-  borderRadius:'10px',
+  borderRadius: '10px',
   cursor: 'pointer',
-  opacity:'0.7'
+  opacity: '0.7'
+}
+
+const menuTextStyle = {
+  lineHeight: '2.5em',
+  padding: '0px 15px 0px 5px'
 }
 
 function Navigation() {
-  const [expanded,setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false)
 
-  function returnBarStyle(expanded){
+  function returnBarStyle(expanded) {
     if (expanded) {
       return {
         ...barStyle,
-        height:'auto'
+        height: 'auto',
+        width: 'auto',
+        boxShadow: '0px 0px 7px 0px black',
       }
     }
     return barStyle
@@ -60,20 +71,24 @@ function Navigation() {
       <nav className="navbar navbar-expand navbar-dark bg-dark" >
         <div className="container" style={returnBarStyle(expanded)}>
           <div style={linkStyle}>
-            <img src={IconHamburger} style={ButtonStyle} onClick={() => {setExpanded(!expanded)}} />
+            <img src={IconHamburger} style={ButtonStyle} onClick={() => { setExpanded(!expanded) }} />
+            <div style={menuTextStyle}>Menu</div>
           </div>
           <NavLink style={linkStyle} className="nav-link" to="/">
-          <img src={IconHome} style={ButtonStyle} />
+            <img src={IconHome} style={ButtonStyle} />
+            <div style={menuTextStyle}>Home</div>
           </NavLink>
           <NavLink style={linkStyle} className="nav-link" to="/comics/page=1">
-          <img src={IconComics} style={ButtonStyle} />
-          </NavLink>
-          <NavLink style={linkStyle} className="nav-link" to="/settings">
-          <img src={IconSettings} style={ButtonStyle} />
-          </NavLink>
-        </div>
-      </nav>
-    </div>
+            <img src={IconComics} style={ButtonStyle} />
+            <div style={menuTextStyle}>Comics</div>
+      </NavLink>
+      <NavLink style={linkStyle} className="nav-link" to="/settings">
+        <img src={IconSettings} style={ButtonStyle} />
+        <div style={menuTextStyle}>Settings</div>
+          </NavLink >
+        </div >
+      </nav >
+    </div >
   );
 }
 

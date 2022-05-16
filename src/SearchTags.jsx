@@ -1,36 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as API from './hydrus-backend.js';
 import * as TagTools from './TagTools'
+import TagDisplay from './TagDisplay.jsx';
+
+import IconGroup from './assets/group.svg'
 
 
 export function SearchTags(props) {
   const [tag, setTag] = useState('');
   const [searches, setSearches] = useState([]);
 
-  const searchStyle = {
+  const [tags, setTags] = useState(props.tags)
+
+  const topBarStyle = {
     textAlign: 'center',
     fontSize: 'larger',
-    display:'flex',
+    display: 'flex',
     justifyContent: 'center',
-    gap:'5px',
+    gap: '5px',
+    height:'43px',
+    margin:'0px 3px 3px 3px',
+    background: '#333333',
+    padding:'3px',
+    boxShadow: '0 0 5px 0 black',
+  }
+
+  const searchBarSt = {
+    background: '#ffffff',
+    boxShadow: '0 0 5px 0 black',
+    display: 'flex',
+    flexFlow: 'rows',
+    height: 'inherit',
+    margin: '0px',
+    minWidth: '40%',
+    maxWidth: '95vw',
+    borderRadius: '5px',
+    overflow: 'hidden'
 
   }
 
-  const searchBarStyle = {
-    background: '#ffffff',
-    boxShadow: '0 0 5px 0 black',
-    height: '35px',
-    minWidth: '40%',
-    maxWidth: '80vw',
+  const formStyle = {
+    height:'inherit',
+    flexGrow: '1',
+    borderRadius:'5px'
+  }
+
+  const labelStyle = {
+    display:'block',
+    height:'inherit',
+    width:'inherit'
+  }
+
+  const inputStyle = {
+    display:'block',
+    height: 'inherit',
+    width:'99%',
     border: 'none',
     borderRadius: '5px',
     textAlign: 'left',
     fontSize: '12px',
-    flexGrow: '3'
+    padding: '0px 0px 0px 3px',
+    margin:'0px',
   }
 
   function submitTag(event) {
     event.preventDefault(); //necessary to not reload page after submit
+    console.log('submitTag')
 
     let split = tag.split(' OR ')
     if (split.length > 0) {
@@ -40,7 +75,7 @@ export function SearchTags(props) {
       }
       props.addTag(inside)
     }
-    else{
+    else {
       props.addTag(tag);
     }
     setTag('');
@@ -57,23 +92,50 @@ export function SearchTags(props) {
 
   }
 
-  function GroupButton(props){
-    return <button style={{...TagTools.getTagButtonStyle(),height:'35px',fontSize:'auto',maxWidth:'15%'}} onClick={() => {props.clickAction()}}  >Group images</button>
+  function GroupButton(props) {
+    const ButtonStyle = {
+      height: '1.5em',
+      width: '1.5em',
+      background: '#1e1e1e',
+      margin: '2px',
+      padding: '5px',
+      borderRadius: '10px',
+      cursor: 'pointer',
+      opacity: '0.7'
+    }
+
+    return <img src={IconGroup} style={ButtonStyle} onClick={() => { props.clickAction() }} />
+    return <button
+      style={{
+        ...TagTools.getTagButtonStyle()
+      }}
+      onClick={() => { props.clickAction() }}>Group images</button>
   }
-  
 
+  useEffect(() => {
+    if (JSON.stringify(props.tags) !== JSON.stringify(tags)) {
+      setTags(props.tags)
+    }
+  })
 
-  function TagInput() {
-    return <form onSubmit={submitTag} style={searchBarStyle}>
-      <label style={{width:'fit-content'}}>
-        <input style={{...searchBarStyle,width:'-webkit-fill-available'}}
-          type="text"
-          value={tag}
-          placeholder="Search tags"
-          onChange={(e) => searchTag(e.target.value)} />
-      </label>
-    </form>;
+  function TagInput(props) {
+    return <div style={searchBarSt}>
+      <TagDisplay key={props.tags} removeTag={props.removeTag} tags={props.tags} />
+      <form onSubmit={submitTag} style={formStyle}>
+        <label style={ labelStyle }>
+          <input style={inputStyle}
+            type="text"
+            value={tag}
+            placeholder="Search tags"
+            onChange={(e) => searchTag(e.target.value)} />
+        </label>
+      </form>
+    </div>
   }
 
-  return <div style={searchStyle}><GroupButton clickAction={props.groupAction} />{TagInput()}</div>;
+  return <div style={topBarStyle}>
+    <div style={{width:'125px',height:'inherit'}} />
+    <GroupButton clickAction={props.groupAction} />
+    {TagInput({ removeTag: props.removeTag, tags: tags })}
+  </div>;
 }
