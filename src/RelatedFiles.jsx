@@ -1,6 +1,6 @@
 import * as API from './hydrus-backend';
 import { ImageThumbnail } from './ImageThumbnail';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export function RelatedFiles(props) {
     const [relatedHashes, setRelatedHashes] = useState([])
