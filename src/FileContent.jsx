@@ -81,11 +81,26 @@ export const FileContent = React.memo((props) => {
     }
 
     if (props.type.includes("image")) {
-      return <img onClick={() => { nextState() }} src={props.content} style={style} alt={props.hash} />
+      return <img 
+      onClick={() => { nextState() }} 
+      src={props.content} 
+      style={style} 
+      alt={props.hash} />
     }
     if (props.type.includes("video")) {
-      return <video style={ThumbnailStyle} autoPlay loop controls src={props.content} />
+      return <video 
+      style={ThumbnailStyle} 
+      autoPlay loop controls 
+      src={props.content} />
     }
+    if (props.type.includes("application")) {
+      return <img 
+      onClick={() => { console.log('This should at some point trigger file download') }}
+      src={API.api_get_file_thumbnail_address(props.hash)}
+      style={style} 
+      alt={props.hash} />
+    }
+
   }
 
   return (
