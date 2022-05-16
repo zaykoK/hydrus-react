@@ -18,6 +18,8 @@ export function SearchPage(props) {
   const [groupFiles, setGroupFiles] = useState(getGroupingToggle())
   const { parm } = useParams()
 
+  const [width, setWidth] = useState(window.innerWidth)
+
   const navigate = useNavigate();
 
   function refreshParams() {
@@ -39,37 +41,52 @@ export function SearchPage(props) {
     //Map response into hash => file tags
     let tMap = new Map()
     for (let element in responses) {
+      //console.log(responses[element])
       let filterTags = TagTools.transformIntoTuple(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]).filter((element) => element["namespace"] === groupNamespace)
-      if (filterTags.length !== 0) {
+      let pageTags = TagTools.transformIntoTuple(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]).filter((element) => element["namespace"] === 'page')
+      if (filterTags.length !== 0) { //Don't create group for files with no group namespace
         tMap.set(
           responses[element].hash,
-          filterTags
+          [filterTags,pageTags,responses[element].time_modified]
         )
       }
     }
     //Map files into tag => hashes with that tag format
     let hMap = new Map()
     tMap.forEach((value, key, map) => {
-      let groupTitle = value[0].value
+      //console.log(value)
+      let groupTitle = value[0][0].value
+      //console.log(groupTitle)
       if (hMap.has(groupTitle)) {
         let v = hMap.get(groupTitle)
-        hMap.set(groupTitle, [...v, key]) //can't use push with maps so that's what I do
+        //console.log(v)
+        hMap.set(groupTitle, [[...v[0], key],[...v[1],value[1]],[...v[2],value[2]]]) //can't use push with maps so that's what I do
       }
       else {
-        hMap.set(groupTitle, [key])
+        hMap.set(groupTitle, [[key],[value[1]],[value[2]]])
       }
     })
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
 
+
+
     //Grab a copy of all search hashes
     let hashesCopy = hashes.slice()
     //Remove hashes from grouped up files except for first one(seems to always be the newest file in group)
     hMap.forEach((value, key, map) => {
-      for (let v in value.slice(1)) {
-        hashesCopy.splice(hashesCopy.indexOf(value[v]), 1)
+      //console.log("TESt")
+      //console.log(value.slice(0,-1))
+      //console.log(value.slice(1))
+      //console.log(value)
+      let removed = []
+      for ( let v in value[0].slice(1) ) {
+        //value.slice(1) - first element encounter, should always be newest
+        //value.slice(0,-1) - last element encountered, should be oldest file
+        removed.push(hashesCopy.splice(hashesCopy.indexOf(value[0][v]), 1))
       }
+      //console.log(removed)
     })
     return hashesCopy
   }
@@ -292,18 +309,35 @@ export function SearchPage(props) {
     return parameters
   }
 
-  const contentStyle = {
-    display: "grid",
-    height: 'fit-content',
-    gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
+  function getContentStyle(width) {
+    const contentStyle = {
+      display: "grid",
+      height: 'fit-content',
+      gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
+    }
+
+    console.log(width)
+    if (width <= 450) {
+      console.log('mobile')
+      return {
+        display: 'flex',
+        width: 'fit-content'
+      }
+    }
+    
+
+    console.log('desktop')
+    return contentStyle
   }
+
+  
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
 
   return <>
     <div style={{ height: '36px' }}><TagDisplay key={tags} removeTag={removeTag} tags={tags} /></div>
     <SearchTags groupAction={changeGrouping} addTag={addTag} />
-    <div style={contentStyle}>
+    <div style={getContentStyle(width)}>
 
       {(fileTags != undefined) && <TagList tags={fileTags} blacklist={tagBlacklist} scrollable={true} clickFunction={addTag} />}
       <ImageWall grouping={groupFiles} addTag={addTag} type={props.type} page={params.page} hashes={hashes} changePage={changePage} />
