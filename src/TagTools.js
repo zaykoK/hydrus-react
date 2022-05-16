@@ -4,17 +4,17 @@ export function getTagTextStyle(style) {
   if (style === '') { style = 'unnamedspaced' }
   const cssStyle = {
     cursor: 'pointer',
-    margin: '0px',
+    margin: '2px 4px 4px 2px',
     width: 'fit-content',
-    color: (TagColor.colors[style] != undefined ? TagColor.colors[style] : TagColor.colors['other'])
+    color: (TagColor.colors[style] != undefined ? TagColor.colors[style] : TagColor.colors['other']),
+    fontSize: '1em',
+    fontFamily: 'verdana, sans-serif, helvetica'
   }
   return cssStyle
 }
 
 export function getTagButtonStyle(style) {
-  //console.log(style)
-  if (style === '') { style = 'unnamedspaced' }
-  const cssStyle = {
+  const cssStyleCommon = {
     borderRadius: '5px',
     border: 'none',
     height: '30px',
@@ -22,7 +22,23 @@ export function getTagButtonStyle(style) {
     background: (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']),
     color: (TagColor.buttonTextColors[style] !== undefined ? TagColor.buttonTextColors[style] : 'white')
   }
-  return cssStyle
+
+  //console.log(style)
+  if (style === undefined) {return}
+  if (style === '') { style = 'unnamedspaced' }
+  let exclude = false
+  if (style.charAt(0) === '-') {style = style.substring(1); exclude = true}
+  if (exclude) {
+    let gradient = 'linear-gradient(270deg,' + (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']) + ' , #020024)'
+    return {
+      ...cssStyleCommon,
+      background: gradient,
+      border: 'solid',
+      borderColor: 'black'
+    }
+  }
+  
+  return cssStyleCommon
 }
 
 export function transformIntoTuple(tags) {
