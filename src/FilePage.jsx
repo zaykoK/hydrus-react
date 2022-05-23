@@ -59,6 +59,11 @@ export function FilePage() {
     fontSize:'1em'
   }
 
+  function returnRelatedSwitchStyle(enabled) {
+    if (enabled) {return relatedSwitchStyle}
+    return {...relatedSwitchStyle,opacity:'0.3'}
+  }
+
   const relatedSwitchStyle = {
     height: '1.5em',
     width: '1.5em',
@@ -84,7 +89,7 @@ export function FilePage() {
       <div>
         <div style={barStyle}>
           <div id='home-button-padding' style={relatedSwitchStyle} />
-          <img src={IconRelated} style={relatedSwitchStyle} onClick={() => { setRelateVisible(!relatedVisible) }} />
+          <img src={IconRelated} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { setRelateVisible(!relatedVisible) }} />
         </div>
         {(tags != undefined) && <TagList tags={tags} blacklist={[]} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}

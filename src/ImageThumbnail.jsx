@@ -27,8 +27,8 @@ export const ImageThumbnail = React.memo((props) => {
     borderRadius: '15px',
     overflow: 'hidden',
     boxShadow: '0px 0px 5px 0px black',
-    height:'17vh',
-    width:'17vh',
+    aspectRatio: '1/1',
+    height:'20vh',
     minWidth:'100px',
     minHeight:'100px'
   }
@@ -39,15 +39,15 @@ export const ImageThumbnail = React.memo((props) => {
     height: '100%',
   };
 
-  const wrapperStyle = {
-    ...WrapperStyleCommon,
-  }
-
   const ThumbnailStyleComic = {
     ...ThumbnailCommon,
     width: '250px',
     height: '370px',
   };
+
+  const wrapperStyle = {
+    ...WrapperStyleCommon,
+  }
 
   const wrapperStyleComic = {
     ...WrapperStyleCommon,
@@ -63,7 +63,7 @@ export const ImageThumbnail = React.memo((props) => {
     margin: '0px',
     width: '100%',
     textAlign: 'center',
-    fontSize: 'larger'
+    fontSize: '1em'
   }
 
   const metaStyleBottom = {
