@@ -3,7 +3,7 @@ import * as API from './hydrus-backend.js';
 import * as TagTools from './TagTools'
 import TagDisplay from './TagDisplay.jsx';
 
-import IconGroup from './assets/group.svg'
+import GroupButton from './GroupButton.jsx';
 
 
 export function SearchTags(props) {
@@ -18,10 +18,10 @@ export function SearchTags(props) {
     display: 'flex',
     justifyContent: 'center',
     gap: '5px',
-    height:'43px',
-    margin:'0px 3px 3px 3px',
+    height: '43px',
+    margin: '0px 3px 3px 3px',
     background: '#333333',
-    padding:'3px',
+    padding: '3px',
     boxShadow: '0 0 5px 0 black',
   }
 
@@ -40,27 +40,27 @@ export function SearchTags(props) {
   }
 
   const formStyle = {
-    height:'inherit',
+    height: 'inherit',
     flexGrow: '1',
-    borderRadius:'5px'
+    borderRadius: '5px'
   }
 
   const labelStyle = {
-    display:'block',
-    height:'inherit',
-    width:'inherit'
+    display: 'block',
+    height: 'inherit',
+    width: 'inherit'
   }
 
   const inputStyle = {
-    display:'block',
+    display: 'block',
     height: 'inherit',
-    width:'99%',
+    width: '99%',
     border: 'none',
     borderRadius: '5px',
     textAlign: 'left',
     fontSize: '12px',
     padding: '0px 0px 0px 3px',
-    margin:'0px',
+    margin: '0px',
   }
 
   function submitTag(event) {
@@ -92,25 +92,9 @@ export function SearchTags(props) {
 
   }
 
-  function GroupButton(props) {
-    const ButtonStyle = {
-      height: '1.5em',
-      width: '1.5em',
-      background: '#1e1e1e',
-      margin: '2px',
-      padding: '5px',
-      borderRadius: '10px',
-      cursor: 'pointer',
-      opacity: '0.7'
-    }
 
-    return <img src={IconGroup} style={ButtonStyle} onClick={() => { props.clickAction() }} />
-    return <button
-      style={{
-        ...TagTools.getTagButtonStyle()
-      }}
-      onClick={() => { props.clickAction() }}>Group images</button>
-  }
+
+  
 
   useEffect(() => {
     if (JSON.stringify(props.tags) !== JSON.stringify(tags)) {
@@ -122,7 +106,7 @@ export function SearchTags(props) {
     return <div style={searchBarSt}>
       <TagDisplay key={props.tags} removeTag={props.removeTag} tags={props.tags} />
       <form onSubmit={submitTag} style={formStyle}>
-        <label style={ labelStyle }>
+        <label style={labelStyle}>
           <input style={inputStyle}
             type="text"
             value={tag}
@@ -134,7 +118,7 @@ export function SearchTags(props) {
   }
 
   return <div style={topBarStyle}>
-    <div style={{width:'125px',height:'inherit'}} />
+    <div style={{ width: '125px', height: 'inherit' }} />
     <GroupButton clickAction={props.groupAction} />
     {TagInput({ removeTag: props.removeTag, tags: tags })}
   </div>;
