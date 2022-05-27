@@ -16,7 +16,8 @@ export function PageButtons(props) {
     height: '30px',
     fontSize: 'larger',
     background: '#333333',
-    color: 'white'
+    color: 'white',
+    cursor:'pointer'
   }
 
   const currentPageButtonStyle = {
@@ -25,7 +26,8 @@ export function PageButtons(props) {
     height: '25px',
     fontSize: 'larger',
     background: '#555555',
-    color: 'white'
+    color: 'white',
+    cursor:'pointer'
   }
   //console.log(props.currentPage)
   if (props.pages === 1) { return <></> }
@@ -45,7 +47,6 @@ export function PageButtons(props) {
     pageButtons.push(<ButtonPage style={PageButtonStyle} key={'page1'} changePage={props.changePage} page={1} />)
   }
 
-  let drewBeforeDots = false
   if (props.currentPage - offset > 2) {
     pageButtons.push(<span key="pages before dots">...</span>)
   }
@@ -70,6 +71,10 @@ export function PageButtons(props) {
   if (props.currentPage != props.pages) { pageButtons.push(<ButtonNextPage key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
 
   const buttonListStyle = {
+    position:'absolute',
+    bottom:'1em',
+    left:'0px',
+    right:'0px',
     textAlign: 'center',
     display: 'flex',
     justifyContent: 'center',
