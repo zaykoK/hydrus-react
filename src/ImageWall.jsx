@@ -7,7 +7,7 @@ import colors from './stylingVariables';
 
 export function ImageWall(props) {
 
-  let viewSize = 28
+  let viewSize = 32
   if (props.type === 'comic') {
     viewSize = 14
   }

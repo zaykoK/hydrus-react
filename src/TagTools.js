@@ -4,7 +4,8 @@ export function getTagTextStyle(style) {
   if (style === '') { style = 'unnamedspaced' }
   const cssStyle = {
     cursor: 'pointer',
-    margin: '2px 4px 4px 2px',
+    padding: '2px 4px 4px 2px',
+    margin:'2px',
     width: 'fit-content',
     color: (TagColor.colors[style] != undefined ? TagColor.colors[style] : TagColor.colors['other']),
     fontSize: '1em',

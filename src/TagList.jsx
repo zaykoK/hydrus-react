@@ -56,7 +56,7 @@ export function TagList(props) {
                 maxHeight: '75vh',
                 overflowY: 'auto',
                 overflowX: 'hidden',
-                fontSize: '1em'
+                fontSize: '1.1em'
             }
         }
         return {

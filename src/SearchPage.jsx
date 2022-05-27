@@ -311,7 +311,7 @@ export function SearchPage(props) {
       display: "grid",
       height: 'fit-content',
       gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)',
-      margin: '0px 0px 0px 0px'
+      margin: '5px 0px 0px 0px'
     }
 
     //console.log(width)

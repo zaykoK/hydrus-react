@@ -8,7 +8,6 @@ function TagDisplay(props) {
     //justifyContent: 'center',
     gap: '3px',
     margin: '1px',
-    flexGrow:'1'
   }
 
   return <div style={tagDisplayStyle}>

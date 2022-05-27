@@ -41,14 +41,15 @@ export function SearchTags(props) {
     maxWidth: '95vw',
     borderRadius: '5px',
     overflow: 'auto hidden',
-
+    flexGrow:'1'
   }
 
   const formStyle = {
     height: 'inherit',
     flexGrow: '0',
     borderRadius: '5px',
-    minWidth:'200px'
+    minWidth:'200px',
+    width:'-webkit-fill-available'
   }
 
   const labelStyle = {
