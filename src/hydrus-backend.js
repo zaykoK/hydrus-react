@@ -12,11 +12,20 @@ export function api_version_clear() {
   sessionStorage.removeItem('hydrus-client-version');
 }
 
-export async function api_verify_access_key() {
-  return axios.get(server_address + '/verify_access_key', {
+export function api_verify_access_key() {
+  axios.get(server_address + '/verify_access_key', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
     }
+  })
+  .then(function (response) {
+    //console.log(response)
+  })
+  .catch(function (error) {
+    // handle error
+    //console.log(error);
+    //console.log(error.message)
+    sessionStorage.removeItem('hydrus-session-key')
   })
 }
 
@@ -73,6 +82,8 @@ export function sessionKeyRoutine() {
   if (sessionStorage.getItem('hydrus-all-known-tags') == null) {
     api_get_services();
   }
+
+  api_verify_access_key()
 
   if (localStorage.getItem('hydrus-api-key') != null && sessionStorage.getItem('hydrus-session-key') == null) {
     api_get_session_key();

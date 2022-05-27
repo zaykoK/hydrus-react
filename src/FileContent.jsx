@@ -1,23 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import * as API from './hydrus-backend';
-import colors from './stylingVariables';
-
 export const FileContent = React.memo((props) => {
   const [content, setContent] = useState(API.api_get_file_address(props.hash));
-
-  const ThumbnailStyle = {
-    padding: '0px',
-    maxHeight: '97vh',
-    maxWidth: '75vw',
-    objectFit: 'contain',
-    background: colors.COLOR2,
-    imageRendering: '-webkit-optimize-contrast'
-  };
 
   const wrapperStyle = {
     position: 'relative',
     background: '#1e1e1e',
-    minHeight: '99vh',
     height: 'auto',
     overflow: 'hidden',
   }
@@ -27,76 +15,92 @@ export const FileContent = React.memo((props) => {
   }, [props]);
 
   function Content(props) {
-    const [state, changeState] = useState('fit-height')
-    const [style, changeStyle] = useState({
+
+    const styleFitHeight = {
       padding: '0px',
-      height: '99.5vh',
-      maxWidth: '75vw',
+      height: '94vh',
+      width: 'auto',
+      maxWidth: '100%',
       objectFit: 'contain',
-      background: colors.COLOR2,
       imageRendering: '-webkit-optimize-contrast',
-      cursor:'zoom-in'
-    })
+      cursor: 'zoom-in'
+    }
+
+    const styleFitWidth = {
+      padding: '0px',
+      height: '100%',
+      width: '100%',
+      objectFit: 'fit',
+      imageRendering: '-webkit-optimize-contrast',
+      cursor: 'zoom-out'
+    }
+
+    const [state, changeState] = useState('fit-height')
+    const [style, changeStyle] = useState(getStartingStyle())
+
+   
+
+    function getStartingStyle() {
+      console.log(props.mobile)
+      if (props.mobile) {
+        return styleFitWidth
+      }
+      return styleFitHeight
+    }
+
+
 
     function nextState() {
-      console.log('switching state: ' + state)
-      console.log(style)
+      if (props.mobile){
+        if(document.fullscreenElement != null){
+          document.exitFullscreen()
+          return
+        }
+        document.body.requestFullscreen()
+        return
+      }
+
       switch (state) {
         case 'fit-height':
           changeState('fit-width')
-          changeStyle({
-            padding: '0px',
-            height: '100%',
-            width: '100%',
-            objectFit: 'fit',
-            background: colors.COLOR2,
-            imageRendering: '-webkit-optimize-contrast',
-            cursor:'zoom-out'
-          });
+          changeStyle(styleFitWidth);
           break;
         case 'fit-width':
           changeState('fit-height')
-          changeStyle({
-            padding: '0px',
-            height: '99.5vh',
-            maxWidth: '75vw',
-            objectFit: 'contain',
-            background: colors.COLOR2,
-            imageRendering: '-webkit-optimize-contrast',
-            cursor:'zoom-in'
-          });
+          changeStyle(styleFitHeight);
           break;
         default:
           changeState('fit-height')
       }
     }
+    
 
     if (props.type.includes("image")) {
-      return <img 
-      onClick={() => { nextState() }} 
-      src={props.content} 
-      style={style} 
-      alt={props.hash} />
+      return <img
+        onClick={() => { nextState() }}
+        src={props.content}
+        style={style}
+        alt={props.hash} />
     }
     if (props.type.includes("video")) {
-      return <video 
-      style={ThumbnailStyle} 
-      autoPlay loop controls 
-      src={props.content} />
+      return <video
+        style={style}
+        autoPlay loop controls
+        src={props.content} />
     }
     if (props.type.includes("application")) {
-      return <img 
-      onClick={() => { console.log('This should at some point trigger file download') }}
-      src={API.api_get_file_thumbnail_address(props.hash)}
-      style={style} 
-      alt={props.hash} />
+      return <img
+        onClick={() => { console.log('This should at some point trigger file download') }}
+        src={API.api_get_file_thumbnail_address(props.hash)}
+        style={style}
+        alt={props.hash} />
     }
 
   }
 
   return (
     <div key={props.hash} style={wrapperStyle} >
-      <Content type={props.type} content={content} hash={props.hash} />
+      <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} />
     </div>
   );
 });

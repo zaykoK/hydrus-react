@@ -7,15 +7,7 @@ import { useNavigate } from 'react-router-dom';
 //Tags - tag list
 //clickFunction - function to run on clicking tag
 export function TagList(props) {
-    const tagListStyle = {
-        padding: '5px',
-        margin: '5px',
-        minHeight: '50vh',
-        maxHeight: '92vh',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        fontSize: '12px'
-    }
+
     const navigate = useNavigate();
 
     const [tags, setTags] = useState([]);
@@ -55,6 +47,29 @@ export function TagList(props) {
         return ''
     }
 
+    function getTagListStyle(mobile) {
+        if (mobile) {
+            return {
+                padding: '5px',
+                margin: '5px',
+                minHeight: 'auto',
+                maxHeight: '75vh',
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                fontSize: '1em'
+            }
+        }
+        return {
+            padding: '5px',
+            margin: '5px',
+            minHeight: '50vh',
+            maxHeight: '92vh',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            fontSize: '12px'
+        }
+    }
+
     function createTagList(args) {
         let tagList = []
         for (let element in args.tags) {
@@ -76,6 +91,6 @@ export function TagList(props) {
     }, [props])
 
     return (
-        <div style={tagListStyle}>{tags}</div>
+        <div style={getTagListStyle(props.mobile)}>{tags}</div>
     )
 }

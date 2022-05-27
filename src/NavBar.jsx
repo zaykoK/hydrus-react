@@ -20,7 +20,7 @@ const linkStyle = {
 }
 
 const barStyle = {
-  position: 'absolute',
+  position: 'fixed',
   top: '0px',
   left: '0px',
   background: colors.COLOR1,

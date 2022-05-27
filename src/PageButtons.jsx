@@ -71,14 +71,15 @@ export function PageButtons(props) {
   if (props.currentPage != props.pages) { pageButtons.push(<ButtonNextPage key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
 
   const buttonListStyle = {
-    position:'absolute',
+    position:'relative',
     bottom:'1em',
     left:'0px',
     right:'0px',
     textAlign: 'center',
     display: 'flex',
     justifyContent: 'center',
-    gap: '5px'
+    gap: '5px',
+    paddingTop:'20px'
   }
 
   return <div style={buttonListStyle}>{pageButtons}</div>

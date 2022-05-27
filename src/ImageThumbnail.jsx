@@ -28,10 +28,9 @@ export const ImageThumbnail = React.memo((props) => {
     borderRadius: '15px',
     overflow: 'hidden',
     boxShadow: '0px 0px 5px 0px black',
+    minHeight:'150px',
+    height:'20%',
     aspectRatio: '1/1',
-    height:'20vh',
-    minWidth:'100px',
-    minHeight:'100px'
   }
 
   const ThumbnailStyle = {

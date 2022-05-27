@@ -15,16 +15,19 @@ export function SearchTags(props) {
   const TOP_BAR_HEIGHT = 43
 
   const topBarStyle = {
+    position: 'fixed',
+    top:'0px',
     textAlign: 'center',
     fontSize: 'larger',
     display: 'flex',
     justifyContent: 'center',
     gap: '5px',
     height: TOP_BAR_HEIGHT,
-    margin: '0px 3px 3px 3px',
     background: '#333333',
-    padding: '3px',
+    padding: '3px 0 3px 0',
     boxShadow: '0 0 5px 0 black',
+    zIndex:'5',
+    width:'100vw'
   }
 
   const searchBarSt = {
@@ -37,7 +40,8 @@ export function SearchTags(props) {
     minWidth: '40%',
     maxWidth: '95vw',
     borderRadius: '5px',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    flexGrow:'1'
 
   }
 
@@ -117,7 +121,7 @@ export function SearchTags(props) {
   }
 
   return <div style={topBarStyle}>
-    <div style={{ width: '125px', height: 'inherit' }} />
+    <div style={{ width: '45px', height: 'inherit' }} />
     <GroupButton clickAction={props.groupAction} />
     {TagInput({ removeTag: props.removeTag, tags: tags })}
   </div>;

@@ -95,8 +95,6 @@ export function SearchPage(props) {
     return hashesCopy
   }
 
-
-
   function getGroupNamespace() {
     if (localStorage.getItem('group-namespace') === null) {
       return 'group-title'
@@ -117,12 +115,12 @@ export function SearchPage(props) {
   }
 
   async function grabMetaData(hashes) {
-    let step = 100
+    const STEP = 100
     let responses = []
     if (hashes.length > 0) {
 
-      for (let i = 0; i < Math.min(i + step, hashes.length); i += step) {
-        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + step, hashes.length)), hide_service_names_tags: true })
+      for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
+        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
         responses.push(response.data.metadata)
       }
       responses = responses.flat()
@@ -143,13 +141,8 @@ export function SearchPage(props) {
     for (let element in responses) {
       merged.push(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
     }
-    //console.log(merged.flat())
-
     const map = merged.flat().reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 
-    console.log(map)
-    //console.log([...new Set(merged.flat())])
-    //merged = TagTools.transformIntoTuple([...new Set(merged.flat())])
     merged = TagTools.transformIntoTuple(map)
     merged.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.timeEnd('metajoin')
@@ -325,37 +318,75 @@ export function SearchPage(props) {
     if (width <= 450) {
       console.log('mobile')
       return {
-        display: 'flex',
-        width: 'fit-content'
+        display: 'grid',
+        width: 'fit-content',
+        gridTemplateColumns: 'auto',
+        gridTemplateRows: 'auto auto'
       }
     }
-
 
     //console.log('desktop')
     return contentStyle
   }
 
-
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
 
+  function getGridStyleList(mobile) {
+    if (mobile) {
+      return {
+        gridColumn: '1',
+        gridRow: '2'
+      }
+    }
+    return {
+      gridColumn: '1',
+      gridRow: '1'
+    }
+  }
+
+  function getMobileStyle(width) {
+    if (width < 450) { return true }
+    return false
+  }
+
+  function getGridStyleThumbs(mobile) {
+    if (mobile) {
+      return {
+        gridColumn: '1',
+        gridRow: '1'
+      }
+    }
+    return {
+      gridColumn: '2',
+      gridRow: '1'
+    }
+  }
+
   return <>
+    <div style={{height:'43px'}}></div>
     <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />
     <div style={getContentStyle(width)}>
-      {(fileTags != undefined) &&
-        <TagList
-          visibleCount={true}
-          tags={fileTags}
-          blacklist={tagBlacklist}
-          scrollable={true}
-          clickFunction={addTag} />}
-      <ImageWall
-        grouping={groupFiles}
-        addTag={addTag}
-        type={props.type}
-        page={params.page}
-        hashes={hashes}
-        changePage={changePage} />
+      <div style={getGridStyleList(getMobileStyle(width))}>
+        {(fileTags != undefined) &&
+          <TagList
+            visibleCount={true}
+            tags={fileTags}
+            blacklist={tagBlacklist}
+            scrollable={true}
+            clickFunction={addTag}
+            mobile={getMobileStyle(width)}
+             />}
+      </div>
+      <div style={getGridStyleThumbs(getMobileStyle(width))}>
+        <ImageWall
+          grouping={groupFiles}
+          addTag={addTag}
+          type={props.type}
+          page={params.page}
+          hashes={hashes}
+          changePage={changePage} />
+      </div>
     </div>
   </>;
 }

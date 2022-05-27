@@ -8,18 +8,39 @@ import * as API from './hydrus-backend';
 import { RelatedFiles } from './RelatedFiles';
 import IconRelated from './assets/related.svg'
 import colors from './stylingVariables';
+import { getRelatedVisibile } from './StorageUtils';
 
 export function FilePage() {
   let { fileHash } = useParams();
 
   const [metadata, setMetaData] = useState();
   const [tags, setTags] = useState();
-  const [relatedVisible, setRelateVisible] = useState(true)
+  const [relatedVisible, setRelateVisible] = useState(getRelatedVisibile())
 
-  const contentStyle = {
-    display: "grid",
-    gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
+  const [width, setWidth] = useState(window.innerWidth)
+
+  function getMobileStyle(width) {
+    if (width < 450) { return true }
+    return false
   }
+
+  function returnStyle(mobile) {
+    const contentStyle = {
+      display: "grid",
+      gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
+    }
+
+    if (mobile) {
+      return {
+        display: 'grid',
+        gridTemplateColumns: 'auto',
+        gridTemplateRows: 'auto auto auto'
+      }
+    }
+    return contentStyle
+  }
+
+
   //If file hash changes reload tags
   useEffect(() => {
     loadTags();
@@ -46,18 +67,39 @@ export function FilePage() {
     return joined
   }
 
-  const relatedStyle = {
-    background: colors.COLORRELATED,
-    padding: '5px',
-    borderRadius: '10px',
-    position: 'fixed',
-    right: '0px',
-    height: '99vh',
-    maxWidth: '27vh',
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    boxShadow: '0 0 5px 0 black',
-    fontSize: '1em',
+  function returnRelatedStyle(mobile) {
+    if (mobile) {
+      return {
+        background: colors.COLOR2,
+        padding: '5px',
+        borderRadius: '10px',
+        position: 'fixed',
+        bottom: '0px',
+        minHeight: '0',
+        maxHeight: '27vh',
+        width: '100vw',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        boxShadow: '0 0 5px 0 black',
+        fontSize: '1em',
+        zIndex: '30'
+      }
+    }
+    return {
+      background: colors.COLORRELATED,
+      padding: '5px',
+      borderRadius: '10px',
+      position: 'fixed',
+      right: '0px',
+      top: '0px',
+      height: '99vh',
+      maxWidth: '27vh',
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      boxShadow: '0 0 5px 0 black',
+      fontSize: '1em',
+      zIndex: '30'
+    }
 
   }
 
@@ -78,13 +120,23 @@ export function FilePage() {
   }
 
   const barStyle = {
+    position: 'fixed',
+    top: '0px',
     display: 'flex',
     flexFlow: 'rows',
     fontSize: 'larger',
     background: colors.COLOR1,
+    width:'100vw',
     height: '49px',
     boxShadow: '0 0 5px 0 black',
+    zIndex: '1'
   }
+
+  const barStylePadding = {
+    height: '51px',
+  }
+
+
 
   const groupedNamespaces = ['group-title', 'pixiv-title', 'kemono-title', 'doujin-title', 'title']
 
@@ -97,26 +149,64 @@ export function FilePage() {
           currentHash={fileHash}
           key={groupedNamespaces[element] + returnTagsFromNamespace(groupedNamespaces[element])}
           tags={returnTagsFromNamespace(groupedNamespaces[element])}
-          space={groupedNamespaces[element]} />
+          space={groupedNamespaces[element]}
+          mobile={getMobileStyle(width)}
+        />
       )
     }
     return returned
   }
 
+  function getContentStyle(mobile) {
+    if (mobile) {
+      return {
+        gridRow: '1',
+        gridColumn: '1'
+      }
+    }
+    return {
+      gridRow: '1',
+      gridColumn: '2'
+    }
+  }
+
+  function switchRelatedVisible() {
+    if (relatedVisible) {
+      localStorage.setItem('related-visible', false)
+      setRelateVisible(false)
+      return
+    }
+    localStorage.setItem('related-visible', true)
+    setRelateVisible(true)
+  }
+
+
+
 
   return <>
-    <div style={contentStyle}>
+    <div style={barStylePadding}></div>
+    <div style={barStyle}>
+      <div id='home-button-padding' style={relatedSwitchStyle} />
+      <img src={IconRelated} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+    </div>
+    <div style={returnStyle(getMobileStyle(width))}>
       <div>
-        <div style={barStyle}>
-          <div id='home-button-padding' style={relatedSwitchStyle} />
-          <img src={IconRelated} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { setRelateVisible(!relatedVisible) }} />
-        </div>
-        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} />}
+
+        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={getMobileStyle(width)} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
 
       </div>
-      {(metadata != undefined) && <FileContent hash={fileHash} type={metadata.mime} />}
-      {(relatedVisible) && <div style={relatedStyle}>
+      <div
+        style={getContentStyle(getMobileStyle(width))}
+      >
+        {(metadata != undefined) &&
+          <FileContent
+            hash={fileHash}
+            type={metadata.mime}
+            mobile={getMobileStyle(width)} />}
+      </div>
+
+      {(relatedVisible) && <div style={returnRelatedStyle(getMobileStyle(width))}>
         {returnRelatedElements(metadata)}
       </div>}
     </div>

@@ -59,6 +59,6 @@ export function FileMetaData(props) {
         <p key={hash + 'size'} style={{ margin: '1px' }}>Size: {formatBytes(size)}</p>
         <p key={hash + 'contenttype'} style={{ margin: '1px' }}>Content-type : {mime}</p>
         <p key={hash + 'inbox'} style={{ margin: '1px' }}>{(inbox) ? ('Is not archived') : ('Is archived')}</p>
-        <div key={hash + 'links'} style={{ margin: '1px' }}>Links:{links}</div>
+        {(links.length > 0) && <div key={hash + 'links'} style={{ margin: '1px' }}>Links:{links}</div>}
     </div>
 }

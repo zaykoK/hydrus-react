@@ -49,20 +49,37 @@ export function RelatedFiles(props) {
                         loadMeta={false}
                     />)
             }
-        setThumbs(temp)
-    }
+            setThumbs(temp)
+        }
     }, [relatedHashes, props])
 
-const relatedThumbsStyle = {
-    display: 'flex',
-    gap: '5px',
-    flexDirection: 'column-reverse'
-}
-const relatedTextStyle = {
-    fontSize:'1em'
-}
+    function returnStyle(mobile) {
+        console.log(mobile)
+        if (!mobile) {
+            return {
+                display: 'flex',
+                gap: '5px',
+                flexDirection: 'column-reverse',
+            }
+        }
+        return {
+            display: 'flex',
+            gap: '5px',
+            flexDirection: 'row',
+            overflow:'auto auto'
+        }
+    }
 
-return <>{
-    (thumbs != undefined) &&
-    (<><p style={relatedTextStyle}>Related Files for {props.space}</p> <div style={relatedThumbsStyle}>{thumbs}</div></>)}</>
+    const relatedThumbsStyle = {
+        display: 'flex',
+        gap: '5px',
+        flexDirection: 'column-reverse'
+    }
+    const relatedTextStyle = {
+        fontSize: '1em',
+    }
+
+    return <>{
+        (thumbs != undefined) &&
+        (<><p style={relatedTextStyle}>Related Files for {props.space}</p> <div style={returnStyle(props.mobile)}>{thumbs}</div></>)}</>
 }
