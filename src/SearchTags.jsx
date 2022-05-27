@@ -40,15 +40,15 @@ export function SearchTags(props) {
     minWidth: '40%',
     maxWidth: '95vw',
     borderRadius: '5px',
-    overflow: 'hidden',
-    flexGrow:'1'
+    overflow: 'auto hidden',
 
   }
 
   const formStyle = {
     height: 'inherit',
-    flexGrow: '1',
-    borderRadius: '5px'
+    flexGrow: '0',
+    borderRadius: '5px',
+    minWidth:'200px'
   }
 
   const labelStyle = {
@@ -121,7 +121,7 @@ export function SearchTags(props) {
   }
 
   return <div style={topBarStyle}>
-    <div style={{ width: '45px', height: 'inherit' }} />
+    <div style={{ width: '45px', height: 'inherit', flexShrink:'0' }} />
     <GroupButton clickAction={props.groupAction} />
     {TagInput({ removeTag: props.removeTag, tags: tags })}
   </div>;

@@ -64,22 +64,24 @@ export function RelatedFiles(props) {
         }
         return {
             display: 'flex',
+            flexWrap:'nowrap',
+            whiteSpace:'nowrap',
             gap: '5px',
             flexDirection: 'row',
-            overflow:'auto auto'
+            overflowX: 'auto',
+            width: 'max-content'
         }
     }
 
-    const relatedThumbsStyle = {
-        display: 'flex',
-        gap: '5px',
-        flexDirection: 'column-reverse'
-    }
     const relatedTextStyle = {
+        position: 'relative',
         fontSize: '1em',
+        margin: '1px'
     }
 
     return <>{
         (thumbs != undefined) &&
-        (<><p style={relatedTextStyle}>Related Files for {props.space}</p> <div style={returnStyle(props.mobile)}>{thumbs}</div></>)}</>
+        (<>
+            <p style={relatedTextStyle}>Related Files for {props.space}</p>
+            <div style={returnStyle(props.mobile)}>{thumbs}</div></>)}</>
 }

@@ -79,7 +79,9 @@ export function PageButtons(props) {
     display: 'flex',
     justifyContent: 'center',
     gap: '5px',
-    paddingTop:'20px'
+    paddingTop:'20px',
+    flexWrap:'wrap',
+    maxWidth:'100vh'
   }
 
   return <div style={buttonListStyle}>{pageButtons}</div>

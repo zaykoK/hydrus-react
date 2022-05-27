@@ -20,6 +20,7 @@ export function getTagButtonStyle(style) {
     border: 'none',
     height: 'inherit',
     fontSize: '12px',
+    flexGrow:'1',
     background: (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']),
     color: (TagColor.buttonTextColors[style] !== undefined ? TagColor.buttonTextColors[style] : 'white')
   }

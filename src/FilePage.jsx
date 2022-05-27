@@ -79,7 +79,7 @@ export function FilePage() {
         maxHeight: '27vh',
         width: '100vw',
         overflowY: 'auto',
-        overflowX: 'hidden',
+        overflowX: 'auto',
         boxShadow: '0 0 5px 0 black',
         fontSize: '1em',
         zIndex: '30'
