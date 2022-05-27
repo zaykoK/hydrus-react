@@ -7,6 +7,7 @@ import { FileMetaData } from './FileMetaData';
 import * as API from './hydrus-backend';
 import { RelatedFiles } from './RelatedFiles';
 import IconRelated from './assets/related.svg'
+import colors from './stylingVariables';
 
 export function FilePage() {
   let { fileHash } = useParams();
@@ -28,7 +29,7 @@ export function FilePage() {
     let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
 
     let responseTags = response.data.metadata[0].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]
-    let tagTuples = TagTools.transformIntoTuple(responseTags)
+    let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
     tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.log(response.data.metadata[0])
     setMetaData(response.data.metadata[0])
@@ -46,43 +47,62 @@ export function FilePage() {
   }
 
   const relatedStyle = {
-    background: '#252526b3',
+    background: colors.COLORRELATED,
     padding: '5px',
     borderRadius: '10px',
     position: 'fixed',
     right: '0px',
     height: '99vh',
-    maxWidth:'27vh',
-    overflowY: 'scroll',
+    maxWidth: '27vh',
+    overflowY: 'auto',
     overflowX: 'hidden',
     boxShadow: '0 0 5px 0 black',
-    fontSize:'1em'
+    fontSize: '1em',
+
   }
 
   function returnRelatedSwitchStyle(enabled) {
-    if (enabled) {return relatedSwitchStyle}
-    return {...relatedSwitchStyle,opacity:'0.3'}
+    if (enabled) { return relatedSwitchStyle }
+    return { ...relatedSwitchStyle, opacity: '0.3' }
   }
 
   const relatedSwitchStyle = {
     height: '1.5em',
     width: '1.5em',
-    background: '#1e1e1e',
+    background: colors.COLOR2,
     margin: '5px',
     padding: '5px',
     borderRadius: '10px',
     cursor: 'pointer',
-    opacity:'0.7'
+    opacity: '0.7'
   }
 
   const barStyle = {
-    display:'flex',
-    flexFlow:'rows',
-    fontSize:'larger',
-    background:'#333333',
-    height:'49px',
+    display: 'flex',
+    flexFlow: 'rows',
+    fontSize: 'larger',
+    background: colors.COLOR1,
+    height: '49px',
     boxShadow: '0 0 5px 0 black',
   }
+
+  const groupedNamespaces = ['group-title', 'pixiv-title', 'kemono-title', 'doujin-title', 'title']
+
+  function returnRelatedElements(metadata) {
+    let returned = []
+    if (metadata == undefined) { return returned }
+    for (let element in groupedNamespaces) {
+      returned.push(
+        <RelatedFiles
+          currentHash={fileHash}
+          key={groupedNamespaces[element] + returnTagsFromNamespace(groupedNamespaces[element])}
+          tags={returnTagsFromNamespace(groupedNamespaces[element])}
+          space={groupedNamespaces[element]} />
+      )
+    }
+    return returned
+  }
+
 
   return <>
     <div style={contentStyle}>
@@ -91,43 +111,14 @@ export function FilePage() {
           <div id='home-button-padding' style={relatedSwitchStyle} />
           <img src={IconRelated} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { setRelateVisible(!relatedVisible) }} />
         </div>
-        {(tags != undefined) && <TagList tags={tags} blacklist={[]} />}
+        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
 
       </div>
       {(metadata != undefined) && <FileContent hash={fileHash} type={metadata.mime} />}
-      <div style={relatedStyle}>
-        {((metadata != undefined) && relatedVisible) &&
-          <RelatedFiles
-            currentHash={fileHash}
-            key={'group-title' + returnTagsFromNamespace('group-title')}
-            tags={returnTagsFromNamespace('group-title')}
-            space='group-title' />}
-        {((metadata != undefined) && relatedVisible) &&
-          <RelatedFiles
-            currentHash={fileHash}
-            key={'pixiv-title' + returnTagsFromNamespace('pixiv-title')}
-            tags={returnTagsFromNamespace('pixiv-title')}
-            space='pixiv-title' />}
-        {((metadata != undefined) && relatedVisible) &&
-          <RelatedFiles
-            currentHash={fileHash}
-            key={'kemono-title' + returnTagsFromNamespace('kemono-title')}
-            tags={returnTagsFromNamespace('kemono-title')}
-            space='kemono-title' />}
-        {((metadata != undefined) && relatedVisible) &&
-          <RelatedFiles
-            currentHash={fileHash}
-            key={'doujin-title' + returnTagsFromNamespace('doujin-title')}
-            tags={returnTagsFromNamespace('doujin-title')}
-            space='doujin-title' />}
-        {((metadata != undefined) && relatedVisible) &&
-          <RelatedFiles
-            currentHash={fileHash}
-            key={'title' + returnTagsFromNamespace('title')}
-            tags={returnTagsFromNamespace('title')}
-            space='title' />}
-      </div>
+      {(relatedVisible) && <div style={relatedStyle}>
+        {returnRelatedElements(metadata)}
+      </div>}
     </div>
   </>;
 }
