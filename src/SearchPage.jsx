@@ -7,6 +7,8 @@ import TagDisplay from './TagDisplay';
 import * as TagTools from './TagTools';
 import { TagList } from './TagList';
 
+import { getGroupingToggle } from './StorageUtils';
+
 
 export function SearchPage(props) {
   const [tags, setTags] = useState();
@@ -42,12 +44,14 @@ export function SearchPage(props) {
     let tMap = new Map()
     for (let element in responses) {
       //console.log(responses[element])
-      let filterTags = TagTools.transformIntoTuple(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]).filter((element) => element["namespace"] === groupNamespace)
-      let pageTags = TagTools.transformIntoTuple(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]).filter((element) => element["namespace"] === 'page')
+      let filter = TagTools.tagArrayToMap(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
+      let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
+      let pageFilter = TagTools.tagArrayToMap(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
+      let pageTags = TagTools.transformIntoTuple(pageFilter).filter((element) => element["namespace"] === 'page')
       if (filterTags.length !== 0) { //Don't create group for files with no group namespace
         tMap.set(
           responses[element].hash,
-          [filterTags,pageTags,responses[element].time_modified]
+          [filterTags, pageTags, responses[element].time_modified]
         )
       }
     }
@@ -60,10 +64,10 @@ export function SearchPage(props) {
       if (hMap.has(groupTitle)) {
         let v = hMap.get(groupTitle)
         //console.log(v)
-        hMap.set(groupTitle, [[...v[0], key],[...v[1],value[1]],[...v[2],value[2]]]) //can't use push with maps so that's what I do
+        hMap.set(groupTitle, [[...v[0], key], [...v[1], value[1]], [...v[2], value[2]]]) //can't use push with maps so that's what I do
       }
       else {
-        hMap.set(groupTitle, [[key],[value[1]],[value[2]]])
+        hMap.set(groupTitle, [[key], [value[1]], [value[2]]])
       }
     })
     //TODO
@@ -81,7 +85,7 @@ export function SearchPage(props) {
       //console.log(value.slice(1))
       //console.log(value)
       let removed = []
-      for ( let v in value[0].slice(1) ) {
+      for (let v in value[0].slice(1)) {
         //value.slice(1) - first element encounter, should always be newest
         //value.slice(0,-1) - last element encountered, should be oldest file
         removed.push(hashesCopy.splice(hashesCopy.indexOf(value[0][v]), 1))
@@ -91,14 +95,7 @@ export function SearchPage(props) {
     return hashesCopy
   }
 
-  function getGroupingToggle() {
-    if (localStorage.getItem('group-toggle') === null) {
-      return false
-    }
-    //because of string conversion, check on string is done first
-    if (localStorage.getItem('group-toggle') === 'true') { return true }
-    return false
-  }
+
 
   function getGroupNamespace() {
     if (localStorage.getItem('group-namespace') === null) {
@@ -146,8 +143,14 @@ export function SearchPage(props) {
     for (let element in responses) {
       merged.push(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
     }
+    //console.log(merged.flat())
 
-    merged = TagTools.transformIntoTuple([...new Set(merged.flat())])
+    const map = merged.flat().reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+
+    console.log(map)
+    //console.log([...new Set(merged.flat())])
+    //merged = TagTools.transformIntoTuple([...new Set(merged.flat())])
+    merged = TagTools.transformIntoTuple(map)
     merged.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.timeEnd('metajoin')
     setFileTags(merged)
@@ -269,7 +272,7 @@ export function SearchPage(props) {
 
 
   function addTag(tag) {
-    console.log('adding tag:' + tag)
+    //console.log('adding tag:' + tag)
     if (tag === '') { return; }
     let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
     //If tag exists in array don't add it
@@ -282,13 +285,9 @@ export function SearchPage(props) {
   }
 
   function removeTag(tag) {
-    console.log('removing')
-    console.log(tags)
     let i = tags.indexOf(tag);
     let afterRemove = tags.slice();
     afterRemove.splice(i, 1);
-    console.log('after remove')
-    console.log(afterRemove)
 
     let par = generateSearchURL(afterRemove, 1)
     navigateTo(par)
@@ -319,7 +318,7 @@ export function SearchPage(props) {
       display: "grid",
       height: 'fit-content',
       gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)',
-      margin:'0px 0px 0px 0px'
+      margin: '0px 0px 0px 0px'
     }
 
     //console.log(width)
@@ -330,21 +329,33 @@ export function SearchPage(props) {
         width: 'fit-content'
       }
     }
-    
+
 
     //console.log('desktop')
     return contentStyle
   }
 
-  
+
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
 
   return <>
     <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />
     <div style={getContentStyle(width)}>
-      {(fileTags != undefined) && <TagList tags={fileTags} blacklist={tagBlacklist} scrollable={true} clickFunction={addTag} />}
-      <ImageWall grouping={groupFiles} addTag={addTag} type={props.type} page={params.page} hashes={hashes} changePage={changePage} />
+      {(fileTags != undefined) &&
+        <TagList
+          visibleCount={true}
+          tags={fileTags}
+          blacklist={tagBlacklist}
+          scrollable={true}
+          clickFunction={addTag} />}
+      <ImageWall
+        grouping={groupFiles}
+        addTag={addTag}
+        type={props.type}
+        page={params.page}
+        hashes={hashes}
+        changePage={changePage} />
     </div>
   </>;
 }

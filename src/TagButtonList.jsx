@@ -17,9 +17,11 @@ function TagButtonList(props) {
   }
 
   useEffect(() => {
-    let sortedTags = TagTools.transformIntoTuple(props.tags)
+    if (props.tags == undefined) {return}
+    let map = TagTools.tagArrayToMap(props.tags)
+    let sortedTags = TagTools.transformIntoTuple(map)
     let tagSet = [];
-    for (let t in props.tags) {
+    for (let t in sortedTags) {
       tagSet.push(<button
         key={props.tags[t]}
         style={TagTools.getTagButtonStyle(sortedTags[t].namespace)}

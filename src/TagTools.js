@@ -24,7 +24,7 @@ export function getTagButtonStyle(style) {
     color: (TagColor.buttonTextColors[style] !== undefined ? TagColor.buttonTextColors[style] : 'white')
   }
   if (style === undefined) { return cssStyleCommon }
- 
+
   let exclude = false
   if (style.charAt(0) === '-') {
     style = style.substring(1); exclude = true
@@ -39,43 +39,41 @@ export function getTagButtonStyle(style) {
       //borderColor: 'black'
     }
   }
-  
+
   return cssStyleCommon
+}
+
+//Transforms tag array into a map with count of those tags
+export function tagArrayToMap(tags) {
+  return tags.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
 }
 
 export function transformIntoTuple(tags) {
   let tagsSorted = []
-  let tagMap = new Map()
-  for (let element in tags) {
+
+  if (tags == undefined ) {return}
+
+  for (const [key,value] of tags.entries()) {
     let temp = ''
     //Little hacky way of processing OR queries [tag1,[tag2,tag3]]
-    if (Array.isArray(tags[element])) {
-      temp = tags[element][0].split(':');
+    if (Array.isArray(key)) {
+      temp = key[0].split(':');
     }
     else {
-      temp = tags[element].split(':');
-    }
-
-    function getMapValue(map, key) {
-      if (map.get(key) !== undefined) {
-        return map.get(key).count +1
-      }
-      return 1
+      if (typeof key == 'string')
+      temp = key.split(':');
     }
 
     if (temp.length === 1) {
-      tagsSorted.push({ namespace: '', value: temp[0], count: 1 })
-      tagMap.set(tags[element], { namespace: '', value: temp[0], count: getMapValue(tagMap, tags[element]) })
+      tagsSorted.push({ namespace: '', value: temp[0], count: value })
     }
     if (temp.length > 1) {
       let k = temp.shift();
       let val = temp.join(':')
-      tagsSorted.push({ namespace: k, value: val, count: 1 })
-      tagMap.set(tags[element], { namespace: k, value: val, count: getMapValue(tagMap, tags[element]) })
+      tagsSorted.push({ namespace: k, value: val, count: value })
     }
 
   }
-
   return tagsSorted
 }
 

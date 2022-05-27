@@ -48,6 +48,13 @@ export function TagList(props) {
         return searchTag(arg)
     }
 
+    function displayTagCount(count) {
+        if (props.visibleCount) {
+            return ' (' + count + ')'
+        }
+        return ''
+    }
+
     function createTagList(args) {
         let tagList = []
         for (let element in args.tags) {
@@ -58,7 +65,7 @@ export function TagList(props) {
                         onClick={() => { clickHandler(displayTagString(args.tags[element])) }}
                         key={displayTagString(args.tags[element])}
                         style={TagTools.getTagTextStyle(args.tags[element].namespace)} >
-                        {displayTagString(args.tags[element])}
+                        {displayTagString(args.tags[element]) + displayTagCount(args.tags[element].count)}
                     </p>);
             }
         }
