@@ -12,13 +12,15 @@ export function SearchTags(props) {
 
   const [tags, setTags] = useState(props.tags)
 
+  const TOP_BAR_HEIGHT = 43
+
   const topBarStyle = {
     textAlign: 'center',
     fontSize: 'larger',
     display: 'flex',
     justifyContent: 'center',
     gap: '5px',
-    height: '43px',
+    height: TOP_BAR_HEIGHT,
     margin: '0px 3px 3px 3px',
     background: '#333333',
     padding: '3px',
@@ -27,11 +29,11 @@ export function SearchTags(props) {
 
   const searchBarSt = {
     background: '#ffffff',
-    boxShadow: '0 0 5px 0 black',
+    boxShadow: '0 0 0px 0 black',
     display: 'flex',
     flexFlow: 'rows',
-    height: 'inherit',
-    margin: '0px',
+    height: TOP_BAR_HEIGHT-7,
+    margin: '4px',
     minWidth: '40%',
     maxWidth: '95vw',
     borderRadius: '5px',
@@ -61,6 +63,7 @@ export function SearchTags(props) {
     fontSize: '12px',
     padding: '0px 0px 0px 3px',
     margin: '0px',
+    outline: 'none'
   }
 
   function submitTag(event) {
@@ -91,10 +94,6 @@ export function SearchTags(props) {
     //setSearches(result);
 
   }
-
-
-
-  
 
   useEffect(() => {
     if (JSON.stringify(props.tags) !== JSON.stringify(tags)) {

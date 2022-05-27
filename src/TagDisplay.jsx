@@ -2,7 +2,6 @@ import React from 'react';
 import TagButtonList from './TagButtonList';
 
 function TagDisplay(props) {
-  console.log(props)
   const tagDisplayStyle = {
     textAlign: 'center',
     display: 'flex',
