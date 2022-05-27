@@ -7,9 +7,10 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigate } from 'react-router-dom'
 import Navigation from './NavBar';
 import * as API from './hydrus-backend'
+import colors from './stylingVariables';
 
 const elementStyle = {
-  background: '#252526',
+  background: colors.COLOR3,
   color: 'white',
   margin: '0px',
   position: 'absolute',

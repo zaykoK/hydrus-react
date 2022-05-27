@@ -5,6 +5,7 @@ import * as TagTools from './TagTools'
 import IconImage from './assets/filetype-picture.svg'
 import IconVideo from './assets/filetype-video.svg'
 import IconOther from './assets/filetype-unknown.svg'
+import colors from './stylingVariables';
 
 export const ImageThumbnail = React.memo((props) => {
   const [thumbnail, setThumbnail] = useState(API.api_get_file_thumbnail_address(props.hash));
@@ -17,13 +18,13 @@ export const ImageThumbnail = React.memo((props) => {
     padding: '0px',
     verticalAlign: 'bottom',
     objectFit: 'cover',
-    background: '#1e1e1e',
+    background: colors.COLOR2,
     cursor: 'pointer'
   }
 
   const WrapperStyleCommon = {
     position: 'relative',
-    background: '#1e1e1e',
+    background: colors.COLOR2,
     borderRadius: '15px',
     overflow: 'hidden',
     boxShadow: '0px 0px 5px 0px black',
@@ -109,7 +110,7 @@ export const ImageThumbnail = React.memo((props) => {
     if (args.metadata != null) {
       let tags = args.metadata.service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0];
 
-      let tagsSorted = TagTools.transformIntoTuple(tags)
+      let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
       let tagArrays = []
       for (let space in args.spaces) {
         let t = tagsSorted.filter((element) => element["namespace"] === args.spaces[space])

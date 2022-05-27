@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ImageThumbnail } from "./ImageThumbnail";
 import { PageButtons } from './PageButtons';
+import colors from './stylingVariables';
 
 
 
@@ -57,7 +58,7 @@ export function ImageWall(props) {
   }
 
   const imageWallStyle = {
-    background: '#252526',
+    background: colors.COLOR3,
     height: 'fit-content',
     gridColumn: '2',
     margin:'0px 0px 30px 0px'

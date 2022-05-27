@@ -4,6 +4,7 @@ import IconHome from './assets/menu-home.svg'
 import IconComics from './assets/filetype-picture.svg'
 import IconSettings from './assets/menu-settings.svg'
 import IconHamburger from './assets/menu-burger.svg'
+import colors from "./stylingVariables";
 
 //for now lifted from
 //https://www.techomoro.com/how-to-create-a-multi-page-website-with-react-in-5-minutes/
@@ -22,7 +23,7 @@ const barStyle = {
   position: 'absolute',
   top: '0px',
   left: '0px',
-  background: '#333333',
+  background: colors.COLOR1,
   display: 'flex',
   flexFlow: 'column',
   gridTemplateColumns: 'auto auto auto',
@@ -38,7 +39,7 @@ const barStyle = {
 const ButtonStyle = {
   height: '1.5em',
   width: '1.5em',
-  background: '#1e1e1e',
+  background: colors.COLOR2,
   margin: '5px',
   padding: '5px',
   borderRadius: '10px',

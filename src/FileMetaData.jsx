@@ -1,3 +1,4 @@
+import colors from "./stylingVariables";
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -45,7 +46,7 @@ export function FileMetaData(props) {
     }
 
     const metadataStyle = {
-        background: '#1e1e1e',
+        background: colors.COLOR2,
         color: 'white',
         margin: '5px',
         padding: '7px',

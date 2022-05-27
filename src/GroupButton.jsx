@@ -1,5 +1,6 @@
 import { getGroupingToggle } from './StorageUtils';
 import IconGroup from './assets/group.svg'
+import colors from './stylingVariables';
 
 
 export function GroupButton(props) {
@@ -12,7 +13,7 @@ export function GroupButton(props) {
     const ButtonStyle = {
       height: '1.5em',
       width: '1.5em',
-      background: '#1e1e1e',
+      background: colors.COLOR2,
       margin: '2px',
       padding: '5px',
       borderRadius: '10px',

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as API from './hydrus-backend';
+import colors from './stylingVariables';
 
 export const FileContent = React.memo((props) => {
   const [content, setContent] = useState(API.api_get_file_address(props.hash));
@@ -9,7 +10,7 @@ export const FileContent = React.memo((props) => {
     maxHeight: '97vh',
     maxWidth: '75vw',
     objectFit: 'contain',
-    background: '#1e1e1e',
+    background: colors.COLOR2,
     imageRendering: '-webkit-optimize-contrast'
   };
 
@@ -32,7 +33,7 @@ export const FileContent = React.memo((props) => {
       height: '99.5vh',
       maxWidth: '75vw',
       objectFit: 'contain',
-      background: '#1e1e1e',
+      background: colors.COLOR2,
       imageRendering: '-webkit-optimize-contrast',
       cursor:'zoom-in'
     })
@@ -48,7 +49,7 @@ export const FileContent = React.memo((props) => {
             height: '100%',
             width: '100%',
             objectFit: 'fit',
-            background: '#1e1e1e',
+            background: colors.COLOR2,
             imageRendering: '-webkit-optimize-contrast',
             cursor:'zoom-out'
           });
@@ -60,7 +61,7 @@ export const FileContent = React.memo((props) => {
             height: '99.5vh',
             maxWidth: '75vw',
             objectFit: 'contain',
-            background: '#1e1e1e',
+            background: colors.COLOR2,
             imageRendering: '-webkit-optimize-contrast',
             cursor:'zoom-in'
           });
