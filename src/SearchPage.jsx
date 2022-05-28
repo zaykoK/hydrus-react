@@ -7,8 +7,7 @@ import TagDisplay from './TagDisplay';
 import * as TagTools from './TagTools';
 import { TagList } from './TagList';
 
-import { getGroupingToggle } from './StorageUtils';
-
+import { getBlacklistedNamespaces, getGroupingToggle } from './StorageUtils';
 
 export function SearchPage(props) {
   const [tags, setTags] = useState();
@@ -241,13 +240,10 @@ export function SearchPage(props) {
     Search()
   }, [tags])
 
-
-
   function changePage(newPage) {
     let par = generateSearchURL(tags, newPage)
     navigateTo(par)
   }
-
 
   function navigateTo(parameters) {
     switch (props.type) {
@@ -262,7 +258,6 @@ export function SearchPage(props) {
         break
     }
   }
-
 
   function addTag(tag) {
     //console.log('adding tag:' + tag)
@@ -330,7 +325,7 @@ export function SearchPage(props) {
   }
 
   //Don't display those namespaces in tag list, eventually to move this into a setting
-  const tagBlacklist = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
+  const tagBlacklist = getBlacklistedNamespaces()
 
   function getGridStyleList(mobile) {
     if (mobile) {

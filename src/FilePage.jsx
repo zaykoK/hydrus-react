@@ -8,7 +8,7 @@ import * as API from './hydrus-backend';
 import { RelatedFiles } from './RelatedFiles';
 import IconRelated from './assets/related.svg'
 import colors from './stylingVariables';
-import { getRelatedVisibile } from './StorageUtils';
+import { getRelatedVisibile, getRelatedNamespaces } from './StorageUtils';
 
 export function FilePage() {
   let { fileHash } = useParams();
@@ -143,7 +143,7 @@ export function FilePage() {
   function returnRelatedElements(metadata) {
     let returned = []
     if (metadata == undefined) { return returned }
-    for (let element in groupedNamespaces) {
+    for (let element in getRelatedNamespaces()) {
       returned.push(
         <RelatedFiles
           currentHash={fileHash}

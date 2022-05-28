@@ -5,7 +5,6 @@ export const FileContent = React.memo((props) => {
 
   const wrapperStyle = {
     position: 'relative',
-    background: '#1e1e1e',
     height: 'auto',
     overflow: 'hidden',
   }

@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as API from './hydrus-backend.js';
-import * as TagTools from './TagTools'
 import TagDisplay from './TagDisplay.jsx';
-
 import GroupButton from './GroupButton.jsx';
-
 
 export function SearchTags(props) {
   const [tag, setTag] = useState('');
