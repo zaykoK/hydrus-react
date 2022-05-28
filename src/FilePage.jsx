@@ -136,20 +136,17 @@ export function FilePage() {
     height: '51px',
   }
 
-
-
-  const groupedNamespaces = ['group-title', 'pixiv-title', 'kemono-title', 'doujin-title', 'title']
-
   function returnRelatedElements(metadata) {
     let returned = []
     if (metadata == undefined) { return returned }
-    for (let element in getRelatedNamespaces()) {
+    let spaces = getRelatedNamespaces()
+    for (let element in spaces) {
       returned.push(
         <RelatedFiles
           currentHash={fileHash}
-          key={groupedNamespaces[element] + returnTagsFromNamespace(groupedNamespaces[element])}
-          tags={returnTagsFromNamespace(groupedNamespaces[element])}
-          space={groupedNamespaces[element]}
+          key={spaces[element] + returnTagsFromNamespace(spaces[element])}
+          tags={returnTagsFromNamespace(spaces[element])}
+          space={spaces[element]}
           mobile={getMobileStyle(width)}
         />
       )

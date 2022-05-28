@@ -54,7 +54,7 @@ export function RelatedFiles(props) {
     }, [relatedHashes, props])
 
     function returnStyle(mobile) {
-        console.log(mobile)
+        //console.log(mobile)
         if (!mobile) {
             return {
                 display: 'flex',

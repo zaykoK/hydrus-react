@@ -40,7 +40,7 @@ export const FileContent = React.memo((props) => {
    
 
     function getStartingStyle() {
-      console.log(props.mobile)
+      //console.log(props.mobile)
       if (props.mobile) {
         return styleFitWidth
       }

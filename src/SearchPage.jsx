@@ -3,7 +3,6 @@ import { ImageWall } from "./ImageWall";
 import { SearchTags } from "./SearchTags";
 import { useParams, useNavigate } from 'react-router-dom';
 import * as API from './hydrus-backend';
-import TagDisplay from './TagDisplay';
 import * as TagTools from './TagTools';
 import { TagList } from './TagList';
 
@@ -17,6 +16,9 @@ export function SearchPage(props) {
   const [params, setParams] = useState({ tags: undefined, page: undefined })
   const [fileTags, setFileTags] = useState()
   const [groupFiles, setGroupFiles] = useState(getGroupingToggle())
+
+  const [groupCount, setGroupCount] = useState(new Map())
+
   const { parm } = useParams()
 
   const [width, setWidth] = useState(window.innerWidth)
@@ -37,60 +39,51 @@ export function SearchPage(props) {
   }
 
   function groupImages(responses, hashes, groupNamespace = 'group-title') {
-    //Super inefficient way to group images together, to optimize later
-
-    //Map response into hash => file tags
-    let tMap = new Map()
-    for (let element in responses) {
-      //console.log(responses[element])
-      let filter = TagTools.tagArrayToMap(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
-      let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
-      let pageFilter = TagTools.tagArrayToMap(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
-      let pageTags = TagTools.transformIntoTuple(pageFilter).filter((element) => element["namespace"] === 'page')
-      if (filterTags.length !== 0) { //Don't create group for files with no group namespace
-        tMap.set(
-          responses[element].hash,
-          [filterTags, pageTags, responses[element].time_modified]
-        )
-      }
-    }
-    //Map files into tag => hashes with that tag format
-    let hMap = new Map()
-    tMap.forEach((value, key, map) => {
-      //console.log(value)
-      let groupTitle = value[0][0].value
-      //console.log(groupTitle)
-      if (hMap.has(groupTitle)) {
-        let v = hMap.get(groupTitle)
-        //console.log(v)
-        hMap.set(groupTitle, [[...v[0], key], [...v[1], value[1]], [...v[2], value[2]]]) //can't use push with maps so that's what I do
-      }
-      else {
-        hMap.set(groupTitle, [[key], [value[1]], [value[2]]])
-      }
-    })
+    //console.time('grouping')
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
 
-
-
-    //Grab a copy of all search hashes
+    let groupMap = new Map()
+    let countMap = new Map()
     let hashesCopy = hashes.slice()
-    //Remove hashes from grouped up files except for first one(seems to always be the newest file in group)
-    hMap.forEach((value, key, map) => {
-      //console.log("TESt")
-      //console.log(value.slice(0,-1))
-      //console.log(value.slice(1))
-      //console.log(value)
-      let removed = []
-      for (let v in value[0].slice(1)) {
-        //value.slice(1) - first element encounter, should always be newest
-        //value.slice(0,-1) - last element encountered, should be oldest file
-        removed.push(hashesCopy.splice(hashesCopy.indexOf(value[0][v]), 1))
+
+    for (let element in responses) {
+      //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
+
+      let filter = TagTools.tagArrayToMap(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
+      let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
+
+      let pageFilter = TagTools.tagArrayToMap(responses[element].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0])
+      let pageTags = TagTools.transformIntoTuple(pageFilter).filter((element) => element["namespace"] === 'page')
+
+
+      if (filterTags.length !== 0) { //Don't create group for files with no group namespace
+        let temp = groupMap.get(filterTags[0].value)
+        if (temp != undefined) {
+          //Remove every next image belonging to the group
+          hashesCopy.splice(hashesCopy.indexOf(responses[element].hash), 1)
+          countMap.set(temp.hashes[0], countMap.get(temp.hashes[0]) + 1)
+          groupMap.set(filterTags[0].value,
+            {
+              hashes: [...temp.hashes, responses[element].hash],
+              pageTags: [...temp.pageTags, pageTags],
+              timeModified: [...temp.timeModified, responses[element].time_modified]
+            })
+        }
+        else {
+          groupMap.set(filterTags[0].value,
+            {
+              hashes: [responses[element].hash],
+              pageTags: [pageTags],
+              timeModified: [responses[element].time_modified]
+            })
+          countMap.set(responses[element].hash, 1)
+        }
       }
-      //console.log(removed)
-    })
+    }
+    setGroupCount(countMap)
+    //console.timeEnd('grouping')
     return hashesCopy
   }
 
@@ -359,7 +352,7 @@ export function SearchPage(props) {
   }
 
   return <>
-    <div style={{height:'43px'}}></div>
+    <div style={{ height: '43px' }}></div>
     <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />
     <div style={getContentStyle(width)}>
       <div style={getGridStyleList(getMobileStyle(width))}>
@@ -371,7 +364,7 @@ export function SearchPage(props) {
             scrollable={true}
             clickFunction={addTag}
             mobile={getMobileStyle(width)}
-             />}
+          />}
       </div>
       <div style={getGridStyleThumbs(getMobileStyle(width))}>
         <ImageWall
@@ -380,7 +373,9 @@ export function SearchPage(props) {
           type={props.type}
           page={params.page}
           hashes={hashes}
-          changePage={changePage} />
+          changePage={changePage}
+          counts={groupCount}
+        />
       </div>
     </div>
   </>;

@@ -176,16 +176,22 @@ export const ImageThumbnail = React.memo((props) => {
       navigate(returnFileLink(), { replace: replace })
     }
 
-    return <img onClick={() => { determineThumbNavigation(props.replace) }} loading='lazy' src={props.thumbnail} style={returnThumbStyle(props.type)[0]} alt={props.hash} />
+    return <img 
+    onClick={() => { determineThumbNavigation(props.replace) }} 
+    loading='lazy' 
+    src={props.thumbnail} 
+    style={returnThumbStyle(props.type)[0]} 
+    alt={props.hash} />
   }
 
   const thumbnailTopTags = ['creator', 'series']
   const thumbnailBottomTags = []
 
   function ContentTypeIcon(props) {
-    //console.log(props.metadata.mime)
     if (props === undefined) {return}
-    //console.log(props.metadata.mime)
+
+    let count = ''
+    if (props.count != undefined) { count = props.count}
 
     const iconStyle = {
       position:'absolute',
@@ -203,31 +209,32 @@ export const ImageThumbnail = React.memo((props) => {
 
 
     if (props.metadata?.mime.includes('video')){
-      return <div style={iconStyle}><img src={IconVideo} style={svgStyle} /></div>
+      return <div style={iconStyle}>{count}<img src={IconVideo} style={svgStyle} /></div>
     }
     if (props.metadata?.mime.includes('image')){
-      return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
+      return <div style={iconStyle}>{count}<img src={IconImage} style={svgStyle} /></div>
     }
     if (props.metadata?.mime.includes('application')){
-      return <div style={iconStyle}><img src={IconOther} style={svgStyle} /></div>
+      return <div style={iconStyle}>{count}<img src={IconOther} style={svgStyle} /></div>
     }
-    return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
+    return <div style={iconStyle}>{count}<img src={IconImage} style={svgStyle} /></div>
   }
 
 
   return (
-    <div className='Thumbnail' key={"thumb-" + props.hash} style={returnThumbStyle(props.type)[1]} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
+    <div className='Thumbnail' key={"thumb-" + props.hash} style={returnThumbStyle(props.type)[1]} onMouseOver={mouseEnterHandler} onMouseOut={mouseLeaveHandler}>
       <div className='topTags' style={metaStyle}>
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
       </div>
       <div className='bottomTags' style={metaStyleBottom}>
-        <ContentTypeIcon metadata={metadata} />
+        <ContentTypeIcon metadata={metadata} count={props.count} />
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags }))}
       </div>
       <ThumbContent
         type={props.type}
         replace={props.replace}
-        thumbnail={thumbnail} />
+        thumbnail={thumbnail}
+         />
     </div>
   );
 });

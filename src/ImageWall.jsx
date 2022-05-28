@@ -14,6 +14,7 @@ export function ImageWall(props) {
 
   const [thumbs, setThumbs] = useState(CreateNewThumbnailList(props.page))
 
+  //console.log(props.counts)
 
   function CreateNewThumbnailList(page) {
     let list = [];
@@ -25,6 +26,7 @@ export function ImageWall(props) {
           addTag={props.addTag}
           key={props.hashes[id]}
           hash={props.hashes[id]}
+          count={props.counts.get(props.hashes[id])}
         />);
     }
     return list;
