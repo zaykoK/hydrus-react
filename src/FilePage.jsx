@@ -9,6 +9,7 @@ import { RelatedFiles } from './RelatedFiles';
 import IconRelated from './assets/related.svg'
 import colors from './stylingVariables';
 import { getRelatedVisibile, getRelatedNamespaces } from './StorageUtils';
+import FullscreenButton from './FullscreenButton';
 
 export function FilePage() {
   let { fileHash } = useParams();
@@ -185,6 +186,8 @@ export function FilePage() {
     <div style={barStyle}>
       <div id='home-button-padding' style={relatedSwitchStyle} />
       <img src={IconRelated} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+      <div style={relatedSwitchStyle}><FullscreenButton /></div>
+      
     </div>
     <div style={returnStyle(getMobileStyle(width))}>
       <div>

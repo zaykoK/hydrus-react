@@ -48,14 +48,8 @@ export const FileContent = React.memo((props) => {
     }
 
 
-
     function nextState() {
       if (props.mobile){
-        if(document.fullscreenElement != null){
-          document.exitFullscreen()
-          return
-        }
-        document.documentElement.requestFullscreen()
         return
       }
 

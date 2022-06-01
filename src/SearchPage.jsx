@@ -256,9 +256,8 @@ export function SearchPage(props) {
     //console.log('adding tag:' + tag)
     if (tag === '') { return; }
     let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
-    //If tag exists in array don't add it
-    if (newTags.includes(tag)) { return }
-    //Some additional processing for checking exclusive tags
+    if (newTags.includes(tag)) { return } //If tag exists in array don't add it
+    //TODO process certain unique tags that user shouldn't be able to add
     newTags.push(tag);
 
     let par = generateSearchURL(newTags, 1)
@@ -302,7 +301,6 @@ export function SearchPage(props) {
       margin: '5px 0px 0px 0px'
     }
 
-    //console.log(width)
     if (width <= 450) {
       console.log('mobile')
       return {
@@ -312,8 +310,6 @@ export function SearchPage(props) {
         gridTemplateRows: 'auto auto'
       }
     }
-
-    //console.log('desktop')
     return contentStyle
   }
 
