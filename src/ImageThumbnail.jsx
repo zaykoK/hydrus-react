@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import * as API from './hydrus-backend';
 import { useNavigate } from "react-router-dom";
 import * as TagTools from './TagTools'
-import IconImage from './assets/filetype-picture.svg'
-import IconVideo from './assets/filetype-video.svg'
-import IconOther from './assets/filetype-unknown.svg'
 import colors from './stylingVariables';
+import WidgetCount from './WidgetCount';
+import WidgetFileType from './WidgetFileType';
 
 export const ImageThumbnail = React.memo((props) => {
   const [thumbnail, setThumbnail] = useState(API.api_get_file_thumbnail_address(props.hash));
@@ -28,10 +27,10 @@ export const ImageThumbnail = React.memo((props) => {
     borderRadius: '15px',
     overflow: 'hidden',
     boxShadow: '0px 0px 5px 0px black',
-    height:'180px',
-    width:'180px',
-    maxHeight:'43vw',
-    maxWidth:'43vw',
+    height: '180px',
+    width: '180px',
+    maxHeight: '43vw',
+    maxWidth: '43vw',
 
   }
 
@@ -176,71 +175,16 @@ export const ImageThumbnail = React.memo((props) => {
       navigate(returnFileLink(), { replace: replace })
     }
 
-    return <img 
-    onClick={() => { determineThumbNavigation(props.replace) }} 
-    loading='lazy' 
-    src={props.thumbnail} 
-    style={returnThumbStyle(props.type)[0]} 
-    alt={props.hash} />
+    return <img
+      onClick={() => { determineThumbNavigation(props.replace) }}
+      loading='lazy'
+      src={props.thumbnail}
+      style={returnThumbStyle(props.type)[0]}
+      alt={props.hash} />
   }
 
   const thumbnailTopTags = ['creator', 'series']
   const thumbnailBottomTags = []
-
-  function CountIcon(props) {
-    if (props.count === undefined) {return}
-
-    let count = ''
-    if (props.count != undefined) { count = props.count}
-
-    const iconStyle = {
-      position:'absolute',
-      bottom:'0px',
-      left:'0px',
-      right:'0px',
-      margin:'auto',
-      background:'#000000d1',
-      padding:'3px',
-      borderRadius:'5px 5px 0px 0px',
-      opacity:'0.85',
-      width:'min-content',
-      pointerEvents:'none'
-    }
-
-    return <div style={iconStyle}>{count}</div>
-  }
-
-  function ImageTypeIcon(props) {
-    if (props === undefined) {return}
-
-    const iconStyle = {
-      position:'absolute',
-      bottom:'0px',
-      left:'0px',
-      background:'#000000d1',
-      padding:'3px',
-      borderRadius:'0px 10px 0px 0px',
-      opacity:'0.6',
-      pointerEvents:'none'
-    }
-    const svgStyle = {
-      width:'20px',
-      height:'20px'
-    }
-
-
-    if (props.metadata?.mime.includes('video')){
-      return <div style={iconStyle}><img src={IconVideo} style={svgStyle} /></div>
-    }
-    if (props.metadata?.mime.includes('image')){
-      return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
-    }
-    if (props.metadata?.mime.includes('application')){
-      return <div style={iconStyle}><img src={IconOther} style={svgStyle} /></div>
-    }
-    return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
-  }
-
 
   return (
     <div className='Thumbnail' key={"thumb-" + props.hash} style={returnThumbStyle(props.type)[1]} onMouseOver={mouseEnterHandler} onMouseOut={mouseLeaveHandler}>
@@ -248,15 +192,15 @@ export const ImageThumbnail = React.memo((props) => {
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
       </div>
       <div className='bottomTags' style={metaStyleBottom}>
-        <CountIcon count={props.count} />
-        <ImageTypeIcon metadata={metadata} />
+        <WidgetCount count={props.count} />
+        <WidgetFileType metadata={metadata} />
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags }))}
       </div>
       <ThumbContent
         type={props.type}
         replace={props.replace}
         thumbnail={thumbnail}
-         />
+      />
     </div>
   );
 });
