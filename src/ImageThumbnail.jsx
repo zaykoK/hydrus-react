@@ -187,8 +187,8 @@ export const ImageThumbnail = React.memo((props) => {
   const thumbnailTopTags = ['creator', 'series']
   const thumbnailBottomTags = []
 
-  function ContentTypeIcon(props) {
-    if (props === undefined) {return}
+  function CountIcon(props) {
+    if (props.count === undefined) {return}
 
     let count = ''
     if (props.count != undefined) { count = props.count}
@@ -197,10 +197,31 @@ export const ImageThumbnail = React.memo((props) => {
       position:'absolute',
       bottom:'0px',
       left:'0px',
+      right:'0px',
+      margin:'auto',
+      background:'#000000d1',
+      padding:'3px',
+      borderRadius:'5px 5px 0px 0px',
+      opacity:'0.85',
+      width:'min-content',
+      pointerEvents:'none'
+    }
+
+    return <div style={iconStyle}>{count}</div>
+  }
+
+  function ImageTypeIcon(props) {
+    if (props === undefined) {return}
+
+    const iconStyle = {
+      position:'absolute',
+      bottom:'0px',
+      left:'0px',
       background:'#000000d1',
       padding:'3px',
       borderRadius:'0px 10px 0px 0px',
-      opacity:'0.6'
+      opacity:'0.6',
+      pointerEvents:'none'
     }
     const svgStyle = {
       width:'20px',
@@ -209,15 +230,15 @@ export const ImageThumbnail = React.memo((props) => {
 
 
     if (props.metadata?.mime.includes('video')){
-      return <div style={iconStyle}>{count}<img src={IconVideo} style={svgStyle} /></div>
+      return <div style={iconStyle}><img src={IconVideo} style={svgStyle} /></div>
     }
     if (props.metadata?.mime.includes('image')){
-      return <div style={iconStyle}>{count}<img src={IconImage} style={svgStyle} /></div>
+      return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
     }
     if (props.metadata?.mime.includes('application')){
-      return <div style={iconStyle}>{count}<img src={IconOther} style={svgStyle} /></div>
+      return <div style={iconStyle}><img src={IconOther} style={svgStyle} /></div>
     }
-    return <div style={iconStyle}>{count}<img src={IconImage} style={svgStyle} /></div>
+    return <div style={iconStyle}><img src={IconImage} style={svgStyle} /></div>
   }
 
 
@@ -227,7 +248,8 @@ export const ImageThumbnail = React.memo((props) => {
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
       </div>
       <div className='bottomTags' style={metaStyleBottom}>
-        <ContentTypeIcon metadata={metadata} count={props.count} />
+        <CountIcon count={props.count} />
+        <ImageTypeIcon metadata={metadata} />
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags }))}
       </div>
       <ThumbContent
