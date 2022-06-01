@@ -120,7 +120,6 @@ export function SettingsPage() {
       if (comicNamespace === '') {
         localStorage.removeItem('comic-namespace')
       }
-
     }
 
     function KeyInput() {
@@ -167,10 +166,6 @@ export function SettingsPage() {
   }
 
   //const relatedSpaces = ['filename', 'title', 'page', 'group-title', 'doujin-title', 'kemono-title', 'pixiv-title', 'last', 'slast']
-
-
-
-
 
   function RelatedGroupsInput() {
 
@@ -220,7 +215,9 @@ export function SettingsPage() {
     function handleSubmit(event) {
       event.preventDefault()
 
-      setSpaces(addRelatedTagToSettings(tag))
+      let temp = tag.toLowerCase()
+
+      setSpaces(addRelatedTagToSettings(temp))
       setTag('')
     }
 
@@ -261,7 +258,6 @@ export function SettingsPage() {
       </form>
     </div>
   }
-
 
   function BlacklistedTagsInput() {
 
@@ -310,13 +306,13 @@ export function SettingsPage() {
 
     function handleSubmit(event) {
       event.preventDefault()
+      let temp = tag.toLowerCase()
 
-      setSpaces(addBlacklistedSpaceToSettings(tag))
+      setSpaces(addBlacklistedSpaceToSettings(temp))
       setTag('')
     }
 
     function removeBlacklistedSpaceFromSettings(tag) {
-      console.log(tag)
       let spaces = getBlacklistedNamespaces()
       let i = spaces.indexOf(tag);
       let afterRemove = spaces.slice();
@@ -326,7 +322,6 @@ export function SettingsPage() {
     }
 
     function addBlacklistedSpaceToSettings(tag) {
-      console.log(tag)
       let spaces = getBlacklistedNamespaces()
       if (spaces.includes(tag)) { return }
       spaces.push(tag)
@@ -337,7 +332,6 @@ export function SettingsPage() {
     useEffect(() => {
       setSpaces(getBlacklistedNamespaces())
     }, [])
-
 
     return <div style={searchBarSt}>
       <TagDisplay key={spaces} removeTag={removeBlacklistedSpaceFromSettings} tags={spaces} />
@@ -352,11 +346,6 @@ export function SettingsPage() {
       </form>
     </div>
   }
-
-
-
-
-
 
   return <>
     <div style={settingsStyle}>
