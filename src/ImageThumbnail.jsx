@@ -13,6 +13,7 @@ export const ImageThumbnail = React.memo((props) => {
 
   const navigate = useNavigate();
 
+
   const ThumbnailCommon = {
     padding: '0px',
     verticalAlign: 'bottom',
@@ -187,7 +188,11 @@ export const ImageThumbnail = React.memo((props) => {
   const thumbnailBottomTags = []
 
   return (
-    <div className='Thumbnail' key={"thumb-" + props.hash} style={returnThumbStyle(props.type)[1]} onMouseOver={mouseEnterHandler} onMouseOut={mouseLeaveHandler}>
+    <div className='Thumbnail'
+      key={"thumb-" + props.hash}
+      style={returnThumbStyle(props.type)[1]}
+      onMouseOver={mouseEnterHandler}
+      onMouseOut={mouseLeaveHandler}>
       <div className='topTags' style={metaStyle}>
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
       </div>

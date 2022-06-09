@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import * as API from './hydrus-backend';
+import { useSwipeable } from 'react-swipeable';
+
+
+
 export const FileContent = React.memo((props) => {
   const [content, setContent] = useState(API.api_get_file_address(props.hash));
+
+  
 
   const wrapperStyle = {
     position: 'relative',
@@ -14,6 +20,20 @@ export const FileContent = React.memo((props) => {
   }, [props]);
 
   function Content(props) {
+    const swipeHandlers = useSwipeable({
+      onSwipedLeft: (eventData) => {
+        //console.log("Swipe LEft",eventData);
+        props.nextImage()
+      },
+      onSwipedRight: (eventData) => {
+        //console.log("Swipe Rite",eventData);
+        props.previousImage()
+      },
+      onTap: (eventData) => {
+        nextState()
+      }
+    })
+
 
     const styleFitHeight = {
       padding: '0px',
@@ -69,20 +89,23 @@ export const FileContent = React.memo((props) => {
     
 
     if (props.type.includes("image")) {
-      return <img
-        onClick={() => { nextState() }}
+      return <img 
+        {...swipeHandlers}
+        onClick={() => nextState()}
         src={props.content}
         style={style}
         alt={props.hash} />
     }
     if (props.type.includes("video")) {
-      return <video
+      return <video 
+        {...swipeHandlers}
         style={style}
         autoPlay loop controls
         src={props.content} />
     }
     if (props.type.includes("application")) {
       return <img
+      {...swipeHandlers}
         src={API.api_get_file_thumbnail_address(props.hash)}
         style={style}
         alt={props.hash} />
@@ -92,7 +115,7 @@ export const FileContent = React.memo((props) => {
 
   return (
     <div key={props.hash} style={wrapperStyle} >
-      <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} />
+      <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} nextImage={props.nextImage} previousImage={props.previousImage} />
     </div>
   );
 });

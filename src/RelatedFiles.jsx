@@ -6,7 +6,9 @@ export function RelatedFiles(props) {
     const [relatedHashes, setRelatedHashes] = useState([])
     const [thumbs, setThumbs] = useState()
 
+
     async function Search() {
+        if (props.tags === undefined) {return}
         let list = props.tags
         let final = list
         if (list.length === 0 || list === undefined) {
@@ -17,6 +19,7 @@ export function RelatedFiles(props) {
             final = [list]
         }
         let response = await API.api_get_files_search_files({ tags: final, return_hashes: true, return_file_ids: false })
+        localStorage.setItem('group-hashes',JSON.stringify(response.data.hashes.reverse()))
         setRelatedHashes(response.data.hashes)
     }
 

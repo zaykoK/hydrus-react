@@ -25,9 +25,14 @@ const elementStyle = {
 //console.log('index')
 API.sessionKeyRoutine()
 
+function handleKeyPress(event) {
+  console.log('doing something')
+  if (event.key === 'r') {console.log('pressed r')}
+}
+
 
 const routerElement = (
-  <div id="app" style ={elementStyle}>
+  <div id="app" style ={elementStyle} tabIndex='0' onKeyPress={handleKeyPress}>
   <Router>
   <Navigation />
     <Routes>
