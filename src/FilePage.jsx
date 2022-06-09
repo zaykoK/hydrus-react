@@ -59,7 +59,8 @@ export function FilePage() {
   function PreviousImage() {
     //Grab image list
     //Use SessionStorage?
-    let elementList = JSON.parse(localStorage.getItem('group-hashes'))
+    if (sessionStorage.getItem('group-hashes') === null) {return}
+    let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
     //console.log(fileHash)
     let index = elementList.indexOf(fileHash)
     //console.log(index)
@@ -72,7 +73,8 @@ export function FilePage() {
   function NextImage() {
     //Grab image list
     //Use SessionStorage?
-    let elementList = JSON.parse(localStorage.getItem('group-hashes'))
+    if (sessionStorage.getItem('group-hashes') === null) {return}
+    let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
     //console.log(fileHash)
     let index = elementList.indexOf(fileHash)
     //console.log(index)

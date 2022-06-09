@@ -19,7 +19,7 @@ export function RelatedFiles(props) {
             final = [list]
         }
         let response = await API.api_get_files_search_files({ tags: final, return_hashes: true, return_file_ids: false })
-        localStorage.setItem('group-hashes',JSON.stringify(response.data.hashes.reverse()))
+        sessionStorage.setItem('group-hashes',JSON.stringify(response.data.hashes.reverse()))
         setRelatedHashes(response.data.hashes)
     }
 

@@ -19,7 +19,7 @@ const elementStyle = {
   left: '0px',
   right: '0px',
   height: "fit-content",
-  minHeight:'100%'
+  minHeight: '100%'
 }
 
 //console.log('index')
@@ -27,22 +27,22 @@ API.sessionKeyRoutine()
 
 function handleKeyPress(event) {
   console.log('doing something')
-  if (event.key === 'r') {console.log('pressed r')}
+  if (event.key === 'r') { console.log('pressed r') }
 }
 
 
 const routerElement = (
-  <div id="app" style ={elementStyle} tabIndex='0' onKeyPress={handleKeyPress}>
-  <Router>
-  <Navigation />
-    <Routes>
-      <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
-      <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' />} />
-      <Route key="route-file" path='/file/:fileHash' element={<FilePage />} />
-      <Route key="route-settings" path='/settings' element={<SettingsPage />} />
-      <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' />} />
-    </Routes>
-  </Router>
+  <div id="app" style={elementStyle} tabIndex='0' onKeyPress={handleKeyPress}>
+    <Router>
+      <Navigation />
+      <Routes>
+        <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
+        <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' />} />
+        <Route key="route-file" path='/file/:fileHash' element={<FilePage />} />
+        <Route key="route-settings" path='/settings' element={<SettingsPage />} />
+        <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' />} />
+      </Routes>
+    </Router>
   </div>
 )
 

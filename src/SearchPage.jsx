@@ -220,6 +220,8 @@ export function SearchPage(props) {
   useEffect(() => {
     let [t, p] = readParams(parm)
 
+    sessionStorage.removeItem('group-hashes')
+
     setPageTitle(t, p)
     setParams({ tags: t, page: p })
     setTags(t)
