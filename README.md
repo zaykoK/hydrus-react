@@ -1,6 +1,6 @@
 # Hydrus-react
 
-Hydrus-react is a web app using [hydrus API](https://github.com/hydrusnetwork/hydrus). The goal is to give a viewing experience similiar to booru/pixiv where using tags and similiar/related files takes you on a journey through your library.
+Hydrus-react is a web app written in React/TypeScript using [hydrus API](https://github.com/hydrusnetwork/hydrus). The goal is to give a viewing experience similiar to booru/pixiv where using tags and similiar/related files takes you on a journey through your library.
 Inspired by somewhat clunky tag interactions in [hydrus-web by floogulinc](https://github.com/floogulinc/hydrus-web)
 
 
