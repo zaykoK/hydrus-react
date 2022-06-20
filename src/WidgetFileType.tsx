@@ -1,9 +1,19 @@
+// @ts-ignore
 import IconImage from './assets/filetype-picture.svg'
+// @ts-ignore
 import IconVideo from './assets/filetype-video.svg'
+// @ts-ignore
 import IconOther from './assets/filetype-unknown.svg'
+import { MetadataResponse } from './hydrus-backend';
 
-function WidgetFileType(props) {
-    if (props === undefined) {return}
+
+interface WidgetFileTypeProps {
+  metadata:MetadataResponse|undefined;
+
+}
+
+function WidgetFileType(props:WidgetFileTypeProps) {
+    if (props === undefined) {return <></>}
 
     const iconStyle = {
       position:'absolute',
@@ -14,11 +24,11 @@ function WidgetFileType(props) {
       borderRadius:'0px 10px 0px 0px',
       opacity:'0.6',
       pointerEvents:'none'
-    }
+    } as React.CSSProperties
     const svgStyle = {
       width:'20px',
       height:'20px'
-    }
+    } as React.CSSProperties
 
 
     if (props.metadata?.mime.includes('video')){

@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import TagDisplay from './TagDisplay.jsx';
-import GroupButton from './GroupButton.jsx';
+import TagDisplay from './TagDisplay';
+import GroupButton from './GroupButton';
 
-export function SearchTags(props) {
+interface SearchTagsProps {
+  tags:Array<Array<string>>;
+  addTag:Function;
+  groupAction:Function;
+  removeTag:Function;
+}
+
+export function SearchTags(props:SearchTagsProps) {
   const [tag, setTag] = useState('');
   const [searches, setSearches] = useState([]);
 
@@ -24,7 +31,7 @@ export function SearchTags(props) {
     boxShadow: '0 0 5px 0 black',
     zIndex:'5',
     width:'100vw'
-  }
+  } as React.CSSProperties
 
   const searchBarSt = {
     background: '#ffffff',
@@ -38,7 +45,7 @@ export function SearchTags(props) {
     borderRadius: '5px',
     overflow: 'auto hidden',
     flexGrow:'1'
-  }
+  } as React.CSSProperties
 
   const formStyle = {
     height: 'inherit',
@@ -46,13 +53,13 @@ export function SearchTags(props) {
     borderRadius: '5px',
     minWidth:'200px',
     width:'-webkit-fill-available'
-  }
+  } as React.CSSProperties
 
   const labelStyle = {
     display: 'block',
     height: 'inherit',
     width: 'inherit'
-  }
+  } as React.CSSProperties
 
   const inputStyle = {
     display: 'block',
@@ -65,9 +72,9 @@ export function SearchTags(props) {
     padding: '0px 0px 0px 3px',
     margin: '0px',
     outline: 'none'
-  }
+  } as React.CSSProperties
 
-  function submitTag(event) {
+  function submitTag(event:React.FormEvent) {
     event.preventDefault(); //necessary to not reload page after submit
     console.log('submitTag')
 
@@ -86,7 +93,7 @@ export function SearchTags(props) {
   }
 
   //At some point should show autocomplete results
-  async function searchTag(search) {
+  async function searchTag(search:string) {
     setTag(search)
 
     //let response = await API.api_add_tags_search_tags({search:search});
@@ -102,9 +109,10 @@ export function SearchTags(props) {
     }
   })
 
-  function TagInput(props) {
+  function TagInput(props:{tags:Array<Array<string>>,removeTag:Function}) {
+
     return <div style={searchBarSt}>
-      <TagDisplay key={props.tags} removeTag={props.removeTag} tags={props.tags} />
+      <TagDisplay key={props.tags.toString()} removeTag={props.removeTag} tags={props.tags} />
       <form onSubmit={submitTag} style={formStyle}>
         <label style={labelStyle}>
           <input style={inputStyle}

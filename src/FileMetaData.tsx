@@ -1,6 +1,7 @@
+import { MetadataResponse } from "./hydrus-backend";
 import colors from "./stylingVariables";
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
-function formatBytes(bytes, decimals = 2) {
+function formatBytes(bytes:number, decimals:number = 2) {
     if (bytes === 0) return '0 Bytes';
 
     const k = 1024;
@@ -12,9 +13,12 @@ function formatBytes(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+interface FileMetaDataProps {
+    metadata: MetadataResponse;
+}
 
 //Displays non-tag metadata about file
-export function FileMetaData(props) {
+export function FileMetaData(props:FileMetaDataProps) {
     //console.log(props)
     const imageSize = [props.metadata.width, props.metadata.height]
     const urls = props.metadata.known_urls
@@ -25,7 +29,7 @@ export function FileMetaData(props) {
     const date = props.metadata.time_modified
 
     //lifted from https://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
-    function timeConverter(UNIX_timestamp) {
+    function timeConverter(UNIX_timestamp:number):string {
         var a = new Date(UNIX_timestamp * 1000);
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         var year = a.getFullYear();

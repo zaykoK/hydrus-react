@@ -1,11 +1,15 @@
 import { getGroupingToggle } from './StorageUtils';
+// @ts-ignore
 import IconGroup from './assets/group.svg'
 import colors from './stylingVariables';
 
+interface GroupButtonsProps {
+  clickAction:Function;
+}
 
-export function GroupButton(props) {
+export function GroupButton(props:GroupButtonsProps) {
 
-    function returnGroupButtonStyle(enabled) {
+    function returnGroupButtonStyle(enabled:boolean) {
       if (enabled) { return ButtonStyle }
       return { ...ButtonStyle, opacity: '0.3' }
     }

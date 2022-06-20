@@ -1,4 +1,6 @@
+// @ts-ignore
 import IconFullscreenOn from './assets/fullScreenOn.svg'
+// @ts-ignore
 import IconFullscreenOff from './assets/fullScreenOff.svg'
 import colors from './stylingVariables';
 import { useState } from 'react';
@@ -7,7 +9,7 @@ import { useState } from 'react';
 export function FullscreenButton() {
     const [enabled,setEnabled] = useState(false)
 
-    function returnButtonStyle(enabled) {
+    function returnButtonStyle(enabled:boolean) {
       if (!enabled) { return ButtonStyle }
       return ButtonStyle
     }
@@ -22,7 +24,7 @@ export function FullscreenButton() {
       return
     }
 
-    function getIcon(enabled){
+    function getIcon(enabled:boolean){
       if (!enabled) {
         return IconFullscreenOn
       }

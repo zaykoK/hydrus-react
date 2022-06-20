@@ -1,25 +1,30 @@
 import * as API from './hydrus-backend';
 import { ImageThumbnail } from './ImageThumbnail';
 import React, { useEffect, useState } from 'react';
+import { tagArrayToNestedArray } from './TagTools';
 
-export function RelatedFiles(props) {
-    const [relatedHashes, setRelatedHashes] = useState([])
-    const [thumbs, setThumbs] = useState()
+interface RelatedFilesProps {
+    tags: Array<string> | undefined; //Nested array only for searching
+    currentHash: string | undefined;
+    id: string;
+    space: string;
+    mobile: boolean;
+}
+
+export function RelatedFiles(props: RelatedFilesProps) {
+    const [relatedHashes, setRelatedHashes] = useState<Array<string>>([])
+    const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
 
 
     async function Search() {
-        if (props.tags === undefined) {return}
+        if (props.tags === undefined) { return }
         let list = props.tags
-        let final = list
         if (list.length === 0 || list === undefined) {
             setRelatedHashes(list)
             return
         }
-        if (list.length > 1) {
-            final = [list]
-        }
-        let response = await API.api_get_files_search_files({ tags: final, return_hashes: true, return_file_ids: false })
-        sessionStorage.setItem('group-hashes',JSON.stringify(response.data.hashes.reverse()))
+        let response = await API.api_get_files_search_files({ tags: tagArrayToNestedArray(list), return_hashes: true, return_file_ids: false })
+        sessionStorage.setItem('group-hashes', JSON.stringify(response.data.hashes.reverse()))
         setRelatedHashes(response.data.hashes)
     }
 
@@ -27,7 +32,7 @@ export function RelatedFiles(props) {
         Search()
     }, [])
 
-    function returnCurrentImage(hash) {
+    function returnCurrentImage(hash: string) {
         if (props.currentHash === hash) {
             return true
         } else {
@@ -42,33 +47,32 @@ export function RelatedFiles(props) {
             for (let hash in relatedHashes) {
                 temp.push(
                     <ImageThumbnail
-                        loading='lazy'
                         currentImage={returnCurrentImage(relatedHashes[hash])}
-                        elementId={relatedHashes[hash]}
                         replace={true}
                         type='image'
                         key={relatedHashes[hash]}
                         hash={relatedHashes[hash]}
                         loadMeta={false}
+                        addTag={() => {return}}
                     />)
             }
             setThumbs(temp)
         }
     }, [relatedHashes, props])
 
-    function returnStyle(mobile) {
+    function returnStyle(mobile:boolean):React.CSSProperties {
         //console.log(mobile)
         if (!mobile) {
             return {
                 display: 'flex',
                 gap: '5px',
-                flexDirection: 'column-reverse',
+                flexDirection: 'column',
             }
         }
         return {
             display: 'flex',
-            flexWrap:'nowrap',
-            whiteSpace:'nowrap',
+            flexWrap: 'nowrap',
+            whiteSpace: 'nowrap',
             gap: '5px',
             flexDirection: 'row',
             overflowX: 'auto',
@@ -80,7 +84,7 @@ export function RelatedFiles(props) {
         position: 'relative',
         fontSize: '1em',
         margin: '1px'
-    }
+    } as React.CSSProperties
 
     return <>{
         (thumbs != undefined) &&

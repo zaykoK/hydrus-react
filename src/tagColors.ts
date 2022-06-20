@@ -1,5 +1,9 @@
 //To add new tag color add 'namespace': 'css accepted color format'
 
+type ColorsList = {
+  [namespace:string]:string;
+}
+
 export const colors = {
   "series": '#aa00aa',
   "character": '#00aa00',
@@ -22,8 +26,8 @@ export const colors = {
   'other': '#72a0c1',
   'unnamedspaced': '#006ffa',
   'censoring': '#3f3f3f'
-}
+} as ColorsList
 
 export const buttonTextColors = {
   'rating' : '#252526',
-}
+} as ColorsList

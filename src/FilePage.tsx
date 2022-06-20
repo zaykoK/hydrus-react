@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { FileContent } from './FileContent';
 import { useParams } from 'react-router-dom';
 import * as TagTools from './TagTools'
@@ -6,8 +6,11 @@ import { TagList } from './TagList'
 import { FileMetaData } from './FileMetaData';
 import * as API from './hydrus-backend';
 import { RelatedFiles } from './RelatedFiles';
+// @ts-ignore
 import IconRelated from './assets/related.svg'
+// @ts-ignore
 import IconLeft from './assets/arrow-left.svg'
+// @ts-ignore
 import IconRight from './assets/arrow-right.svg'
 import colors from './stylingVariables';
 import { getRelatedVisibile, getRelatedNamespaces } from './StorageUtils';
@@ -15,22 +18,26 @@ import FullscreenButton from './FullscreenButton';
 import { useNavigate } from "react-router-dom";
 
 export function FilePage() {
-  let { fileHash } = useParams();
+  interface FilePageParams {
+    hash:string | undefined;
+  }
 
-  const [metadata, setMetaData] = useState();
-  const [tags, setTags] = useState();
-  const [relatedVisible, setRelateVisible] = useState(getRelatedVisibile())
+  const { fileHash } = useParams();
 
-  const [width, setWidth] = useState(window.innerWidth)
+  const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
+  const [tags, setTags] = React.useState([]);
+  const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
+
+  const [width, setWidth] = React.useState(window.innerWidth)
 
   const navigate = useNavigate()
 
-  function getMobileStyle(width) {
+  function getMobileStyle(width:number):boolean {
     if (width < 450) { return true }
     return false
   }
 
-  function returnStyle(mobile) {
+  function returnStyle(mobile:boolean):React.CSSProperties {
     const contentStyle = {
       display: "grid",
       gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
@@ -48,18 +55,19 @@ export function FilePage() {
 
 
   //If file hash changes reload tags
-  useEffect(() => {
+  React.useEffect(() => {
     loadTags();
   }, [fileHash])
 
-  function returnFileLink(hash) {
+  function returnFileLink(hash:string):string {
     return "/file/" + hash
   }
 
-  function PreviousImage() {
+  function PreviousImage():void {
     //Grab image list
     //Use SessionStorage?
     if (sessionStorage.getItem('group-hashes') === null) {return}
+    // @ts-ignore
     let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
     //console.log(fileHash)
     let index = elementList.indexOf(fileHash)
@@ -70,10 +78,11 @@ export function FilePage() {
   }
 
 
-  function NextImage() {
+  function NextImage():void {
     //Grab image list
     //Use SessionStorage?
     if (sessionStorage.getItem('group-hashes') === null) {return}
+     // @ts-ignore
     let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
     //console.log(fileHash)
     let index = elementList.indexOf(fileHash)
@@ -85,18 +94,23 @@ export function FilePage() {
 
   async function loadTags() {
     let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
+    if (!response) {return}
+    let data:API.MetadataResponse = response.data.metadata[0]
 
-    let responseTags = response.data.metadata[0].service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0]
+    let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags');
+    if (!allKnownTags) {allKnownTags=''}
+
+    let responseTags = data.service_keys_to_statuses_to_display_tags[allKnownTags][0]
     let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
+     // @ts-ignore
     tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.log(response.data.metadata[0])
     setMetaData(response.data.metadata[0])
+     // @ts-ignore
     setTags(tagTuples)
   }
 
-
-
-  function returnRelatedStyle(mobile) {
+  function returnRelatedStyle(mobile:boolean):React.CSSProperties {
     if (mobile) {
       return {
         background: colors.COLOR2,
@@ -132,7 +146,7 @@ export function FilePage() {
 
   }
 
-  function returnRelatedSwitchStyle(enabled) {
+  function returnRelatedSwitchStyle(enabled:boolean) {
     if (enabled) { return TopBarButtonStyle }
     return { ...TopBarButtonStyle, opacity: '0.3' }
   }
@@ -159,20 +173,26 @@ export function FilePage() {
     height: '49px',
     boxShadow: '0 0 5px 0 black',
     zIndex: '1'
-  }
+  } as React.CSSProperties;
 
   const barStylePadding = {
     height: '51px',
   }
 
-  function RelatedFilesList(props) {
-    function returnTagsFromNamespace(tags, namespace) {
+  interface RelatedFilesListProps {
+    fileHash:string|undefined;
+    tags:Array<string>
+  }
+
+  function RelatedFilesList(props:RelatedFilesListProps) {
+    if (!fileHash) {return}
+    function returnTagsFromNamespace(tags:Array<string>, namespace:string) {
       //This function returns an array of joined tag strings from tuples
       //{namespace:'character',value:'uzumaki naruto'} => 'character:uzumaki naruto'
 
       if (tags === undefined) { return }
-
-      let list = tags.filter((element) => element["namespace"] === namespace)
+       // @ts-ignore
+      let list:Array<TagTools.Tuple> = tags.filter((element) => element["namespace"] === namespace)
 
       let joined = []
       for (let tag in list) {
@@ -200,7 +220,7 @@ export function FilePage() {
     return returned
   }
 
-  function getContentStyle(mobile) {
+  function getContentStyle(mobile:boolean) {
     if (mobile) {
       return {
         gridRow: '1',
@@ -215,11 +235,11 @@ export function FilePage() {
 
   function switchRelatedVisible() {
     if (relatedVisible) {
-      localStorage.setItem('related-visible', false)
+      localStorage.setItem('related-visible', 'false')
       setRelateVisible(false)
       return
     }
-    localStorage.setItem('related-visible', true)
+    localStorage.setItem('related-visible', 'true')
     setRelateVisible(true)
   }
 

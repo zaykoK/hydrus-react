@@ -1,12 +1,22 @@
-export function PageButtons(props) {
-  //console.log(props)
-  function ButtonNextPage(props) {
-    return <button style={PageButtonStyle} onClick={() => { props.changePage(props.page) }}>Next Page</button>;
+import React from "react";
+
+interface PageButtonsProps {
+  pages: number;
+  currentPage: number;
+  changePage: Function;
+  offset: number;
+
+}
+
+function PageButtons(props: PageButtonsProps) {
+
+  function ButtonNextPage(props: { changePage: Function, style: React.CSSProperties, page: number }) {
+    return <button style={props.style} onClick={() => { props.changePage(props.page) }}>Next Page</button>;
   }
-  function ButtonPreviousPage(props) {
-    return <button style={PageButtonStyle} onClick={() => { props.changePage(props.page) }}>Previous Page</button>;
+  function ButtonPreviousPage(props: { changePage: Function, style: React.CSSProperties, page: number }) {
+    return <button style={props.style} onClick={() => { props.changePage(props.page) }}>Previous Page</button>;
   }
-  function ButtonPage(props) {
+  function ButtonPage(props: { changePage: Function, style: React.CSSProperties, page: number }) {
     return <button style={props.style} onClick={() => { props.changePage(props.page) }}>{props.page}</button>
   }
 
@@ -17,7 +27,7 @@ export function PageButtons(props) {
     fontSize: 'larger',
     background: '#333333',
     color: 'white',
-    cursor:'pointer'
+    cursor: 'pointer'
   }
 
   const currentPageButtonStyle = {
@@ -27,14 +37,14 @@ export function PageButtons(props) {
     fontSize: 'larger',
     background: '#555555',
     color: 'white',
-    cursor:'pointer'
+    cursor: 'pointer'
   }
   //console.log(props.currentPage)
   if (props.pages === 1) { return <></> }
   let pageButtons = []
 
   //Draw previous page button
-  if (props.currentPage != 1) { pageButtons.push(<ButtonPreviousPage key={'pageprev'} changePage={props.changePage} page={props.currentPage - 1} />) }
+  if (props.currentPage != 1) { pageButtons.push(<ButtonPreviousPage style={PageButtonStyle} key={'pageprev'} changePage={props.changePage} page={props.currentPage - 1} />) }
 
   //Amount of buttons to draw +- from current page
   let offset = props.offset;
@@ -68,21 +78,23 @@ export function PageButtons(props) {
     pageButtons.push(<ButtonPage style={PageButtonStyle} key={'page' + props.pages} changePage={props.changePage} page={props.pages} />)
   }
   //Draw next Page Button
-  if (props.currentPage != props.pages) { pageButtons.push(<ButtonNextPage key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
+  if (props.currentPage != props.pages) { pageButtons.push(<ButtonNextPage style={PageButtonStyle} key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
 
   const buttonListStyle = {
-    position:'relative',
-    bottom:'1em',
-    left:'0px',
-    right:'0px',
+    position: 'relative',
+    bottom: '1em',
+    left: '0px',
+    right: '0px',
     textAlign: 'center',
     display: 'flex',
     justifyContent: 'center',
     gap: '5px',
-    paddingTop:'20px',
-    flexWrap:'wrap',
-    maxWidth:'100vh'
-  }
+    paddingTop: '20px',
+    flexWrap: 'wrap',
+    maxWidth: '100vh'
+  } as React.CSSProperties
 
   return <div style={buttonListStyle}>{pageButtons}</div>
 }
+
+export default PageButtons

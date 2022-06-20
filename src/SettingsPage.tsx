@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import * as API from './hydrus-backend.js';
+import * as API from './hydrus-backend';
 import * as TagTools from './TagTools'
-import TagDisplay from './TagDisplay.jsx';
-import { getRelatedNamespaces, setRelatedNamespaces, getBlacklistedNamespaces, setBlacklistedNamespaces } from './StorageUtils.js';
+import TagDisplay from './TagDisplay';
+import { getRelatedNamespaces, setRelatedNamespaces, getBlacklistedNamespaces, setBlacklistedNamespaces } from './StorageUtils';
 
 //Really crude but get things done, its supposed to just assign localStorage items anyways
 
@@ -17,7 +17,7 @@ export function SettingsPage() {
     gridAutoFlow: 'row',
     gridRowGap: '15px',
     justifyContent: 'center'
-  }
+  } as React.CSSProperties
 
   const SettingsBarStyle = {
     background: '#ffffff',
@@ -28,14 +28,21 @@ export function SettingsPage() {
     borderRadius: '5px',
     textAlign: 'center',
     fontSize: 'larger'
-  }
+  } as React.CSSProperties
 
 
   function ApiServerInput() {
-    const [apiServerAddress, setApiServerAddress] = useState(localStorage.getItem('hydrus-server-address'));
-    function submitKey(event) {
+    const [apiServerAddress, setApiServerAddress] = useState(getServerAddress());
+
+    function getServerAddress(): string {
+      let address = localStorage.getItem('hydrus-server-address');
+      if (address) { return address }
+      return ''
+    }
+
+    function submitKey(event: React.FormEvent) {
       event.preventDefault();
-      localStorage.setItem('hydrus-server-address', apiServerAddress)
+      if (apiServerAddress) { localStorage.setItem('hydrus-server-address', apiServerAddress) }
     }
 
     function KeyInput() {
@@ -63,12 +70,17 @@ export function SettingsPage() {
     }
 
 
-    return <div><button style={TagTools.getTagButtonStyle()} key='test api button' onClick={() => { buttonClick() }} >Test Api Connection</button>{message}</div>
+    return <div><button style={TagTools.getTagButtonStyle('')} key='test api button' onClick={() => { buttonClick() }} >Test Api Connection</button>{message}</div>
   }
 
   function ApiMaxResultsInput() {
-    const [apiMaxResults, setApiMaxResults] = useState(localStorage.getItem('hydrus-max-results'));
-    function submitKey(event) {
+    const [apiMaxResults, setApiMaxResults] = useState(getServerAddress());
+    function getServerAddress(): string {
+      let address = localStorage.getItem('hydrus-max-results');
+      if (address) { return address }
+      return ''
+    }
+    function submitKey(event:React.FormEvent) {
       event.preventDefault();
       localStorage.setItem('hydrus-max-results', apiMaxResults)
     }
@@ -91,8 +103,13 @@ export function SettingsPage() {
   }
 
   function ApiKeyInput() {
-    const [apiKey, setApiKey] = useState(localStorage.getItem('hydrus-api-key'));
-    function submitKey(event) {
+    const [apiKey, setApiKey] = useState(getApiKey());
+    function getApiKey(): string {
+      let address = localStorage.getItem('hydrus-api-key');
+      if (address) { return address }
+      return ''
+    }
+    function submitKey(event:React.FormEvent) {
       event.preventDefault();
       localStorage.setItem('hydrus-api-key', apiKey)
     }
@@ -113,8 +130,14 @@ export function SettingsPage() {
   }
 
   function ComicsNamespaceInput() {
-    const [comicNamespace, setComicNamespace] = useState(localStorage.getItem('comic-namespace'));
-    function submitKey(event) {
+    const [comicNamespace, setComicNamespace] = useState(getComicNamespace());
+    function getComicNamespace(): string {
+      let namespace = localStorage.getItem('comic-namespace');
+      if (namespace) { return namespace }
+      return ''
+    }
+
+    function submitKey(event: React.FormEvent) {
       event.preventDefault();
       localStorage.setItem('comic-namespace', comicNamespace)
       if (comicNamespace === '') {
@@ -139,8 +162,14 @@ export function SettingsPage() {
   }
 
   function GroupNamespaceInput() {
-    const [groupNamespace, setGroupNamespace] = useState(localStorage.getItem('group-namespace'));
-    function submitKey(event) {
+    const [groupNamespace, setGroupNamespace] = useState(getGroupNamespace());
+    function getGroupNamespace(): string {
+      let namespace = localStorage.getItem('group-namespace');
+      if (namespace) { return namespace }
+      return ''
+    }
+
+    function submitKey(event: React.FormEvent) {
       event.preventDefault();
       localStorage.setItem('group-namespace', groupNamespace)
       if (groupNamespace === '') {
@@ -181,7 +210,7 @@ export function SettingsPage() {
       borderRadius: '5px',
       overflow: 'auto hidden',
       flexGrow: '1'
-    }
+    } as React.CSSProperties
 
     const formStyle = {
       height: 'inherit',
@@ -189,13 +218,13 @@ export function SettingsPage() {
       borderRadius: '5px',
       minWidth: '200px',
       width: '-webkit-fill-available'
-    }
+    } as React.CSSProperties
 
     const labelStyle = {
       display: 'block',
       height: 'inherit',
       width: 'inherit'
-    }
+    } as React.CSSProperties
 
     const inputStyle = {
       display: 'block',
@@ -208,45 +237,78 @@ export function SettingsPage() {
       padding: '0px 0px 0px 3px',
       margin: '0px',
       outline: 'none'
-    }
+    } as React.CSSProperties
     const [tag, setTag] = useState('')
-    const [spaces, setSpaces] = useState([])
+    const [spaces, setSpaces] = useState<Array<Array<string>>>([])
 
-    function handleSubmit(event) {
+    function handleSubmit(event: React.FormEvent):void {
       event.preventDefault()
-
       let temp = tag.toLowerCase()
-
       setSpaces(addRelatedTagToSettings(temp))
       setTag('')
     }
 
-    function removeRelatedTagFromSetting(tag) {
-      console.log(tag)
+    function removeRelatedTagFromSetting(tag: string):void {
       let spaces = getRelatedNamespaces()
+      let returnSpaces: Array<Array<string>> = []
+
       let i = spaces.indexOf(tag);
       let afterRemove = spaces.slice();
       afterRemove.splice(i, 1);
+      console.log(afterRemove)
+      for (let space of afterRemove) {
+        returnSpaces.push([space+':*'])
+      }
+
+
+
       setRelatedNamespaces(afterRemove)
-      setSpaces(afterRemove)
+      setSpaces(returnSpaces)
     }
 
-    function addRelatedTagToSettings(tag) {
-      console.log(tag)
+    function spacesToTags(spaces: Array<Array<string>>):Array<Array<string>>{
+      let tags: Array<Array<string>> = []
+      console.log(spaces)
+      for (let space of spaces) {
+        if (space[0].includes(':*')) {console.log('returning without change');return spaces}
+        tags.push([space[0]+':*'])
+      }
+      console.log(tags)
+
+      return tags
+    }
+
+
+    function addRelatedTagToSettings(tag: string):Array<Array<string>> {
       let spaces = getRelatedNamespaces()
-      if (spaces.includes(tag)) { return }
+      let returnSpaces: Array<Array<string>> = []
+      if (spaces.includes(tag)) {
+        
+        for (let space of spaces) {
+          returnSpaces.push([space])
+        }
+        return returnSpaces
+      }
       spaces.push(tag)
       setRelatedNamespaces(spaces)
-      return spaces
+
+      for (let space of spaces) {
+        returnSpaces.push([space])
+      }
+
+      return returnSpaces
     }
 
     useEffect(() => {
-      setSpaces(getRelatedNamespaces())
+      let spaces = []
+      for (let space of getRelatedNamespaces()){
+        spaces.push([space+':*'])
+      }
+      setSpaces(spaces)
     }, [])
 
-
     return <div style={searchBarSt}>
-      <TagDisplay key={spaces} removeTag={removeRelatedTagFromSetting} tags={spaces} />
+      <TagDisplay key={spaces.toString()} removeTag={removeRelatedTagFromSetting} tags={spacesToTags(spaces)} />
       <form onSubmit={handleSubmit} style={formStyle}>
         <label style={labelStyle}>
           <input style={inputStyle}
@@ -273,7 +335,7 @@ export function SettingsPage() {
       borderRadius: '5px',
       overflow: 'auto hidden',
       flexGrow: '1'
-    }
+    } as React.CSSProperties
 
     const formStyle = {
       height: 'inherit',
@@ -281,13 +343,13 @@ export function SettingsPage() {
       borderRadius: '5px',
       minWidth: '200px',
       width: '-webkit-fill-available'
-    }
+    } as React.CSSProperties
 
     const labelStyle = {
       display: 'block',
       height: 'inherit',
       width: 'inherit'
-    }
+    } as React.CSSProperties
 
     const inputStyle = {
       display: 'block',
@@ -300,11 +362,11 @@ export function SettingsPage() {
       padding: '0px 0px 0px 3px',
       margin: '0px',
       outline: 'none'
-    }
+    } as React.CSSProperties
     const [tag, setTag] = useState('')
-    const [spaces, setSpaces] = useState([])
+    const [spaces, setSpaces] = useState<Array<Array<string>>>([])
 
-    function handleSubmit(event) {
+    function handleSubmit(event: React.FormEvent) {
       event.preventDefault()
       let temp = tag.toLowerCase()
 
@@ -312,29 +374,33 @@ export function SettingsPage() {
       setTag('')
     }
 
-    function removeBlacklistedSpaceFromSettings(tag) {
+    function removeBlacklistedSpaceFromSettings(tag: string):void {
       let spaces = getBlacklistedNamespaces()
       let i = spaces.indexOf(tag);
       let afterRemove = spaces.slice();
       afterRemove.splice(i, 1);
       setBlacklistedNamespaces(afterRemove)
-      setSpaces(afterRemove)
+      setSpaces([afterRemove])
     }
 
-    function addBlacklistedSpaceToSettings(tag) {
+    function addBlacklistedSpaceToSettings(tag: string):Array<Array<string>> {
       let spaces = getBlacklistedNamespaces()
-      if (spaces.includes(tag)) { return }
+      if (spaces.includes(tag)) { return [spaces] }
       spaces.push(tag)
       setBlacklistedNamespaces(spaces)
-      return spaces
+      return [spaces]
     }
 
     useEffect(() => {
-      setSpaces(getBlacklistedNamespaces())
+      let spaces = []
+      for (let space of getBlacklistedNamespaces()){
+        spaces.push([space+':*'])
+      }
+      setSpaces(spaces)
     }, [])
 
     return <div style={searchBarSt}>
-      <TagDisplay key={spaces} removeTag={removeBlacklistedSpaceFromSettings} tags={spaces} />
+      <TagDisplay key={spaces.toString()} removeTag={removeBlacklistedSpaceFromSettings} tags={spaces} />
       <form onSubmit={handleSubmit} style={formStyle}>
         <label style={labelStyle}>
           <input style={inputStyle}

@@ -6,20 +6,30 @@ import { useNavigate } from 'react-router-dom';
 //Blacklist - tag namespaces to skip
 //Tags - tag list
 //clickFunction - function to run on clicking tag
-export function TagList(props) {
+interface TagListProps {
+    tags: Array<TagTools.Tuple>;
+    mobile:boolean;
+    clickFunction?: Function;
+    visibleCount: boolean;
+    blacklist: Array<string>;
+}
+
+
+
+export function TagList(props:TagListProps) {
 
     const navigate = useNavigate();
 
-    const [tags, setTags] = useState([]);
+    const [tags, setTags] = useState<Array<JSX.Element>>([]);
 
-    function displayTagString(tag) {
+    function displayTagString(tag:{namespace:string,value:string}):string {
         if (tag.namespace === '') { return tag.value }
         return tag.namespace + ':' + tag.value
     }
 
-    function generateSearchURL(tags, page) {
+    function generateSearchURL(tags:Array<string>, page:number) {
         let parameters = new URLSearchParams({
-            page: page
+            page: page.toString()
         })
         for (let tag in tags) {
             parameters.append('tags', tags[tag])
@@ -27,27 +37,27 @@ export function TagList(props) {
         return parameters
     }
 
-    function searchTag(tag) {
+    function searchTag(tag:string) {
         let par = generateSearchURL([tag], 1)
 
         navigate('/search/' + par)
     }
 
-    function clickHandler(arg) {
+    function clickHandler(tag:string) {
         if (props.clickFunction != undefined) {
-            return props.clickFunction(arg)
+            return props.clickFunction(tag)
         }
-        return searchTag(arg)
+        return searchTag(tag)
     }
 
-    function displayTagCount(count) {
+    function displayTagCount(count:number) {
         if (props.visibleCount) {
             return ' (' + count + ')'
         }
         return ''
     }
 
-    function getTagListStyle(mobile) {
+    function getTagListStyle(mobile:boolean) {
         if (mobile) {
             return {
                 padding: '5px',
@@ -57,7 +67,7 @@ export function TagList(props) {
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 fontSize: '1.1em'
-            }
+            } as React.CSSProperties
         }
         return {
             padding: '5px',
@@ -67,10 +77,10 @@ export function TagList(props) {
             overflowY: 'auto',
             overflowX: 'hidden',
             fontSize: '12px'
-        }
+        } as React.CSSProperties
     }
 
-    function createTagList(args) {
+    function createTagList(args:{tags:Array<TagTools.Tuple>,blacklist:Array<string>}) {
         let tagList = []
         for (let element in args.tags) {
             //Don't display tags in certain namespaces like titles,page etc on overall list

@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "outDir": "./built",
+      "allowJs": true,
+      "target": "es6",
+      "noImplicitReturns": true,
+      "jsx": "react-jsx",
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "noImplicitThis": true,
+      "alwaysStrict": true,
+      "allowSyntheticDefaultImports": true,
+      "sourceMap": true,
+      "module": "es2020",
+      "moduleResolution": "node"
+
+    },
+    "include": ["src"]
+  }

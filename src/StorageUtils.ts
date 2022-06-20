@@ -1,4 +1,4 @@
-export function getGroupingToggle() {
+export function getGroupingToggle():boolean {
   if (localStorage.getItem('group-toggle') === null) {
     return false
   }
@@ -6,7 +6,7 @@ export function getGroupingToggle() {
   if (localStorage.getItem('group-toggle') === 'true') { return true }
   return false
 }
-export function getRelatedVisibile() {
+export function getRelatedVisibile():boolean {
   if (localStorage.getItem('related-visible') === null) {
     return false
   }
@@ -15,25 +15,34 @@ export function getRelatedVisibile() {
   return false
 }
 
-export function getRelatedNamespaces() {
+export function getComicNamespace():string {
+    return localStorage.getItem('comic-namespace') || 'doujin-title'
+}
+
+export function getGroupNamespace(): string {
+  return localStorage.getItem('group-namespace') || 'group-title'
+}
+
+export function getRelatedNamespaces():Array<string> {
   if (localStorage.getItem('related-namespaces') === null ) {
     return []
   }
-  return JSON.parse(localStorage.getItem('related-namespaces'))
+  return JSON.parse(localStorage.getItem('related-namespaces') || '')
 }
-
-export function setRelatedNamespaces(spaces) {
+/** Stores presented array of strings into localStorage
+ */
+export function setRelatedNamespaces(spaces:Array<string>):void {
   localStorage.setItem('related-namespaces',JSON.stringify(spaces))
 }
 
-export function getBlacklistedNamespaces() {
+export function getBlacklistedNamespaces():Array<string> {
   if (localStorage.getItem('blacklisted-namespaces') === null ) {
     return []
   }
-  return JSON.parse(localStorage.getItem('blacklisted-namespaces'))
+  return JSON.parse(localStorage.getItem('blacklisted-namespaces') || '')
 }
 
-export function setBlacklistedNamespaces(spaces) {
+export function setBlacklistedNamespaces(spaces:Array<string>):void {
   localStorage.setItem('blacklisted-namespaces',JSON.stringify(spaces))
 }
 

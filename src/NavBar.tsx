@@ -1,8 +1,12 @@
-import { React, useState } from "react";
+import * as React from "react";
 import { NavLink } from "react-router-dom";
+// @ts-ignore
 import IconHome from './assets/menu-home.svg'
+// @ts-ignore
 import IconComics from './assets/filetype-picture.svg'
+// @ts-ignore
 import IconSettings from './assets/menu-settings.svg'
+// @ts-ignore
 import IconHamburger from './assets/menu-burger.svg'
 import colors from "./stylingVariables";
 
@@ -16,8 +20,7 @@ const linkStyle = {
   fontSize: 'larger',
   display: 'flex',
   flexFlow: 'rows'
-
-}
+} as React.CSSProperties
 
 const barStyle = {
   position: 'fixed',
@@ -34,7 +37,7 @@ const barStyle = {
   height: '49px',
   width: '49px',
   zIndex: '50'
-}
+} as React.CSSProperties
 
 const ButtonStyle = {
   height: '1.5em',
@@ -45,17 +48,17 @@ const ButtonStyle = {
   borderRadius: '10px',
   cursor: 'pointer',
   opacity: '0.7'
-}
+} as React.CSSProperties
 
 const menuTextStyle = {
   lineHeight: '2.5em',
   padding: '0px 15px 0px 5px'
-}
+} as React.CSSProperties
 
 function Navigation() {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = React.useState(false)
 
-  function returnBarStyle(expanded) {
+  function returnBarStyle(expanded:boolean):React.CSSProperties {
     if (expanded) {
       return {
         ...barStyle,

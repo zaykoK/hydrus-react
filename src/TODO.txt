@@ -14,3 +14,5 @@ Redo Tag Buttons so OR queries are two buttons that change into normal tag query
 
 
 Modularize stuff
+
+Add JSDoc comments

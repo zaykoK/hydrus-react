@@ -1,8 +1,13 @@
 import React from 'react';
 import TagButtonList from './TagButtonList';
 
-function TagDisplay(props) {
-  const tagDisplayStyle = {
+interface TagDisplayProps {
+  tags:Array<Array<string>>;
+  removeTag:Function;
+}
+
+function TagDisplay(props:TagDisplayProps) {
+  const tagDisplayStyle:React.CSSProperties = {
     textAlign: 'center',
     display: 'flex',
     //justifyContent: 'center',

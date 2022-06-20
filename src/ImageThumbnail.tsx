@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import * as API from './hydrus-backend';
 import { useNavigate } from "react-router-dom";
 import * as TagTools from './TagTools'
@@ -6,10 +6,23 @@ import colors from './stylingVariables';
 import WidgetCount from './WidgetCount';
 import WidgetFileType from './WidgetFileType';
 
-export const ImageThumbnail = React.memo((props) => {
-  const [thumbnail, setThumbnail] = useState(API.api_get_file_thumbnail_address(props.hash));
-  const [metadata, setMetadata] = useState();
-  const [isExpanded, setIsExpanded] = useState(false);
+// @ts-check
+
+interface ImageThumbnailProps {
+  hash: string;
+  currentImage?: boolean;
+  loadMeta: boolean;
+  addTag: Function;
+  replace: boolean;
+  type:string;
+  count?:number;
+}
+
+
+export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
+  const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
+  const [metadata, setMetadata] = React.useState();
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -20,7 +33,7 @@ export const ImageThumbnail = React.memo((props) => {
     objectFit: 'cover',
     background: colors.COLOR2,
     cursor: 'pointer'
-  }
+  } as React.CSSProperties
 
   const WrapperStyleCommon = {
     position: 'relative',
@@ -33,29 +46,29 @@ export const ImageThumbnail = React.memo((props) => {
     maxHeight: '43vw',
     maxWidth: '43vw',
 
-  }
+  } as React.CSSProperties
 
   const ThumbnailStyle = {
     ...ThumbnailCommon,
     width: '100%',
     height: '100%',
-  };
+  } as React.CSSProperties
 
   const ThumbnailStyleComic = {
     ...ThumbnailCommon,
     width: '250px',
     height: '370px',
-  };
+  } as React.CSSProperties
 
   const wrapperStyle = {
     ...WrapperStyleCommon,
-  }
+  } as React.CSSProperties
 
   const wrapperStyleComic = {
     ...WrapperStyleCommon,
     width: '250px',
     height: '370px',
-  }
+  } as React.CSSProperties
 
   const metaStyle = {
     color: "white",
@@ -66,7 +79,7 @@ export const ImageThumbnail = React.memo((props) => {
     width: '100%',
     textAlign: 'center',
     fontSize: '1em'
-  }
+  } as React.CSSProperties
 
   const metaStyleBottom = {
     color: "white",
@@ -76,16 +89,16 @@ export const ImageThumbnail = React.memo((props) => {
     margin: '0px',
     width: '100%',
     textAlign: 'center'
-  }
+  } as React.CSSProperties
 
-  function createTagPreview(args) {
+  function createTagPreview(args: { metadata: API.MetadataResponse|undefined, spaces: Array<string> }) {
     if (args.metadata != null) {
       return createTagList({ metadata: args.metadata, spaces: args.spaces });
     }
     return "";
   }
 
-  function returnThumbStyle(type) {
+  function returnThumbStyle(type: string):Array<React.CSSProperties> {
     //console.log(type)
     switch (type) {
       case 'image':
@@ -107,9 +120,12 @@ export const ImageThumbnail = React.memo((props) => {
     }
   }
 
-  function createTagList(args) {
+  function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string> }) {
     if (args.metadata != null) {
-      let tags = args.metadata.service_keys_to_statuses_to_display_tags[sessionStorage.getItem('hydrus-all-known-tags')][0];
+      let index = sessionStorage.getItem('hydrus-all-known-tags')
+      if (!index) { return }
+
+      let tags = args.metadata.service_keys_to_statuses_to_display_tags[index][0];
 
       let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
       let tagArrays = []
@@ -118,7 +134,7 @@ export const ImageThumbnail = React.memo((props) => {
         let innerArray = []
         for (let element in t) {
           let tagStyle = TagTools.getTagTextStyle(t[element].namespace)
-          if (element != t.length) {
+          if ( parseInt(element) != t.length) {
             tagStyle = {
               ...tagStyle,
               paddingRight: '5px'
@@ -153,14 +169,15 @@ export const ImageThumbnail = React.memo((props) => {
     setIsExpanded(false);
   }
 
-  async function GrabMetadata(hash) {
+  async function GrabMetadata(hash: string) {
     let responseMeta = await API.api_get_file_metadata({ hash: hash, hide_service_names_tags: true })
+    if (!responseMeta) {return}
     let meta = responseMeta.data.metadata[0]
 
     setMetadata(meta)
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (metadata == undefined && props.loadMeta) {
       GrabMetadata(props.hash);
     }
@@ -170,9 +187,9 @@ export const ImageThumbnail = React.memo((props) => {
     return "/file/" + props.hash
   }
 
-  function ThumbContent(props) {
+  function ThumbContent(props: { thumbnail: string|undefined, type: string, hash: string, replace: boolean }) {
 
-    function determineThumbNavigation(replace) {
+    function determineThumbNavigation(replace: boolean) {
       navigate(returnFileLink(), { replace: replace })
     }
 
@@ -185,7 +202,7 @@ export const ImageThumbnail = React.memo((props) => {
   }
 
   const thumbnailTopTags = ['creator', 'series']
-  const thumbnailBottomTags = []
+  const thumbnailBottomTags: Array<string> = []
 
   return (
     <div className='Thumbnail'
@@ -205,6 +222,7 @@ export const ImageThumbnail = React.memo((props) => {
         type={props.type}
         replace={props.replace}
         thumbnail={thumbnail}
+        hash={props.hash}
       />
     </div>
   );
