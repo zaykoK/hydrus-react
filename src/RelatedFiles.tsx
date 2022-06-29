@@ -53,14 +53,14 @@ export function RelatedFiles(props: RelatedFilesProps) {
                         key={relatedHashes[hash]}
                         hash={relatedHashes[hash]}
                         loadMeta={false}
-                        addTag={() => {return}}
+                        addTag={() => { return }}
                     />)
             }
             setThumbs(temp)
         }
     }, [relatedHashes, props])
 
-    function returnStyle(mobile:boolean):React.CSSProperties {
+    function returnStyle(mobile: boolean): React.CSSProperties {
         //console.log(mobile)
         if (!mobile) {
             return {
@@ -87,8 +87,9 @@ export function RelatedFiles(props: RelatedFilesProps) {
     } as React.CSSProperties
 
     return <>{
-        (thumbs != undefined) &&
+        (thumbs.length != 0) &&
         (<>
             <p style={relatedTextStyle}>Related Files for {props.space}</p>
-            <div style={returnStyle(props.mobile)}>{thumbs}</div></>)}</>
+            <div style={returnStyle(props.mobile)}>{thumbs}</div></>)}
+        </>
 }
