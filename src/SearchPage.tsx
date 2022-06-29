@@ -113,11 +113,11 @@ export function SearchPage(props: SearchPageProps) {
   async function Search() {
     //If there is nothing to search for or search is identical to previous don't do anything
     if (tags === undefined) {
-      console.log('not doing anything undefined');
+      //console.log('not doing anything undefined');
       return
     }
     if (JSON.stringify(tags) === JSON.stringify(lastSearch)) {
-      console.log("not doing anything same search")
+      //console.log("not doing anything same search")
       return
     }
 
@@ -127,7 +127,6 @@ export function SearchPage(props: SearchPageProps) {
 
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type:API.FileSortType.ImportTime });
     let responseHashes = response.data.hashes
-    console.log(responseHashes)
 
     setUngroupedHashes(responseHashes) //For use later with grouping
     grabMetaData(responseHashes)
@@ -142,12 +141,11 @@ export function SearchPage(props: SearchPageProps) {
         if (response) { responses.push(response.data.metadata) }
       }
       responses = responses.flat()
-      console.log(responses.length)
 
       createListOfUniqueTags(responses)
       let h = hashes
       if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
-      console.log(h)
+
       setHashes(h)
     }
   }
@@ -165,7 +163,6 @@ export function SearchPage(props: SearchPageProps) {
     merged = TagTools.transformIntoTuple(map)
     merged.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.timeEnd('metajoin')
-    console.log(merged)
     setFileTags(merged)
   }
 

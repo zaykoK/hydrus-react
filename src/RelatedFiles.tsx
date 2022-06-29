@@ -1,5 +1,5 @@
 import * as API from './hydrus-backend';
-import { ImageThumbnail } from './ImageThumbnail';
+import { ImageThumbnail } from './Thumbnail/ImageThumbnail';
 import React, { useEffect, useState } from 'react';
 import { tagArrayToNestedArray } from './TagTools';
 

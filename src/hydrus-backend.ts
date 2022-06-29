@@ -184,7 +184,6 @@ export async function api_get_files_search_files(props: APISearchFilesProps) {
     sentTags = props.tags.slice()
     sentTags.push('system:limit=5000')
   }
-  console.log(sentTags)
 
   return axios.get(server_address + '/get_files/search_files', {
     params: {

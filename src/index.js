@@ -36,6 +36,7 @@ const routerElement = (
     <Router>
       <Navigation />
       <Routes>
+        
         <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
         <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' />} />
         <Route key="route-file" path='/file/:fileHash' element={<FilePage />} />

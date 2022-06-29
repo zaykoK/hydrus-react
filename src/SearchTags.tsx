@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import TagDisplay from './TagDisplay';
 import GroupButton from './GroupButton';
 
+import './SearchTags.css'
+
 interface SearchTagsProps {
   tags:Array<Array<string>>;
   addTag:Function;
@@ -11,68 +13,8 @@ interface SearchTagsProps {
 
 export function SearchTags(props:SearchTagsProps) {
   const [tag, setTag] = useState('');
-  const [searches, setSearches] = useState([]);
 
   const [tags, setTags] = useState(props.tags)
-
-  const TOP_BAR_HEIGHT = 43
-
-  const topBarStyle = {
-    position: 'fixed',
-    top:'0px',
-    textAlign: 'center',
-    fontSize: 'larger',
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '5px',
-    height: TOP_BAR_HEIGHT,
-    background: '#333333',
-    padding: '3px 0 3px 0',
-    boxShadow: '0 0 5px 0 black',
-    zIndex:'5',
-    width:'100vw'
-  } as React.CSSProperties
-
-  const searchBarSt = {
-    background: '#ffffff',
-    boxShadow: '0 0 0px 0 black',
-    display: 'flex',
-    flexFlow: 'rows',
-    height: TOP_BAR_HEIGHT-7,
-    margin: '4px',
-    minWidth: '40%',
-    maxWidth: '95vw',
-    borderRadius: '5px',
-    overflow: 'auto hidden',
-    flexGrow:'1'
-  } as React.CSSProperties
-
-  const formStyle = {
-    height: 'inherit',
-    flexGrow: '0',
-    borderRadius: '5px',
-    minWidth:'200px',
-    width:'-webkit-fill-available'
-  } as React.CSSProperties
-
-  const labelStyle = {
-    display: 'block',
-    height: 'inherit',
-    width: 'inherit'
-  } as React.CSSProperties
-
-  const inputStyle = {
-    display: 'block',
-    height: 'inherit',
-    width: '99%',
-    border: 'none',
-    borderRadius: '5px',
-    textAlign: 'left',
-    fontSize: '12px',
-    padding: '0px 0px 0px 3px',
-    margin: '0px',
-    outline: 'none'
-  } as React.CSSProperties
 
   function submitTag(event:React.FormEvent) {
     event.preventDefault(); //necessary to not reload page after submit
@@ -95,12 +37,6 @@ export function SearchTags(props:SearchTagsProps) {
   //At some point should show autocomplete results
   async function searchTag(search:string) {
     setTag(search)
-
-    //let response = await API.api_add_tags_search_tags({search:search});
-    //let result = response.data.tags;
-    //console.log(result)
-    //setSearches(result);
-
   }
 
   useEffect(() => {
@@ -111,21 +47,19 @@ export function SearchTags(props:SearchTagsProps) {
 
   function TagInput(props:{tags:Array<Array<string>>,removeTag:Function}) {
 
-    return <div style={searchBarSt}>
+    return <div className="searchBar">
       <TagDisplay key={props.tags.toString()} removeTag={props.removeTag} tags={props.tags} />
-      <form onSubmit={submitTag} style={formStyle}>
-        <label style={labelStyle}>
-          <input style={inputStyle}
+      <form onSubmit={submitTag}>
+          <input
             type="text"
             value={tag}
             placeholder="Search tags, -tag excludes, tag1 OR tag2 for alternative"
             onChange={(e) => searchTag(e.target.value)} />
-        </label>
       </form>
     </div>
   }
 
-  return <div style={topBarStyle}>
+  return <div className='topBar'>
     <div style={{ width: '45px', height: 'inherit', flexShrink:'0' }} />
     <GroupButton clickAction={props.groupAction} />
     {TagInput({ removeTag: props.removeTag, tags: tags })}

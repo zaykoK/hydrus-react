@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { ImageThumbnail } from './ImageThumbnail';
+import { ImageThumbnail } from './Thumbnail/ImageThumbnail';
 import PageButtons from './PageButtons';
-import colors from './stylingVariables';
+
+import './ImageWall.css'
 
 // @ts-check
 
@@ -13,7 +14,6 @@ interface ImageWallProps {
   addTag: Function;
   changePage: Function;
   counts: Map<any, any>;
-
 }
 
 export function ImageWall(props: ImageWallProps) {
@@ -57,16 +57,6 @@ export function ImageWall(props: ImageWallProps) {
     setThumbs(CreateNewThumbnailList(props.page))
   }, [props.hashes, props.page])
 
-
-  const WrapperListStyle = {
-    display: 'flex',
-    flexFlow: 'row wrap',
-    placeItems: "flex-start",
-    padding: '15px',
-    gap: '15px',
-    borderRadius: '15px',
-  };
-
   function returnPageCount() {
     let count = Math.max(Math.floor(props.hashes.length / (viewSize)) + 1, 1)
     return count
@@ -74,19 +64,12 @@ export function ImageWall(props: ImageWallProps) {
 
   function WrapperList(props: { thumbs: Array<JSX.Element> }) {
     return (
-      <div id="wall" style={WrapperListStyle}>{props.thumbs}</div>
+      <div className="WrapperList">{props.thumbs}</div>
     );
   }
 
-  const imageWallStyle = {
-    background: colors.COLOR3,
-    height: 'fit-content',
-    gridColumn: '2',
-    margin: '0px 0px 30px 0px'
-  }
-
   return (
-    <div style={imageWallStyle}>
+    <div className='imageWall' >
       <WrapperList
         key={getHashSlice(props.hashes, props.page)}
         thumbs={thumbs} />

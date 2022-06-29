@@ -1,0 +1,67 @@
+element {
+    --COLOR1: #333333;
+    --COLOR2: #1e1e1e;
+    --COLOR3: #252526;
+    --COLORRELATED: #252526b3;
+}
+
+.thumbnail {
+    padding: 0px;
+    vertical-align: bottom;
+    object-fit: cover;
+    background: var(--COLOR2);
+    cursor: pointer;
+  }
+
+.thumbnailWrapper{
+    position: relative;
+    background: var(--COLOR2);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0px 0px 5px 0px black;
+    height: 180px;
+    width: 180px;
+    max-height: 43vw;
+    max-width: 43vw;
+  }
+  .thumbnailWrapper:hover{
+    box-shadow: 0px 0px 15px 0px rgb(114, 37, 37);
+  }
+
+.thumbnailImage {
+    width: 100%;
+    height: 100%;
+  }
+.thumbnailComic {
+    width: 250px;
+    height: 370px;
+  }
+
+.thumbnailWrapperComic {
+    width: 250px;
+    height: 370px;
+  }
+.currentThumbnail {
+    opacity: 0.3;
+}
+
+.topTags {
+    color: white;
+    position: absolute;
+    top: 0px;
+    background: #000000d1;
+    margin: 0px;
+    width: 100%;
+    text-align: center;
+    font-size: 1em;
+  }
+
+.bottomTags {
+    color: white;
+    position: absolute;
+    bottom: -2px;
+    background: #000000a1;
+    margin: 0px;
+    width: 100%;
+    text-align: center;
+  }

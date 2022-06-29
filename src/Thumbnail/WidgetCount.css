@@ -1,0 +1,13 @@
+.widgetCount {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    margin: auto;
+    background: #000000d1;
+    padding: 5px;
+    border-radius: 10px 0px 0px 0px;
+    opacity: 0.75;
+    width: min-content;
+    pointer-events: none;
+    font-size: larger;
+}

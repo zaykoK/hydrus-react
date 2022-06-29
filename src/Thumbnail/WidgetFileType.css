@@ -1,0 +1,15 @@
+.WidgetFileTypeWrapper {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    background: #000000d1;
+    padding: 3px;
+    border-radius: 0px 10px 0px 0px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.WidgetFileTypeIcon {
+    width: 20px;
+    height: 20px;
+}

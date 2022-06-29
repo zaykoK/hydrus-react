@@ -1,10 +1,12 @@
 import * as React from 'react';
-import * as API from './hydrus-backend';
+import * as API from '../hydrus-backend';
 import { useNavigate } from "react-router-dom";
-import * as TagTools from './TagTools'
-import colors from './stylingVariables';
+import * as TagTools from '../TagTools'
+import colors from '../stylingVariables';
 import WidgetCount from './WidgetCount';
 import WidgetFileType from './WidgetFileType';
+
+import './ImageThumbnail.css'
 
 // @ts-check
 
@@ -26,71 +28,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
 
   const navigate = useNavigate();
 
-
-  const ThumbnailCommon = {
-    padding: '0px',
-    verticalAlign: 'bottom',
-    objectFit: 'cover',
-    background: colors.COLOR2,
-    cursor: 'pointer'
-  } as React.CSSProperties
-
-  const WrapperStyleCommon = {
-    position: 'relative',
-    background: colors.COLOR2,
-    borderRadius: '15px',
-    overflow: 'hidden',
-    boxShadow: '0px 0px 5px 0px black',
-    height: '180px',
-    width: '180px',
-    maxHeight: '43vw',
-    maxWidth: '43vw',
-
-  } as React.CSSProperties
-
-  const ThumbnailStyle = {
-    ...ThumbnailCommon,
-    width: '100%',
-    height: '100%',
-  } as React.CSSProperties
-
-  const ThumbnailStyleComic = {
-    ...ThumbnailCommon,
-    width: '250px',
-    height: '370px',
-  } as React.CSSProperties
-
-  const wrapperStyle = {
-    ...WrapperStyleCommon,
-  } as React.CSSProperties
-
-  const wrapperStyleComic = {
-    ...WrapperStyleCommon,
-    width: '250px',
-    height: '370px',
-  } as React.CSSProperties
-
-  const metaStyle = {
-    color: "white",
-    position: "absolute",
-    top: '0px',
-    background: '#000000d1',
-    margin: '0px',
-    width: '100%',
-    textAlign: 'center',
-    fontSize: '1em'
-  } as React.CSSProperties
-
-  const metaStyleBottom = {
-    color: "white",
-    position: "absolute",
-    bottom: '-2px',
-    background: '#000000a1',
-    margin: '0px',
-    width: '100%',
-    textAlign: 'center'
-  } as React.CSSProperties
-
   function createTagPreview(args: { metadata: API.MetadataResponse|undefined, spaces: Array<string> }) {
     if (args.metadata != null) {
       return createTagList({ metadata: args.metadata, spaces: args.spaces });
@@ -98,25 +35,27 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     return "";
   }
 
-  function returnThumbStyle(type: string):Array<React.CSSProperties> {
+  function returnThumbStyle(type: string):string {
     //console.log(type)
     switch (type) {
-      case 'image':
-        if (props.currentImage) {
-          return [{ ...ThumbnailStyle, opacity: '0.3' }, wrapperStyle]
-        }
-        else {
-          return [ThumbnailStyle, wrapperStyle]
-        }
       case 'comic':
-        return [ThumbnailStyleComic, wrapperStyleComic]
-      default:
+        return "thumbnail thumbnailComic"
+      default: //case 'image':
         if (props.currentImage) {
-          return [{ ...ThumbnailStyle, opacity: '0.3' }, wrapperStyle]
+          return "thumbnail thumbnailImage currentThumbnail"
         }
         else {
-          return [ThumbnailStyle, wrapperStyle]
+          return "thumbnail thumbnailImage"
         }
+    }
+  }
+
+  function returnWrapperStyle(type: string):string {
+    switch (type) {
+      case 'comic':
+        return 'thumbnailWrapper thumbnailWrapperComic'
+      default: //image
+        return 'thumbnailWrapper'
     }
   }
 
@@ -194,26 +133,25 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
 
     return <img
+    className={returnThumbStyle(props.type)}
       onClick={() => { determineThumbNavigation(props.replace) }}
       loading='lazy'
       src={props.thumbnail}
-      style={returnThumbStyle(props.type)[0]}
       alt={props.hash} />
   }
 
-  const thumbnailTopTags = ['creator', 'series']
+  const thumbnailTopTags: Array<string> = ['creator', 'series']
   const thumbnailBottomTags: Array<string> = []
 
   return (
-    <div className='Thumbnail'
+    <div className={returnWrapperStyle(props.type)}
       key={"thumb-" + props.hash}
-      style={returnThumbStyle(props.type)[1]}
       onMouseOver={mouseEnterHandler}
       onMouseOut={mouseLeaveHandler}>
-      <div className='topTags' style={metaStyle}>
+      <div className='topTags'>
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
       </div>
-      <div className='bottomTags' style={metaStyleBottom}>
+      <div className='bottomTags'>
         <WidgetCount count={props.count} />
         <WidgetFileType metadata={metadata} />
         {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags }))}

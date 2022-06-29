@@ -1,0 +1,62 @@
+:root {
+    --topBarHeight: 43px;
+    --searchBarHeight: 36px;
+    /* search bar should be ~7px smaller than top bar */
+}
+
+.topBar {
+    position: fixed;
+    top: 0px;
+    text-align: center;
+    font-size: larger;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    height: var(--topBarHeight);
+    background: #333333;
+    padding: 3px 0 3px 0;
+    box-shadow: 0 0 5px 0 black;
+    z-index: 5;
+    width: 100vw;
+}
+
+.searchBar {
+    background: #ffffff;
+    box-shadow: 0 0 0px 0 black;
+    display: flex;
+    flex-flow: row;
+    height: var(--searchBarHeight);
+    margin: 4px;
+    min-width: 40%;
+    max-width: 95vw;
+    border-radius: 5px;
+    overflow: auto hidden;
+    flex-grow: 1;
+}
+
+form {
+    height: inherit;
+    flex-grow: 0;
+    border-radius: 5px;
+    min-width: 200px;
+    width: -webkit-fill-available;
+}
+
+.label {
+    display: block;
+    height: inherit;
+    width: inherit;
+}
+
+input {
+    display: block;
+    height: inherit;
+    width: 99%;
+    border: none;
+    border-radius: 5px;
+    text-align: left;
+    font-size: 12px;
+    padding: 0px 0px 0px 3px;
+    margin: 0px;
+    outline: none;
+}
