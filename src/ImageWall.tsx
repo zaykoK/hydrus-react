@@ -25,20 +25,20 @@ export function ImageWall(props: ImageWallProps) {
   const [thumbs, setThumbs] = React.useState(CreateNewThumbnailList(props.page))
 
   function CreateNewThumbnailList(page: number) {
-    let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize),Math.min((page) * viewSize, props.hashes.length))
+    let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
     let list: Array<JSX.Element> = [];
     //for (let id = 0 + ((page - 1) * viewSize); id < Math.min((page) * viewSize, props.hashes.length); id++) {
-      for (let hash of hashSlice) {
-        list.push(
-          <ImageThumbnail
-            loadMeta={true}
-            type={props.type}
-            addTag={props.addTag}
-            key={hash}
-            hash={hash}
-            count={props.counts.get(hash)}
-            replace={false}
-          />);
+    for (let hash of hashSlice) {
+      list.push(
+        <ImageThumbnail
+          loadMeta={true}
+          type={props.type}
+          addTag={props.addTag}
+          key={hash}
+          hash={hash}
+          count={props.counts.get(hash)}
+          replace={false}
+        />);
     }
     return list;
   }

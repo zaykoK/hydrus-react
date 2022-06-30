@@ -49,8 +49,9 @@ export function SearchTags(props:SearchTagsProps) {
 
     return <div className="searchBar">
       <TagDisplay key={props.tags.toString()} removeTag={props.removeTag} tags={props.tags} />
-      <form onSubmit={submitTag}>
+      <form className="searchForm" onSubmit={submitTag}>
           <input
+            className="searchInput"
             type="text"
             value={tag}
             placeholder="Search tags, -tag excludes, tag1 OR tag2 for alternative"

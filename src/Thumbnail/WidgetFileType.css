@@ -5,8 +5,9 @@
     background: #000000d1;
     padding: 3px;
     border-radius: 0px 10px 0px 0px;
-    opacity: 0.6;
+    opacity: 0.15;
     pointer-events: none;
+    transition:all 0.25s;
 }
 
 .WidgetFileTypeIcon {

@@ -34,7 +34,7 @@
     flex-grow: 1;
 }
 
-form {
+.searchForm {
     height: inherit;
     flex-grow: 0;
     border-radius: 5px;
@@ -42,13 +42,7 @@ form {
     width: -webkit-fill-available;
 }
 
-.label {
-    display: block;
-    height: inherit;
-    width: inherit;
-}
-
-input {
+.searchInput {
     display: block;
     height: inherit;
     width: 99%;

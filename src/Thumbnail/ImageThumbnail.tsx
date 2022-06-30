@@ -24,16 +24,10 @@ interface ImageThumbnailProps {
 export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
   const [metadata, setMetadata] = React.useState();
-  const [isExpanded, setIsExpanded] = React.useState(false);
 
   const navigate = useNavigate();
 
-  function createTagPreview(args: { metadata: API.MetadataResponse|undefined, spaces: Array<string> }) {
-    if (args.metadata != null) {
-      return createTagList({ metadata: args.metadata, spaces: args.spaces });
-    }
-    return "";
-  }
+  
 
   function returnThumbStyle(type: string):string {
     //console.log(type)
@@ -57,6 +51,13 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       default: //image
         return 'thumbnailWrapper'
     }
+  }
+
+  function createTagPreview(args: { metadata: API.MetadataResponse|undefined, spaces: Array<string> }) {
+    if (args.metadata != null) {
+      return createTagList({ metadata: args.metadata, spaces: args.spaces });
+    }
+    return "";
   }
 
   function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string> }) {
@@ -100,14 +101,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     return ''
   }
 
-  function mouseEnterHandler() {
-    setIsExpanded(true);
-  }
-
-  function mouseLeaveHandler() {
-    setIsExpanded(false);
-  }
-
   async function GrabMetadata(hash: string) {
     let responseMeta = await API.api_get_file_metadata({ hash: hash, hide_service_names_tags: true })
     if (!responseMeta) {return}
@@ -145,16 +138,14 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
 
   return (
     <div className={returnWrapperStyle(props.type)}
-      key={"thumb-" + props.hash}
-      onMouseOver={mouseEnterHandler}
-      onMouseOut={mouseLeaveHandler}>
+      key={"thumb-" + props.hash}>
       <div className='topTags'>
-        {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailTopTags }))}
+        {createTagPreview({ metadata: metadata, spaces: thumbnailTopTags })}
       </div>
       <div className='bottomTags'>
         <WidgetCount count={props.count} />
         <WidgetFileType metadata={metadata} />
-        {isExpanded && (createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags }))}
+        {createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags })}
       </div>
       <ThumbContent
         type={props.type}

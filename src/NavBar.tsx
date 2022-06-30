@@ -72,8 +72,8 @@ function Navigation() {
 
   return (
     <div className="navigation" >
-      <nav className="navbar navbar-expand navbar-dark bg-dark" >
-        <div className="container" style={returnBarStyle(expanded)}>
+      <nav className="navbar" >
+        <div className="navigationContainer" style={returnBarStyle(expanded)}>
           <div style={linkStyle}>
             <img src={IconHamburger} style={ButtonStyle} onClick={() => { setExpanded(!expanded) }} />
             <div style={menuTextStyle}>Menu</div>
