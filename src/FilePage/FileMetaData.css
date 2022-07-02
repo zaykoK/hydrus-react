@@ -5,6 +5,12 @@
     padding: 7px;
     border-radius: 10px;
 }
-.metadataCard > p {
+
+.metadataCard>p {
     margin: 1px;
+}
+
+.metadataLink {
+    color: lightBlue;
+    text-decoration: none;
 }

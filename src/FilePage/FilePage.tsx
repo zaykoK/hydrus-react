@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { FileContent } from './FileContent';
-import { useParams } from 'react-router-dom';
-import * as TagTools from './TagTools'
-import { TagList } from './TagList'
 import { FileMetaData } from './FileMetaData';
-import * as API from './hydrus-backend';
-import { RelatedFiles } from './RelatedFiles';
+import { useParams } from 'react-router-dom';
+import * as TagTools from '../TagTools'
+import { TagList } from '../TagList'
+import * as API from '../hydrus-backend';
+import { RelatedFiles } from '../RelatedFiles';
 // @ts-ignore
-import IconRelated from './assets/related.svg'
+import IconRelated from '../assets/related.svg'
 // @ts-ignore
-import IconLeft from './assets/arrow-left.svg'
+import IconLeft from '../assets/arrow-left.svg'
 // @ts-ignore
-import IconRight from './assets/arrow-right.svg'
-import { getRelatedVisibile, getRelatedNamespaces } from './StorageUtils';
-import FullscreenButton from './FullscreenButton';
+import IconRight from '../assets/arrow-right.svg'
+import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
+import FullscreenButton from '../FullscreenButton';
 import { useNavigate } from "react-router-dom";
 
 import './FilePage.css'
@@ -38,20 +38,11 @@ export function FilePage() {
     return false
   }
 
-  function returnStyle(mobile: boolean): React.CSSProperties {
-    const contentStyle = {
-      display: "grid",
-      gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
-    }
-
+  function returnStyle(mobile: boolean): string {
     if (mobile) {
-      return {
-        display: 'grid',
-        gridTemplateColumns: 'auto',
-        gridTemplateRows: 'auto auto auto'
-      }
+      return "filePage mobile"
     }
-    return contentStyle
+    return "filePage"
   }
 
 
@@ -190,7 +181,7 @@ export function FilePage() {
       <div className="TopBarButtonStyle"><FullscreenButton /></div>
 
     </div>
-    <div style={returnStyle(getMobileStyle(width))}>
+    <div className={returnStyle(getMobileStyle(width))}>
       <div>
 
         {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={getMobileStyle(width)} />}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as API from './hydrus-backend';
+import * as API from '../hydrus-backend';
 import { useSwipeable } from 'react-swipeable';
 
 import './FileContent.css'

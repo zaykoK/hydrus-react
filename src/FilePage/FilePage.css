@@ -66,6 +66,17 @@
     z-index: 30;
 }
 
+.filePage {
+    display: grid;
+    grid-template-columns: minmax(auto, 1fr) minmax(auto, 5fr);
+}
+
+.filePage.mobile {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+}
+
 
 .fileContent.mobile {
     grid-row: 1;

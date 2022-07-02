@@ -1,7 +1,7 @@
-import { MetadataResponse } from "./hydrus-backend";
+import { MetadataResponse } from "../hydrus-backend";
 import './FileMetaData.css'
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
-function formatBytes(bytes:number, decimals:number = 2) {
+function formatBytes(bytes: number, decimals: number = 2) {
     if (bytes === 0) return '0 Bytes';
 
     const k = 1024;
@@ -18,7 +18,7 @@ interface FileMetaDataProps {
 }
 
 //Displays non-tag metadata about file
-export function FileMetaData(props:FileMetaDataProps) {
+export function FileMetaData(props: FileMetaDataProps) {
     //console.log(props)
     const imageSize = [props.metadata.width, props.metadata.height]
     const urls = props.metadata.known_urls
@@ -29,7 +29,7 @@ export function FileMetaData(props:FileMetaDataProps) {
     const date = props.metadata.time_modified
 
     //lifted from https://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
-    function timeConverter(UNIX_timestamp:number):string {
+    function timeConverter(UNIX_timestamp: number): string {
         var a = new Date(UNIX_timestamp * 1000);
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         var year = a.getFullYear();
@@ -46,9 +46,8 @@ export function FileMetaData(props:FileMetaDataProps) {
     for (let el in urls) {
         let s = urls[el].split('/')
         let ss = s[2]
-        links.push(<p key={hash + 'link' + urls[el]} style={{ margin: '1px' }} ><a style={{ color: 'lightBlue', textDecoration: 'none' }} href={urls[el]} >{ss}</a></p>)
+        links.push(<p key={hash + 'link' + urls[el]} ><a className="metadataLink" href={urls[el]} >{ss}</a></p>)
     }
-
 
     return <div className="metadataCard">
         <p key={hash + 'date'}  >Date: {timeConverter(date)}</p>
@@ -56,6 +55,6 @@ export function FileMetaData(props:FileMetaDataProps) {
         <p key={hash + 'size'}  >Size: {formatBytes(size)}</p>
         <p key={hash + 'contenttype'}  >Content-type : {mime}</p>
         <p key={hash + 'inbox'}  >{(inbox) ? ('Is not archived') : ('Is archived')}</p>
-        {(links.length > 0) && <div key={hash + 'links'} >Links:{links}</div>}
+        {(links.length > 0) && <><p key="metadataLinks">Links:</p>{links}</>}
     </div>
 }
