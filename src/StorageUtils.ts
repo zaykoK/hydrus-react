@@ -1,3 +1,4 @@
+
 export function getGroupingToggle():boolean {
   if (localStorage.getItem('group-toggle') === null) {
     return false
@@ -6,6 +7,7 @@ export function getGroupingToggle():boolean {
   if (localStorage.getItem('group-toggle') === 'true') { return true }
   return false
 }
+
 export function getRelatedVisibile():boolean {
   if (localStorage.getItem('related-visible') === null) {
     return false

@@ -3,6 +3,8 @@ import { ImageThumbnail } from './Thumbnail/ImageThumbnail';
 import React, { useEffect, useState } from 'react';
 import { tagArrayToNestedArray } from './TagTools';
 
+import "./RelatedFiles.css"
+
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
     currentHash: string | undefined;
@@ -14,7 +16,6 @@ interface RelatedFilesProps {
 export function RelatedFiles(props: RelatedFilesProps) {
     const [relatedHashes, setRelatedHashes] = useState<Array<string>>([])
     const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
-
 
     async function Search() {
         if (props.tags === undefined) { return }
@@ -40,7 +41,6 @@ export function RelatedFiles(props: RelatedFilesProps) {
         }
     }
 
-
     useEffect(() => {
         if (relatedHashes.length > 1) {
             let temp = []
@@ -60,36 +60,17 @@ export function RelatedFiles(props: RelatedFilesProps) {
         }
     }, [relatedHashes, props])
 
-    function returnStyle(mobile: boolean): React.CSSProperties {
-        //console.log(mobile)
+    function returnStyle(mobile: boolean): string {
         if (!mobile) {
-            return {
-                display: 'flex',
-                gap: '5px',
-                flexDirection: 'column',
-            }
+            return "relatedThumbnails mobile"
         }
-        return {
-            display: 'flex',
-            flexWrap: 'nowrap',
-            whiteSpace: 'nowrap',
-            gap: '5px',
-            flexDirection: 'row',
-            overflowX: 'auto',
-            width: 'max-content'
-        }
+        return "relatedThumbnails"
     }
-
-    const relatedTextStyle = {
-        position: 'relative',
-        fontSize: '1em',
-        margin: '1px'
-    } as React.CSSProperties
 
     return <>{
         (thumbs.length != 0) &&
         (<>
-            <p style={relatedTextStyle}>Related Files for {props.space}</p>
-            <div style={returnStyle(props.mobile)}>{thumbs}</div></>)}
+            <p className="relatedTextStyle">Related Files for {props.space}</p>
+            <div className={returnStyle(props.mobile)}>{thumbs}</div></>)}
         </>
 }

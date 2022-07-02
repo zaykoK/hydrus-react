@@ -1,0 +1,6 @@
+.tagDisplayStyle {
+    text-align: center;
+    display: flex;
+    gap: 3px;
+    margin: 1px;
+  }

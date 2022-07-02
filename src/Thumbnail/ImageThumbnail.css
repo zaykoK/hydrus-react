@@ -1,4 +1,4 @@
-element {
+:root {
     --COLOR1: #333333;
     --COLOR2: #1e1e1e;
     --COLOR3: #252526;
@@ -78,5 +78,5 @@ element {
     margin: 0px;
     width: 100%;
     text-align: center;
-    opacity:0;
+    opacity:1;
 }

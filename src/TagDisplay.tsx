@@ -1,5 +1,6 @@
 import React from 'react';
 import TagButtonList from './TagButtonList';
+import "./TagDisplay.css"
 
 interface TagDisplayProps {
   tags:Array<Array<string>>;
@@ -7,15 +8,7 @@ interface TagDisplayProps {
 }
 
 function TagDisplay(props:TagDisplayProps) {
-  const tagDisplayStyle:React.CSSProperties = {
-    textAlign: 'center',
-    display: 'flex',
-    //justifyContent: 'center',
-    gap: '3px',
-    margin: '1px',
-  }
-
-  return <div style={tagDisplayStyle}>
+  return <div className="tagDisplayStyle">
     <TagButtonList removeTag={props.removeTag} tags={props.tags} />
   </div>;
 }

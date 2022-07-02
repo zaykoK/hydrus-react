@@ -1,0 +1,10 @@
+.metadataCard {
+    background: var(--COLOR2);
+    color: white;
+    margin: 5px;
+    padding: 7px;
+    border-radius: 10px;
+}
+.metadataCard > p {
+    margin: 1px;
+}

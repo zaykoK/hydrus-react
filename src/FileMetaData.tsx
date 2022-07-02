@@ -1,5 +1,5 @@
 import { MetadataResponse } from "./hydrus-backend";
-import colors from "./stylingVariables";
+import './FileMetaData.css'
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 function formatBytes(bytes:number, decimals:number = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -49,20 +49,13 @@ export function FileMetaData(props:FileMetaDataProps) {
         links.push(<p key={hash + 'link' + urls[el]} style={{ margin: '1px' }} ><a style={{ color: 'lightBlue', textDecoration: 'none' }} href={urls[el]} >{ss}</a></p>)
     }
 
-    const metadataStyle = {
-        background: colors.COLOR2,
-        color: 'white',
-        margin: '5px',
-        padding: '7px',
-        borderRadius: '10px'
-    }
 
-    return <div style={metadataStyle}>
-        <p key={hash + 'date'} style={{ margin: '1px' }}>Date: {timeConverter(date)}</p>
-        <p key={hash + 'res'} style={{ margin: '1px' }}>Resolution: {imageSize[0]}x{imageSize[1]}</p>
-        <p key={hash + 'size'} style={{ margin: '1px' }}>Size: {formatBytes(size)}</p>
-        <p key={hash + 'contenttype'} style={{ margin: '1px' }}>Content-type : {mime}</p>
-        <p key={hash + 'inbox'} style={{ margin: '1px' }}>{(inbox) ? ('Is not archived') : ('Is archived')}</p>
-        {(links.length > 0) && <div key={hash + 'links'} style={{ margin: '1px' }}>Links:{links}</div>}
+    return <div className="metadataCard">
+        <p key={hash + 'date'}  >Date: {timeConverter(date)}</p>
+        <p key={hash + 'res'}  >Resolution: {imageSize[0]}x{imageSize[1]}</p>
+        <p key={hash + 'size'}  >Size: {formatBytes(size)}</p>
+        <p key={hash + 'contenttype'}  >Content-type : {mime}</p>
+        <p key={hash + 'inbox'}  >{(inbox) ? ('Is not archived') : ('Is archived')}</p>
+        {(links.length > 0) && <div key={hash + 'links'} >Links:{links}</div>}
     </div>
 }

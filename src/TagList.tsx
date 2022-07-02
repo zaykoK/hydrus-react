@@ -2,24 +2,18 @@ import * as TagTools from './TagTools'
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-//Props
-//Blacklist - tag namespaces to skip
-//Tags - tag list
-//clickFunction - function to run on clicking tag
+import './TagList.css'
+
 interface TagListProps {
     tags: Array<TagTools.Tuple>;
     mobile:boolean;
     clickFunction?: Function;
     visibleCount: boolean;
-    blacklist: Array<string>;
+    blacklist: Array<string>; // tag namespaces to skip
 }
 
-
-
 export function TagList(props:TagListProps) {
-
     const navigate = useNavigate();
-
     const [tags, setTags] = useState<Array<JSX.Element>>([]);
 
     function displayTagString(tag:{namespace:string,value:string}):string {
@@ -59,25 +53,9 @@ export function TagList(props:TagListProps) {
 
     function getTagListStyle(mobile:boolean) {
         if (mobile) {
-            return {
-                padding: '5px',
-                margin: '5px',
-                minHeight: 'auto',
-                maxHeight: '75vh',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                fontSize: '1.1em'
-            } as React.CSSProperties
+            return "tagList mobile"
         }
-        return {
-            padding: '5px',
-            margin: '5px',
-            minHeight: '50vh',
-            maxHeight: '92vh',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            fontSize: '12px'
-        } as React.CSSProperties
+        return "tagList"
     }
 
     function createTagList(args:{tags:Array<TagTools.Tuple>,blacklist:Array<string>}) {
@@ -101,6 +79,6 @@ export function TagList(props:TagListProps) {
     }, [props])
 
     return (
-        <div style={getTagListStyle(props.mobile)}>{tags}</div>
+        <div className={getTagListStyle(props.mobile)}>{tags}</div>
     )
 }

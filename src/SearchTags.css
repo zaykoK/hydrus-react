@@ -54,3 +54,9 @@
     margin: 0px;
     outline: none;
 }
+
+.paddingDiv {
+    width: 45px;
+    height: inherit;
+    flex-shrink: 0;
+}

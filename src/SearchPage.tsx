@@ -10,6 +10,8 @@ import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGrou
 import { tagArrayToNestedArray } from './TagTools';
 import { setPageTitle } from './misc';
 
+import './SearchPage.css'
+
 interface SearchPageProps {
   type: string;
 }
@@ -247,8 +249,6 @@ export function SearchPage(props: SearchPageProps) {
     }
   }
 
-  //[[]] 
-
   function addTag(tag: string) {
     if (tags) {
       //console.log('adding tag:' + tag)
@@ -295,23 +295,11 @@ export function SearchPage(props: SearchPageProps) {
     return parameters
   }
 
-  function getContentStyle(width: number) {
-    const contentStyle = {
-      display: "grid",
-      height: 'fit-content',
-      gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)',
-      margin: '5px 0px 0px 0px'
+  function getContentStyle(mobile:boolean):string {
+    if (mobile) {
+      return "contentStyle mobile"
     }
-
-    if (width <= 450) {
-      return {
-        display: 'grid',
-        width: 'fit-content',
-        gridTemplateColumns: 'auto',
-        gridTemplateRows: 'auto auto'
-      }
-    }
-    return contentStyle
+    return "contentStyle"
   }
 
   //Don't display those namespaces in tag list, eventually to move this into a setting
@@ -319,15 +307,9 @@ export function SearchPage(props: SearchPageProps) {
 
   function getGridStyleList(mobile: boolean) {
     if (mobile) {
-      return {
-        gridColumn: '1',
-        gridRow: '2'
-      }
+      return "gridStyleList mobile"
     }
-    return {
-      gridColumn: '1',
-      gridRow: '1'
-    }
+    return "gridStyleList"
   }
 
   function getMobileStyle(width: number) {
@@ -335,24 +317,18 @@ export function SearchPage(props: SearchPageProps) {
     return false
   }
 
-  function getGridStyleThumbs(mobile: boolean) {
+  function getGridStyleThumbs(mobile: boolean):string {
     if (mobile) {
-      return {
-        gridColumn: '1',
-        gridRow: '1'
-      }
+      return "gridStyleThumbs mobile"
     }
-    return {
-      gridColumn: '2',
-      gridRow: '1'
-    }
+    return "gridStyleThumbs"
   }
 
   return <>
-    <div style={{ height: '43px' }}></div>
+    <div className="topBarPadding" />
     {(tags) && <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
-    <div style={getContentStyle(width)}>
-      <div style={getGridStyleList(getMobileStyle(width))}>
+    <div className={getContentStyle(getMobileStyle(width))}>
+      <div className={getGridStyleList(getMobileStyle(width))}>
         {(fileTags != undefined) &&
           <TagList
             visibleCount={true}
@@ -362,7 +338,7 @@ export function SearchPage(props: SearchPageProps) {
             mobile={getMobileStyle(width)}
           />}
       </div>
-      <div style={getGridStyleThumbs(getMobileStyle(width))}>
+      <div className={getGridStyleThumbs(getMobileStyle(width))}>
         <ImageWall
           grouping={groupFiles}
           addTag={addTag}

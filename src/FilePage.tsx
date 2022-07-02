@@ -12,14 +12,15 @@ import IconRelated from './assets/related.svg'
 import IconLeft from './assets/arrow-left.svg'
 // @ts-ignore
 import IconRight from './assets/arrow-right.svg'
-import colors from './stylingVariables';
 import { getRelatedVisibile, getRelatedNamespaces } from './StorageUtils';
 import FullscreenButton from './FullscreenButton';
 import { useNavigate } from "react-router-dom";
 
+import './FilePage.css'
+
 export function FilePage() {
   interface FilePageParams {
-    hash:string | undefined;
+    hash: string | undefined;
   }
 
   const { fileHash } = useParams();
@@ -32,12 +33,12 @@ export function FilePage() {
 
   const navigate = useNavigate()
 
-  function getMobileStyle(width:number):boolean {
+  function getMobileStyle(width: number): boolean {
     if (width < 450) { return true }
     return false
   }
 
-  function returnStyle(mobile:boolean):React.CSSProperties {
+  function returnStyle(mobile: boolean): React.CSSProperties {
     const contentStyle = {
       display: "grid",
       gridTemplateColumns: 'minmax(auto,1fr) minmax(auto,5fr)'
@@ -59,140 +60,80 @@ export function FilePage() {
     loadTags();
   }, [fileHash])
 
-  function returnFileLink(hash:string):string {
+  function returnFileLink(hash: string): string {
     return "/file/" + hash
   }
 
-  function PreviousImage():void {
+  function PreviousImage(): void {
     //Grab image list
     //Use SessionStorage?
-    if (sessionStorage.getItem('group-hashes') === null) {return}
+    if (sessionStorage.getItem('group-hashes') === null) { return }
     // @ts-ignore
     let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
     //console.log(fileHash)
     let index = elementList.indexOf(fileHash)
     //console.log(index)
     //Move to next
-    if (index-1 < 0) { return }
-    navigate(returnFileLink(elementList[index-1]), { replace: true })
+    if (index - 1 < 0) { return }
+    navigate(returnFileLink(elementList[index - 1]), { replace: true })
   }
 
 
-  function NextImage():void {
+  function NextImage(): void {
     //Grab image list
     //Use SessionStorage?
-    if (sessionStorage.getItem('group-hashes') === null) {return}
-     // @ts-ignore
-    let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
-    //console.log(fileHash)
+    if (sessionStorage.getItem('group-hashes') === null) { return }
+    let elementList = JSON.parse(sessionStorage.getItem('group-hashes') || '')
     let index = elementList.indexOf(fileHash)
-    //console.log(index)
     //Move to next
-    if (index+1 >= elementList.length) { return }
-    navigate(returnFileLink(elementList[index+1]), { replace: true })
+    if (index + 1 >= elementList.length) { return }
+    navigate(returnFileLink(elementList[index + 1]), { replace: true })
   }
 
   async function loadTags() {
     let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
-    if (!response) {return}
-    let data:API.MetadataResponse = response.data.metadata[0]
+    if (!response) { return }
+    let data: API.MetadataResponse = response.data.metadata[0]
 
-    let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags');
-    if (!allKnownTags) {allKnownTags=''}
+    let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags') || '';
 
     let responseTags = data.service_keys_to_statuses_to_display_tags[allKnownTags][0]
     let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
-     // @ts-ignore
+    // @ts-ignore
     tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.log(response.data.metadata[0])
     setMetaData(response.data.metadata[0])
-     // @ts-ignore
+    // @ts-ignore
     setTags(tagTuples)
   }
 
-  function returnRelatedStyle(mobile:boolean):React.CSSProperties {
+  function returnRelatedStyle(mobile: boolean): string {
     if (mobile) {
-      return {
-        background: colors.COLOR2,
-        padding: '5px',
-        borderRadius: '10px',
-        position: 'fixed',
-        bottom: '0px',
-        minHeight: '0',
-        maxHeight: '27vh',
-        width: '100vw',
-        overflowY: 'auto',
-        overflowX: 'auto',
-        boxShadow: '0 0 5px 0 black',
-        fontSize: '1em',
-        zIndex: '30'
-      }
+      return "relatedStyle mobile"
     }
-    return {
-      background: colors.COLORRELATED,
-      padding: '5px',
-      borderRadius: '10px',
-      position: 'fixed',
-      right: '0px',
-      top: '0px',
-      height: '99vh',
-      maxWidth: '27vh',
-      overflowY: 'auto',
-      overflowX: 'hidden',
-      boxShadow: '0 0 5px 0 black',
-      fontSize: '1em',
-      zIndex: '30'
-    }
-
+    return 'relatedStyle'
   }
 
-  function returnRelatedSwitchStyle(enabled:boolean) {
-    if (enabled) { return TopBarButtonStyle }
-    return { ...TopBarButtonStyle, opacity: '0.3' }
+  function returnRelatedSwitchStyle(enabled: boolean) {
+    if (enabled) { return "TopBarButtonStyle" }
+    return "TopBarButtonStyle transparent"
   }
 
-  const TopBarButtonStyle = {
-    height: '1.5em',
-    width: '1.5em',
-    background: colors.COLOR2,
-    margin: '5px',
-    padding: '5px',
-    borderRadius: '10px',
-    cursor: 'pointer',
-    opacity: '0.7'
-  }
-
-  const barStyle = {
-    position: 'fixed',
-    top: '0px',
-    display: 'flex',
-    flexFlow: 'rows',
-    fontSize: 'larger',
-    background: colors.COLOR1,
-    width: '100vw',
-    height: '49px',
-    boxShadow: '0 0 5px 0 black',
-    zIndex: '1'
-  } as React.CSSProperties;
-
-  const barStylePadding = {
-    height: '51px',
-  }
 
   interface RelatedFilesListProps {
-    fileHash:string|undefined;
-    tags:Array<string>
+    fileHash: string | undefined;
+    tags: Array<string>
   }
 
-  function RelatedFilesList(props:RelatedFilesListProps) {
-    if (!fileHash) {return}
-    function returnTagsFromNamespace(tags:Array<string>, namespace:string) {
+  function RelatedFilesList(props: RelatedFilesListProps) {
+    if (!fileHash) { return }
+    function returnTagsFromNamespace(tags: Array<string>, namespace: string) {
       //This function returns an array of joined tag strings from tuples
       //{namespace:'character',value:'uzumaki naruto'} => 'character:uzumaki naruto'
 
       if (tags === undefined) { return }
-       // @ts-ignore
-      let list:Array<TagTools.Tuple> = tags.filter((element) => element["namespace"] === namespace)
+      // @ts-ignore
+      let list: Array<TagTools.Tuple> = tags.filter((element) => element["namespace"] === namespace)
 
       let joined = []
       for (let tag in list) {
@@ -220,17 +161,11 @@ export function FilePage() {
     return returned
   }
 
-  function getContentStyle(mobile:boolean) {
+  function getContentStyle(mobile: boolean) {
     if (mobile) {
-      return {
-        gridRow: '1',
-        gridColumn: '1'
-      }
+      return "fileContent mobile"
     }
-    return {
-      gridRow: '1',
-      gridColumn: '2'
-    }
+    return "fileContent"
   }
 
   function switchRelatedVisible() {
@@ -246,13 +181,13 @@ export function FilePage() {
 
 
   return <>
-    <div style={barStylePadding}></div>
-    <div style={barStyle} >
-      <div id='home-button-padding' style={TopBarButtonStyle} />
-      <img src={IconRelated} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-      <img src={IconLeft} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { PreviousImage() }} />
-      <img src={IconRight} style={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { NextImage() }} />
-      <div style={TopBarButtonStyle}><FullscreenButton /></div>
+    <div className="barStylePadding"></div>
+    <div className="barStyle" >
+      <div id='home-button-padding' className="TopBarButtonStyle" />
+      <img src={IconRelated} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+      <img src={IconLeft} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { PreviousImage() }} />
+      <img src={IconRight} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { NextImage() }} />
+      <div className="TopBarButtonStyle"><FullscreenButton /></div>
 
     </div>
     <div style={returnStyle(getMobileStyle(width))}>
@@ -262,9 +197,7 @@ export function FilePage() {
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
 
       </div>
-      <div
-        style={getContentStyle(getMobileStyle(width))}
-      >
+      <div className={getContentStyle(getMobileStyle(width))} >
         {(metadata != undefined) &&
           <FileContent
             hash={fileHash}
@@ -272,10 +205,10 @@ export function FilePage() {
             mobile={getMobileStyle(width)}
             previousImage={PreviousImage}
             nextImage={NextImage}
-             />}
+          />}
       </div>
 
-      {(relatedVisible) && <div style={returnRelatedStyle(getMobileStyle(width))}>
+      {(relatedVisible) && <div className={returnRelatedStyle(getMobileStyle(width))}>
 
         {RelatedFilesList({ fileHash: fileHash, tags: tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
       </div>}

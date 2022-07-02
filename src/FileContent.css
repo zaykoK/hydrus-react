@@ -1,0 +1,23 @@
+.contentWrapper {
+    position: relative;
+    height: auto;
+    overflow: hidden;
+  } 
+
+.styleFitHeight {
+    padding: 0px;
+    height: 94vh;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    cursor: zoom-in;
+  }
+.styleFitWidth {
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    cursor: zoom-out;
+  }

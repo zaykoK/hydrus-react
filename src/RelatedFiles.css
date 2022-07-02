@@ -1,0 +1,21 @@
+.relatedTextStyle {
+    position: relative;
+    font-size: 1em;
+    margin: 1px;
+}
+
+.relatedThumbnails.mobile {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+}
+
+.relatedThumbnails {
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 5px;
+    flex-direction: row;
+    overflow-x: auto;
+    width: max-content;
+}

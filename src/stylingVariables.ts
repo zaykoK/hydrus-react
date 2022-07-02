@@ -1,4 +1,3 @@
-
 type ColorConst = {
     [colorName:string]:string;
 }

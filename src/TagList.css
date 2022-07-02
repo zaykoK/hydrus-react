@@ -1,0 +1,19 @@
+.tagList.mobile {
+    padding: 5px;
+    margin: 5px;
+    min-height: auto;
+    max-height: 75vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 1.1em;
+}
+
+.tagList {
+    padding: 5px;
+    margin: 5px;
+    min-height: 50vh;
+    max-height: 92vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 12px;
+}

@@ -27,7 +27,6 @@ export function ImageWall(props: ImageWallProps) {
   function CreateNewThumbnailList(page: number) {
     let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
     let list: Array<JSX.Element> = [];
-    //for (let id = 0 + ((page - 1) * viewSize); id < Math.min((page) * viewSize, props.hashes.length); id++) {
     for (let hash of hashSlice) {
       list.push(
         <ImageThumbnail

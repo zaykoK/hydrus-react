@@ -1,0 +1,32 @@
+.buttonList {
+    position: relative;
+    bottom: 1em;
+    left: 0px;
+    right: 0px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    padding-top: 20px;
+    flex-wrap: wrap;
+    max-width: 100vh;
+}
+
+.pageButton {
+    border-radius: 5px;
+    border: none;
+    height: 30px;
+    font-size: larger;
+    background: #333333;
+    color: white;
+    cursor: pointer;
+}
+
+.pageButton:hover {
+    background: #555555;
+}
+
+.pageButton.current {
+    height: 25px;
+    background: #555555;
+}
