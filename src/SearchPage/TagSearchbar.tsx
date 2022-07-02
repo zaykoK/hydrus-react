@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import TagDisplay from './TagDisplay';
+import TagDisplay from '../TagDisplay';
 import GroupButton from './GroupButton';
 
-import './SearchTags.css'
+import './TagSearchbar.css'
 
 interface SearchTagsProps {
   tags:Array<Array<string>>;
@@ -61,7 +61,7 @@ export function SearchTags(props:SearchTagsProps) {
   }
 
   return <div className='topBar'>
-    <div style={{ width: '45px', height: 'inherit', flexShrink:'0' }} />
+    <div className="paddingDiv" />
     <GroupButton clickAction={props.groupAction} />
     {TagInput({ removeTag: props.removeTag, tags: tags })}
   </div>;

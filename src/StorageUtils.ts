@@ -1,5 +1,5 @@
 
-export function getGroupingToggle():boolean {
+export function getGroupingToggle(): boolean {
   if (localStorage.getItem('group-toggle') === null) {
     return false
   }
@@ -8,7 +8,7 @@ export function getGroupingToggle():boolean {
   return false
 }
 
-export function getRelatedVisibile():boolean {
+export function getRelatedVisibile(): boolean {
   if (localStorage.getItem('related-visible') === null) {
     return false
   }
@@ -17,35 +17,74 @@ export function getRelatedVisibile():boolean {
   return false
 }
 
-export function getComicNamespace():string {
-    return localStorage.getItem('comic-namespace') || 'doujin-title'
+export function getComicNamespace(): string {
+  return localStorage.getItem('comic-namespace') || 'doujin-title'
+}
+
+export function setComicNamespace(namespace: string) {
+  if (namespace === '') {
+    localStorage.removeItem('comic-namespace')
+    return
+  }
+  localStorage.setItem('comic-namespace', namespace)
 }
 
 export function getGroupNamespace(): string {
   return localStorage.getItem('group-namespace') || 'group-title'
 }
 
-export function getRelatedNamespaces():Array<string> {
-  if (localStorage.getItem('related-namespaces') === null ) {
+export function setGroupNamespace(namespace:string) {
+  if (namespace === '') {
+    localStorage.removeItem('group-namespace')
+    return
+}
+  localStorage.setItem('group-namespace', namespace)
+}
+
+export function getMaxResults():string {
+  return localStorage.getItem('hydrus-max-results') || "5000";
+}
+
+export function setMaxResults(count:string) {
+  localStorage.setItem('hydrus-max-results', count)
+}
+
+export function getRelatedNamespaces(): Array<string> {
+  if (localStorage.getItem('related-namespaces') === null) {
     return []
   }
   return JSON.parse(localStorage.getItem('related-namespaces') || '')
 }
 /** Stores presented array of strings into localStorage
  */
-export function setRelatedNamespaces(spaces:Array<string>):void {
-  localStorage.setItem('related-namespaces',JSON.stringify(spaces))
+export function setRelatedNamespaces(spaces: Array<string>): void {
+  localStorage.setItem('related-namespaces', JSON.stringify(spaces))
 }
 
-export function getBlacklistedNamespaces():Array<string> {
-  if (localStorage.getItem('blacklisted-namespaces') === null ) {
+export function getBlacklistedNamespaces(): Array<string> {
+  if (localStorage.getItem('blacklisted-namespaces') === null) {
     return []
   }
   return JSON.parse(localStorage.getItem('blacklisted-namespaces') || '')
 }
 
-export function setBlacklistedNamespaces(spaces:Array<string>):void {
-  localStorage.setItem('blacklisted-namespaces',JSON.stringify(spaces))
+export function setBlacklistedNamespaces(spaces: Array<string>): void {
+  localStorage.setItem('blacklisted-namespaces', JSON.stringify(spaces))
 }
 
+export function getServerAddress(): string {
+  return localStorage.getItem('hydrus-server-address') || '';
+}
+
+export function setServerAddress(address: string) {
+  localStorage.setItem('hydrus-server-address', address)
+}
+
+export function getAPIKey(): string {
+  return localStorage.getItem('hydrus-api-key') || '';
+}
+
+export function setAPIKey(key: string) {
+  localStorage.setItem('hydrus-api-key', key)
+}
 

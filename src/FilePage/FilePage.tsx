@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import * as TagTools from '../TagTools'
 import { TagList } from '../TagList'
 import * as API from '../hydrus-backend';
-import { RelatedFiles } from '../RelatedFiles';
+import { RelatedFiles } from './RelatedFiles';
 // @ts-ignore
 import IconRelated from '../assets/related.svg'
 // @ts-ignore

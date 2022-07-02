@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { ImageWall } from "./ImageWall";
-import { SearchTags } from "./SearchTags";
+import { SearchTags } from "./TagSearchbar";
 import { useParams, useNavigate } from 'react-router-dom';
-import * as API from './hydrus-backend';
-import * as TagTools from './TagTools';
-import { TagList } from './TagList';
+import * as API from '../hydrus-backend';
+import * as TagTools from '../TagTools';
+import { TagList } from '../TagList';
 
-import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace } from './StorageUtils';
-import { tagArrayToNestedArray } from './TagTools';
-import { setPageTitle } from './misc';
+import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace } from '../StorageUtils';
+import { tagArrayToNestedArray } from '../TagTools';
+import { setPageTitle } from '../misc';
 
 import './SearchPage.css'
 

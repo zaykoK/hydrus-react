@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageThumbnail } from './Thumbnail/ImageThumbnail';
+import { ImageThumbnail } from '../Thumbnail/ImageThumbnail';
 import PageButtons from './PageButtons';
 
 import './ImageWall.css'
@@ -74,7 +74,7 @@ export function ImageWall(props: ImageWallProps) {
         thumbs={thumbs} />
       <PageButtons
         pages={returnPageCount()}
-        offset={6}
+        offset={4}
         currentPage={props.page}
         changePage={props.changePage} />
     </div>

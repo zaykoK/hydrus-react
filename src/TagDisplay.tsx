@@ -1,4 +1,3 @@
-import React from 'react';
 import TagButtonList from './TagButtonList';
 import "./TagDisplay.css"
 

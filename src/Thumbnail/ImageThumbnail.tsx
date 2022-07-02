@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as API from '../hydrus-backend';
 import { useNavigate } from "react-router-dom";
 import * as TagTools from '../TagTools'
-import colors from '../stylingVariables';
 import WidgetCount from './WidgetCount';
 import WidgetFileType from './WidgetFileType';
 

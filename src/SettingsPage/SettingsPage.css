@@ -1,0 +1,63 @@
+.settingsPage {
+    margin-top: 5%;
+    text-align: right;
+    font-size: larger;
+    gap: 15px;
+    display: grid;
+    grid-auto-flow: row;
+    grid-row-gap: 15px;
+    justify-content: center;
+}
+
+.settingsBar {
+    background: #ffffff;
+    box-shadow: 0 0 0 0 grey;
+    height: 30px;
+    width: 33vw;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: larger;
+}
+
+
+.searchBarSt {
+    background: #ffffff;
+    box-shadow: 0 0 0px 0 black;
+    display: flex;
+    flex-flow: rows;
+    height: 45px;
+    margin: 4px;
+    min-width: 40%;
+    max-width: 95vw;
+    border-radius: 5px;
+    overflow: auto hidden;
+    flex-grow: 1;
+}
+
+.formStyle {
+    height: inherit;
+    flex-grow: 0;
+    border-radius: 5px;
+    min-width: 200px;
+    width: -webkit-fill-available;
+}
+
+.labelStyle {
+    display: block;
+    height: inherit;
+    width: inherit;
+}
+
+.inputStyle {
+    display: block;
+    height: inherit;
+    width: 99%;
+    border: none;
+    border-radius: 5px;
+    text-align: left;
+    font-size: 12px;
+    padding: 0px 0px 0px 3px;
+    margin: 0px;
+    outline: none;
+}

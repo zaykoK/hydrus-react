@@ -5,6 +5,10 @@
     padding: 15px;
     gap: 15px;
     border-radius: 15px;
+    
+}
+.WrapperList.mobile {
+    justify-content: center;
 }
 
 .imageWall {
@@ -12,4 +16,5 @@
     height: fit-content;
     grid-column: 2;
     margin: 0px 0px 30px 0px;
+
 }

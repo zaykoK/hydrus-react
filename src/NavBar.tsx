@@ -11,11 +11,6 @@ import IconHamburger from './assets/menu-burger.svg'
 
 import "./NavBar.css"
 
-//for now lifted from
-//https://www.techomoro.com/how-to-create-a-multi-page-website-with-react-in-5-minutes/
-//to change later on
-
-
 function Navigation() {
   const [expanded, setExpanded] = React.useState(false)
 
@@ -28,8 +23,7 @@ function Navigation() {
 
   return (
     <div className="navigation" >
-      <nav>
-        <div className={returnBarStyle(expanded)}>
+        <nav className={returnBarStyle(expanded)}>
           <div className="navLink">
             <img src={IconHamburger} className="navButton" onClick={() => { setExpanded(!expanded) }} />
             <div className="navButtonLabel">Menu</div>
@@ -46,8 +40,7 @@ function Navigation() {
         <img src={IconSettings} className="navButton" />
         <div className="navButtonLabel">Settings</div>
           </NavLink >
-        </div >
-      </nav >
+        </nav >
     </div >
   );
 }

@@ -1,5 +1,3 @@
-import React from "react";
-
 import './PageButtons.css'
 
 interface PageButtonsProps {
@@ -7,7 +5,6 @@ interface PageButtonsProps {
   currentPage: number;
   changePage: Function;
   offset: number;
-
 }
 
 function PageButtons(props: PageButtonsProps) {
@@ -41,7 +38,7 @@ function PageButtons(props: PageButtonsProps) {
   }
 
   if (props.currentPage - offset > 2) {
-    pageButtons.push(<span key="pages before dots">...</span>)
+    pageButtons.push(<span key="pages before dots">.</span>)
   }
   //Draw current+-6 pages
   for (let i = Math.max(2, props.currentPage - offset); i <= Math.min(props.pages, props.currentPage + offset); i++) {
@@ -52,7 +49,7 @@ function PageButtons(props: PageButtonsProps) {
       pageButtons.push(<ButtonPage className="pageButton" key={'page' + i} changePage={props.changePage} page={i} />)
     }
     if (i + 1 > Math.min(props.pages, props.currentPage + offset) && (i + 1 < props.pages)) {
-      pageButtons.push(<span key="pages dots">...</span>)
+      pageButtons.push(<span key="pages dots">.</span>)
     }
   }
 
@@ -62,8 +59,6 @@ function PageButtons(props: PageButtonsProps) {
   }
   //Draw next Page Button
   if (props.currentPage != props.pages) { pageButtons.push(<ButtonNextPage className="pageButton" key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
-
-
 
   return <div className="buttonList" >{pageButtons}</div>
 }

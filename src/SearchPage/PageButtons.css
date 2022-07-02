@@ -1,15 +1,20 @@
 .buttonList {
-    position: relative;
+    position: fixed;
+    background:var(--COLOR2);
+    padding:3px;
+    border-radius: 10px;
+    width:fit-content;
     bottom: 1em;
     left: 0px;
     right: 0px;
+    margin:auto;
     text-align: center;
     display: flex;
     justify-content: center;
     gap: 5px;
-    padding-top: 20px;
-    flex-wrap: wrap;
+    flex-wrap:wrap;
     max-width: 100vh;
+    box-shadow: 0px 0px 5px 0px black;
 }
 
 .pageButton {
@@ -27,6 +32,5 @@
 }
 
 .pageButton.current {
-    height: 25px;
     background: #555555;
 }
