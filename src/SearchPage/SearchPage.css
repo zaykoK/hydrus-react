@@ -11,7 +11,8 @@
 
 .contentStyle.mobile {
     display: grid;
-    width: fit-content;
+    width: 100vw;
+    overflow-x:hidden;
     grid-template-columns: auto;
     grid-template-rows: auto auto;
 }
