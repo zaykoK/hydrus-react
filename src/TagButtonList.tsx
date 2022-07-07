@@ -35,8 +35,8 @@ function TagButtonList(props: TagButtonListProps) {
 
     for (let tagArray of props.tags) {
       //Take first member of array and split it by ':'
-      let temp = tagArray[0].split(':');
-      if (temp.length > 0) {
+      let temp = tagArray[0].split(':')
+      if (temp.length > 1) {
         sortedTags.push({ namespace: temp[0], value: temp[1], count: 1 })
       }
       else {
