@@ -10,10 +10,10 @@ interface PageButtonsProps {
 function PageButtons(props: PageButtonsProps) {
 
   function ButtonNextPage(props: { changePage: Function, className: string, page: number }) {
-    return <button className={props.className} onClick={() => { props.changePage(props.page) }}>Next Page</button>;
+    return <button className={props.className} onClick={() => { props.changePage(props.page) }}>&#62;</button>;
   }
   function ButtonPreviousPage(props: { changePage: Function, className: string, page: number }) {
-    return <button className={props.className} onClick={() => { props.changePage(props.page) }}>Previous Page</button>;
+    return <button className={props.className} onClick={() => { props.changePage(props.page) }}>&#60;</button>;
   }
   function ButtonPage(props: { changePage: Function, className: string, page: number }) {
     return <button className={props.className} onClick={() => { props.changePage(props.page) }}>{props.page}</button>
