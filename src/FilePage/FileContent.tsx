@@ -12,7 +12,7 @@ interface FileContentProps {
   previousImage: Function;
 }
 
-export const FileContent = React.memo((props: FileContentProps) => {
+export function FileContent (props: FileContentProps) {
   const [content, setContent] = React.useState(API.api_get_file_address(props.hash));
 
   React.useEffect(() => {
@@ -43,11 +43,9 @@ export const FileContent = React.memo((props: FileContentProps) => {
       }
     })
 
-    const [state, changeState] = React.useState('fit-height')
     const [style, changeStyle] = React.useState(getStartingStyle())
 
     function getStartingStyle() {
-      //console.log(props.mobile)
       if (props.mobile) {
         return 'styleFitWidth'
       }
@@ -59,18 +57,13 @@ export const FileContent = React.memo((props: FileContentProps) => {
       if (props.mobile) {
         return
       }
-
-      switch (state) {
-        case 'fit-height':
-          changeState('fit-width')
+      switch (style) {
+        case 'styleFitHeight':
           changeStyle('styleFitWidth');
           break;
-        case 'fit-width':
-          changeState('fit-height')
+        case 'styleFitWidth':
           changeStyle('styleFitHeight');
           break;
-        default:
-          changeState('fit-height')
       }
     }
 
@@ -95,7 +88,6 @@ export const FileContent = React.memo((props: FileContentProps) => {
       src={API.api_get_file_thumbnail_address(props.hash)}
       className={style}
       alt={props.hash} />
-
   }
 
   return (
@@ -103,4 +95,4 @@ export const FileContent = React.memo((props: FileContentProps) => {
       <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} nextImage={props.nextImage} previousImage={props.previousImage} />
     </div>
   );
-});
+};

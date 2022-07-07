@@ -1,4 +1,4 @@
-.TopBarButtonStyle {
+.TopBarButton {
     height: 1.5em;
     width: 1.5em;
     background: var(--COLOR2);
@@ -9,7 +9,7 @@
     opacity: 0.7;
 }
 
-.TopBarButtonStyle.transparent {
+.TopBarButton.transparent {
     opacity: 0.3;
 }
 

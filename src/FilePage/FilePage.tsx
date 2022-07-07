@@ -22,15 +22,11 @@ export function FilePage() {
   interface FilePageParams {
     hash: string | undefined;
   }
-
   const { fileHash } = useParams();
-
   const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
   const [tags, setTags] = React.useState([]);
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
-
   const [width, setWidth] = React.useState(window.innerWidth)
-
   const navigate = useNavigate()
 
   function getMobileStyle(width: number): boolean {
@@ -45,7 +41,6 @@ export function FilePage() {
     return "filePage"
   }
 
-
   //If file hash changes reload tags
   React.useEffect(() => {
     loadTags();
@@ -59,11 +54,8 @@ export function FilePage() {
     //Grab image list
     //Use SessionStorage?
     if (sessionStorage.getItem('group-hashes') === null) { return }
-    // @ts-ignore
-    let elementList = JSON.parse(sessionStorage.getItem('group-hashes'))
-    //console.log(fileHash)
+    let elementList = JSON.parse(sessionStorage.getItem('group-hashes') || '')
     let index = elementList.indexOf(fileHash)
-    //console.log(index)
     //Move to next
     if (index - 1 < 0) { return }
     navigate(returnFileLink(elementList[index - 1]), { replace: true })
@@ -85,9 +77,7 @@ export function FilePage() {
     let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
     if (!response) { return }
     let data: API.MetadataResponse = response.data.metadata[0]
-
     let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags') || '';
-
     let responseTags = data.service_keys_to_statuses_to_display_tags[allKnownTags][0]
     let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
     // @ts-ignore
@@ -106,10 +96,9 @@ export function FilePage() {
   }
 
   function returnRelatedSwitchStyle(enabled: boolean) {
-    if (enabled) { return "TopBarButtonStyle" }
-    return "TopBarButtonStyle transparent"
+    if (enabled) { return "TopBarButton" }
+    return "TopBarButton transparent"
   }
-
 
   interface RelatedFilesListProps {
     fileHash: string | undefined;
@@ -121,18 +110,15 @@ export function FilePage() {
     function returnTagsFromNamespace(tags: Array<string>, namespace: string) {
       //This function returns an array of joined tag strings from tuples
       //{namespace:'character',value:'uzumaki naruto'} => 'character:uzumaki naruto'
-
       if (tags === undefined) { return }
       // @ts-ignore
       let list: Array<TagTools.Tuple> = tags.filter((element) => element["namespace"] === namespace)
-
       let joined = []
       for (let tag in list) {
         joined.push(list[tag].namespace + ':' + list[tag].value) //It has to have namespace
       }
       return joined
     }
-
 
     let returned = []
     //if (props.metadata == undefined) { return returned }
@@ -146,7 +132,6 @@ export function FilePage() {
         space={spaces[element]}
         mobile={getMobileStyle(width)}
       />
-
       returned.push(newElement)
     }
     return returned
@@ -169,24 +154,20 @@ export function FilePage() {
     setRelateVisible(true)
   }
 
-
-
   return <>
     <div className="barStylePadding"></div>
     <div className="barStyle" >
-      <div id='home-button-padding' className="TopBarButtonStyle" />
+      <div id='home-button-padding' className="TopBarButton" />
       <img src={IconRelated} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
       <img src={IconLeft} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { PreviousImage() }} />
       <img src={IconRight} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { NextImage() }} />
-      <div className="TopBarButtonStyle"><FullscreenButton /></div>
+      <div className="TopBarButton"><FullscreenButton /></div>
 
     </div>
     <div className={returnStyle(getMobileStyle(width))}>
       <div>
-
         {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={getMobileStyle(width)} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
-
       </div>
       <div className={getContentStyle(getMobileStyle(width))} >
         {(metadata != undefined) &&
