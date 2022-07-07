@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as TagTools from './TagTools'
 
+import './TagButton.css'
+
 
 interface TagButtonListProps {
   tags: Array<Array<string>>;
@@ -45,6 +47,7 @@ function TagButtonList(props: TagButtonListProps) {
     let tagSet = [];
     for (let t in props.tags) {
       tagSet.push(<button
+        className='tagButton'
         key={props.tags[t].toString()}
         style={TagTools.getTagButtonStyle(sortedTags[t].namespace)}
         onClick={() => { props.removeTag(props.tags[t]); }}>

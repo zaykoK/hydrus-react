@@ -12,11 +12,6 @@ export function getTagTextStyle(style: string):React.CSSProperties {
 export function getTagButtonStyle(style: string):React.CSSProperties {
   if (style === '') { style = 'unnamedspaced' }
   const cssStyleCommon = {
-    borderRadius: '5px',
-    border: 'none',
-    height: 'inherit',
-    fontSize: '12px',
-    flexGrow: '1',
     background: (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']),
     color: (TagColor.buttonTextColors[style] !== undefined ? TagColor.buttonTextColors[style] : 'white')
   }

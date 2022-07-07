@@ -1,0 +1,7 @@
+.tagButton {
+    border-radius: 5px;
+    border: none;
+    height: inherit;
+    font-size: 12px;
+    flex-grow: 1;
+}
