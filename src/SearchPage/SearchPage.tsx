@@ -36,8 +36,6 @@ export function SearchPage(props: SearchPageProps) {
 
   const { parm } = useParams<string>()
 
-  const [width, setWidth] = useState(window.innerWidth)
-
   const navigate = useNavigate()
 
   function refreshParams(): void {
@@ -313,18 +311,18 @@ export function SearchPage(props: SearchPageProps) {
   return <>
     <div className="topBarPadding" />
     {(tags) && <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
-    <div className={getContentStyle(isMobile(width))}>
-      <div className={getGridStyleList(isMobile(width))}>
+    <div className={getContentStyle(isMobile())}>
+      <div className={getGridStyleList(isMobile())}>
         {(fileTags != undefined) &&
           <TagList
             visibleCount={true}
             tags={fileTags}
             blacklist={tagBlacklist}
             clickFunction={addTag}
-            mobile={isMobile(width)}
+            mobile={isMobile()}
           />}
       </div>
-      <div className={getGridStyleThumbs(isMobile(width))}>
+      <div className={getGridStyleThumbs(isMobile())}>
         <ImageWall
           grouping={groupFiles}
           addTag={addTag}

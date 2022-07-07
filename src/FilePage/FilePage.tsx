@@ -28,7 +28,6 @@ export function FilePage() {
   const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
   const [tags, setTags] = React.useState([]);
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
-  const [width, setWidth] = React.useState(window.innerWidth)
   const navigate = useNavigate()
 
   function getFilePageStyle(mobile: boolean): string {
@@ -127,7 +126,7 @@ export function FilePage() {
         key={spaces[element] + returnTagsFromNamespace(props.tags, spaces[element])}
         tags={returnTagsFromNamespace(props.tags, spaces[element])}
         space={spaces[element]}
-        mobile={isMobile(width)}
+        mobile={isMobile()}
       />
       returned.push(newElement)
     }
@@ -161,23 +160,23 @@ export function FilePage() {
       <div className="TopBarButton"><FullscreenButton /></div>
 
     </div>
-    <div className={getFilePageStyle(isMobile(width))}>
+    <div className={getFilePageStyle(isMobile())}>
       <div>
-        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile(width)} />}
+        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
       </div>
-      <div className={getContentStyle(isMobile(width))} >
+      <div className={getContentStyle(isMobile())} >
         {(metadata != undefined) &&
           <FileContent
             hash={fileHash}
             type={metadata.mime}
-            mobile={isMobile(width)}
+            mobile={isMobile()}
             previousImage={PreviousImage}
             nextImage={NextImage}
           />}
       </div>
 
-      {(relatedVisible) && <div className={returnRelatedStyle(isMobile(width))}>
+      {(relatedVisible) && <div className={returnRelatedStyle(isMobile())}>
 
         {RelatedFilesList({ fileHash: fileHash, tags: tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
       </div>}

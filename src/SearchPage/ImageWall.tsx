@@ -4,6 +4,8 @@ import PageButtons from './PageButtons';
 
 import './ImageWall.css'
 
+import {isMobile} from '../styleUtils'
+
 // @ts-check
 
 interface ImageWallProps {
@@ -17,7 +19,12 @@ interface ImageWallProps {
 }
 
 export function ImageWall(props: ImageWallProps) {
-  let viewSize = 32
+  let width = (5/6) * (window.innerWidth);
+  //console.log(width)
+  let elements = Math.floor( width/180);
+  //console.log(elements)
+
+  let viewSize = 8*4;
   if (props.type === 'comic') {
     viewSize = 14
   }
@@ -67,6 +74,11 @@ export function ImageWall(props: ImageWallProps) {
     );
   }
 
+  function getOffsetValue(mobile:boolean):number {
+    if (mobile) {return 2}
+    return 6
+  }
+
   return (
     <div className='imageWall' >
       <WrapperList
@@ -74,7 +86,7 @@ export function ImageWall(props: ImageWallProps) {
         thumbs={thumbs} />
       <PageButtons
         pages={returnPageCount()}
-        offset={4}
+        offset={getOffsetValue(isMobile())}
         currentPage={props.page}
         changePage={props.changePage} />
     </div>
