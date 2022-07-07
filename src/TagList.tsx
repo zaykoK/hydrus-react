@@ -65,6 +65,7 @@ export function TagList(props:TagListProps) {
             if (!args.blacklist.includes(args.tags[element].namespace)) {
                 tagList.push(
                     <p
+                        className='tagEntry'
                         onClick={() => { clickHandler(displayTagString(args.tags[element])) }}
                         key={displayTagString(args.tags[element])}
                         style={TagTools.getTagTextStyle(args.tags[element].namespace)} >
