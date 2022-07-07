@@ -1,7 +1,7 @@
 /** Returns true if running in mobile view mode
  */
 export function isMobile() {
-    if (window.innerWidth < 450) { return true }
+    if (window.innerWidth < 610) { return true }
     return false
 }
 
