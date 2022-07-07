@@ -16,6 +16,8 @@ import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
 import FullscreenButton from '../FullscreenButton';
 import { useNavigate } from "react-router-dom";
 
+import { isMobile } from '../styleUtils';
+
 import './FilePage.css'
 
 export function FilePage() {
@@ -29,12 +31,7 @@ export function FilePage() {
   const [width, setWidth] = React.useState(window.innerWidth)
   const navigate = useNavigate()
 
-  function getMobileStyle(width: number): boolean {
-    if (width < 450) { return true }
-    return false
-  }
-
-  function returnStyle(mobile: boolean): string {
+  function getFilePageStyle(mobile: boolean): string {
     if (mobile) {
       return "filePage mobile"
     }
@@ -130,7 +127,7 @@ export function FilePage() {
         key={spaces[element] + returnTagsFromNamespace(props.tags, spaces[element])}
         tags={returnTagsFromNamespace(props.tags, spaces[element])}
         space={spaces[element]}
-        mobile={getMobileStyle(width)}
+        mobile={isMobile(width)}
       />
       returned.push(newElement)
     }
@@ -164,23 +161,23 @@ export function FilePage() {
       <div className="TopBarButton"><FullscreenButton /></div>
 
     </div>
-    <div className={returnStyle(getMobileStyle(width))}>
+    <div className={getFilePageStyle(isMobile(width))}>
       <div>
-        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={getMobileStyle(width)} />}
+        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile(width)} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
       </div>
-      <div className={getContentStyle(getMobileStyle(width))} >
+      <div className={getContentStyle(isMobile(width))} >
         {(metadata != undefined) &&
           <FileContent
             hash={fileHash}
             type={metadata.mime}
-            mobile={getMobileStyle(width)}
+            mobile={isMobile(width)}
             previousImage={PreviousImage}
             nextImage={NextImage}
           />}
       </div>
 
-      {(relatedVisible) && <div className={returnRelatedStyle(getMobileStyle(width))}>
+      {(relatedVisible) && <div className={returnRelatedStyle(isMobile(width))}>
 
         {RelatedFilesList({ fileHash: fileHash, tags: tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
       </div>}

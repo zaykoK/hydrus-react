@@ -11,6 +11,7 @@ import { tagArrayToNestedArray } from '../TagTools';
 import { setPageTitle } from '../misc';
 
 import './SearchPage.css'
+import { isMobile } from '../styleUtils';
 
 interface SearchPageProps {
   type: string;
@@ -37,7 +38,7 @@ export function SearchPage(props: SearchPageProps) {
 
   const [width, setWidth] = useState(window.innerWidth)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   function refreshParams(): void {
     let [paramsTags, paramsPage] = readParams(parm)
@@ -115,11 +116,11 @@ export function SearchPage(props: SearchPageProps) {
   async function Search() {
     //If there is nothing to search for or search is identical to previous don't do anything
     if (tags === undefined) {
-      //console.log('not doing anything undefined');
+      console.log('not doing anything undefined');
       return
     }
     if (JSON.stringify(tags) === JSON.stringify(lastSearch)) {
-      //console.log("not doing anything same search")
+      console.log("not doing anything same search")
       return
     }
 
@@ -212,16 +213,6 @@ export function SearchPage(props: SearchPageProps) {
     grabMetaData(ungroupedHashes)
   }, [groupFiles])
 
-  // useEffect(() => {
-  //   let [t, p] = readParams(parm)
-
-  //   sessionStorage.removeItem('group-hashes')
-
-  //   setPageTitle(t, parseInt(p))
-  //   setParams({ tags: t, page: parseInt(p) })
-  //   setTags(t)
-  // }, [])
-
   useEffect(() => {
     refreshParams()
   }, [parm])
@@ -312,11 +303,6 @@ export function SearchPage(props: SearchPageProps) {
     return "gridStyleList"
   }
 
-  function getMobileStyle(width: number) {
-    if (width < 450) { return true }
-    return false
-  }
-
   function getGridStyleThumbs(mobile: boolean):string {
     if (mobile) {
       return "gridStyleThumbs mobile"
@@ -327,18 +313,18 @@ export function SearchPage(props: SearchPageProps) {
   return <>
     <div className="topBarPadding" />
     {(tags) && <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
-    <div className={getContentStyle(getMobileStyle(width))}>
-      <div className={getGridStyleList(getMobileStyle(width))}>
+    <div className={getContentStyle(isMobile(width))}>
+      <div className={getGridStyleList(isMobile(width))}>
         {(fileTags != undefined) &&
           <TagList
             visibleCount={true}
             tags={fileTags}
             blacklist={tagBlacklist}
             clickFunction={addTag}
-            mobile={getMobileStyle(width)}
+            mobile={isMobile(width)}
           />}
       </div>
-      <div className={getGridStyleThumbs(getMobileStyle(width))}>
+      <div className={getGridStyleThumbs(isMobile(width))}>
         <ImageWall
           grouping={groupFiles}
           addTag={addTag}
