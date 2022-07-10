@@ -7,7 +7,7 @@
 .relatedThumbnails.mobile {
     display: flex;
     gap: 5px;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .relatedThumbnails {
@@ -15,7 +15,7 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     gap: 5px;
-    flex-direction: row;
+    flex-direction: column;
     overflow-x: auto;
     width: max-content;
 }
