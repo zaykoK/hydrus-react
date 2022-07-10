@@ -61,7 +61,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
     }, [relatedHashes, props])
 
     function returnStyle(mobile: boolean): string {
-        if (!mobile) {
+        if (mobile) {
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"
