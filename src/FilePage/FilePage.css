@@ -48,6 +48,11 @@
     box-shadow: 0 0 5px 0 black;
     font-size: 1em;
     z-index: 30;
+    transition: all 0.5s;
+}
+
+.relatedStyle.mobile.hidden {
+    bottom: -350px;
 }
 
 .relatedStyle {

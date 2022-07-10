@@ -84,14 +84,16 @@ export function FilePage() {
     setTags(tagTuples)
   }
 
-  function returnRelatedStyle(mobile: boolean): string {
+  function getRelatedStyle(mobile: boolean,visible: boolean): string {
     if (mobile) {
+      if (!visible) {return "relatedStyle mobile hidden"}
       return "relatedStyle mobile"
     }
+    if (!visible) {return "relatedStyle hidden"}
     return 'relatedStyle'
   }
 
-  function returnRelatedSwitchStyle(enabled: boolean) {
+  function getRelatedButtonStyle(enabled: boolean) {
     if (enabled) { return "TopBarButton" }
     return "TopBarButton transparent"
   }
@@ -154,9 +156,9 @@ export function FilePage() {
     <div className="barStylePadding"></div>
     <div className="barStyle" >
       <div id='home-button-padding' className="TopBarButton" />
-      <img src={IconRelated} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-      <img src={IconLeft} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { PreviousImage() }} />
-      <img src={IconRight} className={returnRelatedSwitchStyle(relatedVisible)} onClick={() => { NextImage() }} />
+      <img src={IconRelated} className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+      <img src={IconLeft} className="TopBarButton" onClick={() => { PreviousImage() }} />
+      <img src={IconRight} className="TopBarButton" onClick={() => { NextImage() }} />
       <div className="TopBarButton"><FullscreenButton /></div>
 
     </div>
@@ -176,10 +178,10 @@ export function FilePage() {
           />}
       </div>
 
-      {(relatedVisible) && <div className={returnRelatedStyle(isMobile())}>
+      <div className={getRelatedStyle(isMobile(),relatedVisible)}>
 
         {RelatedFilesList({ fileHash: fileHash, tags: tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
-      </div>}
+      </div>
     </div>
   </>;
 }
