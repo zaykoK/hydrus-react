@@ -11,6 +11,7 @@
     object-fit: cover;
     background: var(--COLOR2);
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent; /* Disables ugly blue highlight on long press */
 }
 
 .thumbnailWrapper {
