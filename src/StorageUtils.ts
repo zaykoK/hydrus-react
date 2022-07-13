@@ -21,6 +21,15 @@ export function getComicNamespace(): string {
   return localStorage.getItem('comic-namespace') || 'doujin-title'
 }
 
+export function getMobileStyle(): string {
+  return localStorage.getItem('mobile-mode') || 'false'
+}
+
+export function setMobileStyle(enabled: boolean): void {
+  if (enabled) { localStorage.setItem('mobile-mode', 'true'); return }
+  localStorage.setItem('mobile-mode', 'false')
+}
+
 export function setComicNamespace(namespace: string) {
   if (namespace === '') {
     localStorage.removeItem('comic-namespace')
@@ -33,19 +42,19 @@ export function getGroupNamespace(): string {
   return localStorage.getItem('group-namespace') || 'group-title'
 }
 
-export function setGroupNamespace(namespace:string) {
+export function setGroupNamespace(namespace: string) {
   if (namespace === '') {
     localStorage.removeItem('group-namespace')
     return
-}
+  }
   localStorage.setItem('group-namespace', namespace)
 }
 
-export function getMaxResults():string {
+export function getMaxResults(): string {
   return localStorage.getItem('hydrus-max-results') || "5000";
 }
 
-export function setMaxResults(count:string) {
+export function setMaxResults(count: string) {
   localStorage.setItem('hydrus-max-results', count)
 }
 
