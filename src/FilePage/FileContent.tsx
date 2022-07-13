@@ -2,6 +2,8 @@ import * as React from 'react';
 import * as API from '../hydrus-backend';
 import { useSwipeable } from 'react-swipeable';
 
+import { isLandscapeMode } from '../styleUtils';
+
 import './FileContent.css'
 
 interface FileContentProps {
@@ -47,6 +49,7 @@ export function FileContent (props: FileContentProps) {
 
     function getStartingStyle() {
       if (props.mobile) {
+        if (isLandscapeMode()) { return 'styleFitHeight mobile landscape' }
         return 'styleFitWidth'
       }
       return 'styleFitHeight'
@@ -90,8 +93,13 @@ export function FileContent (props: FileContentProps) {
       alt={props.hash} />
   }
 
+  function getContentWrapperStyle(){
+    if (isLandscapeMode()) {return "contentWrapper mobile landscape"}
+    return "contentWrapper"
+  }
+
   return (
-    <div key={props.hash} className="contentWrapper" >
+    <div key={props.hash} className={getContentWrapperStyle()} >
       <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} nextImage={props.nextImage} previousImage={props.previousImage} />
     </div>
   );

@@ -1,23 +1,39 @@
 .contentWrapper {
-    position: relative;
-    height: auto;
-    overflow: hidden;
-  } 
+  position: relative;
+  height: auto;
+  overflow: hidden;
+}
+.contentWrapper.mobile.landscape {
+  position: relative;
+  height: auto;
+  overflow: hidden;
+  text-align: center;
+}
 
 .styleFitHeight {
-    padding: 0px;
-    height: 94vh;
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-    image-rendering: -webkit-optimize-contrast;
-    cursor: zoom-in;
-  }
+  padding: 0px;
+  height: 96.3vh;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  cursor: zoom-in;
+}
+
+.styleFitHeight.mobile.landscape {
+  padding: 0px;
+  height: 100vh;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}
+
 .styleFitWidth {
-    padding: 0px;
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
-    image-rendering: -webkit-optimize-contrast;
-    cursor: zoom-out;
-  }
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  cursor: zoom-out;
+}
