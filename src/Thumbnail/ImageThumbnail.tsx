@@ -15,8 +15,8 @@ interface ImageThumbnailProps {
   loadMeta: boolean;
   addTag: Function;
   replace: boolean;
-  type:string;
-  count?:number;
+  type: string;
+  count?: number;
 }
 
 
@@ -26,9 +26,9 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
 
   const navigate = useNavigate();
 
-  
 
-  function returnThumbStyle(type: string):string {
+
+  function getThumbStyle(type: string): string {
     //console.log(type)
     switch (type) {
       case 'comic':
@@ -43,7 +43,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
   }
 
-  function returnWrapperStyle(type: string):string {
+  function getWrapperStyle(type: string): string {
     switch (type) {
       case 'comic':
         return 'thumbnailWrapper thumbnailWrapperComic'
@@ -52,7 +52,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
   }
 
-  function createTagPreview(args: { metadata: API.MetadataResponse|undefined, spaces: Array<string> }) {
+  function createTagPreview(args: { metadata: API.MetadataResponse | undefined, spaces: Array<string> }) {
     if (args.metadata != null) {
       return createTagList({ metadata: args.metadata, spaces: args.spaces });
     }
@@ -73,10 +73,11 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         let innerArray = []
         for (let element in t) {
           let tagStyle = TagTools.getTagTextStyle(t[element].namespace)
-          if ( parseInt(element) != t.length) {
+          if (parseInt(element) != t.length) {
             tagStyle = {
               ...tagStyle,
-              paddingRight: '5px'
+              paddingRight: '5px',
+              cursor:'pointer'
             }
           }
           innerArray.push(
@@ -102,7 +103,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
 
   async function GrabMetadata(hash: string) {
     let responseMeta = await API.api_get_file_metadata({ hash: hash, hide_service_names_tags: true })
-    if (!responseMeta) {return}
+    if (!responseMeta) { return }
     let meta = responseMeta.data.metadata[0]
 
     setMetadata(meta)
@@ -118,14 +119,16 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     return "/file/" + props.hash
   }
 
-  function ThumbContent(props: { thumbnail: string|undefined, type: string, hash: string, replace: boolean }) {
+  function ThumbContent(props: { thumbnail: string | undefined, type: string, hash: string, replace: boolean }) {
 
     function determineThumbNavigation(replace: boolean) {
+      sessionStorage.setItem('searchScroll', window.scrollY.toString())
       navigate(returnFileLink(), { replace: replace })
     }
 
     return <img
-    className={returnThumbStyle(props.type)}
+      className={getThumbStyle(props.type)}
+      onContextMenu={(e) => e.preventDefault()}
       onClick={() => { determineThumbNavigation(props.replace) }}
       loading='lazy'
       src={props.thumbnail}
@@ -136,7 +139,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   const thumbnailBottomTags: Array<string> = []
 
   return (
-    <div className={returnWrapperStyle(props.type)}
+    <div className={getWrapperStyle(props.type)}
       key={"thumb-" + props.hash}>
       <div className='topTags'>
         {createTagPreview({ metadata: metadata, spaces: thumbnailTopTags })}
