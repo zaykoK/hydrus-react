@@ -10,11 +10,11 @@
     font-size: large;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    gap: 5px;
+    justify-content: flex-start;
+    gap: 15px;
     height: var(--topBarHeight);
     background: var(--COLOR1);
-    padding: 3px 0px 3px 0px;
+    padding: 3px 0px 3px 6px;
     box-shadow: 0 0 5px 0 black;
     z-index: 5;
     width: 100vw;
@@ -66,7 +66,7 @@
     height: var(--searchBarHeight);
     margin: 0px;
     min-width: 40%;
-    max-width: 95vw;
+    max-width: 94vw;
     border-radius: 5px;
     overflow: auto hidden;
     flex-grow: 1;

@@ -30,8 +30,8 @@
 }
 
 .navBar.expanded {
-    height: 11em;
-    width: 6em;
+    height: 11.5em;
+    width: 6.5em;
     box-shadow: 0px 0px 7px 0px black;
 }
 
@@ -42,8 +42,8 @@
 }
 
 .navBar.mobile.expanded {
-    height: 11em;
-    width: 6em;
+    height: 11.5em;
+    width: 6.5em;
     box-shadow: 0px 0px 7px 0px black;
 }
 
