@@ -1,7 +1,7 @@
 import React from 'react'
 import * as TagColor from './tagColors'
 
-export function getTagTextStyle(style: string):React.CSSProperties {
+export function getTagTextStyle(style: string): React.CSSProperties {
   if (style === '') { style = 'unnamedspaced' }
   const cssStyle = {
     color: (TagColor.colors[style] != undefined ? TagColor.colors[style] : TagColor.colors['other']),
@@ -9,7 +9,7 @@ export function getTagTextStyle(style: string):React.CSSProperties {
   return cssStyle
 }
 
-export function getTagButtonStyle(style: string):React.CSSProperties {
+export function getTagButtonStyle(style: string): React.CSSProperties {
   if (style === '') { style = 'unnamedspaced' }
   const cssStyleCommon = {
     background: (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']),
@@ -90,9 +90,12 @@ export function transformIntoTuple(tags: Map<string, number>): Array<Tuple> {
 //Controls order in which tags appear on tag list
 
 type NamespaceOrder = {
-  [namespace:string]: number;
+  [namespace: string]: number;
 }
 
+/** This set controls order of which tags show in tag list
+ * 
+ */
 export const namespaceOrder = {
   'filename': 0.9,
   "title": 1,
@@ -115,7 +118,7 @@ export const namespaceOrder = {
   '': 200
 } as NamespaceOrder
 
-export function compareNamespaces(a:Tuple, b:Tuple) {
+export function compareNamespaces(a: Tuple, b: Tuple) {
   //This assigns a number for object a and b, based on lookup table above
   let orderA = (namespaceOrder[a.namespace] != undefined) ? namespaceOrder[a.namespace] : 100
   let orderB = (namespaceOrder[b.namespace] != undefined) ? namespaceOrder[b.namespace] : 100
