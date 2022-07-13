@@ -27,7 +27,7 @@ export function FullscreenButton() {
     }
 
     return <img
-      className='buttonFullscreen'
+      className='topBarButton'
       src={getIcon(enabled)}
       onClick={() => { toggleFullscreen() }} />
   }

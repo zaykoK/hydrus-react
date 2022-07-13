@@ -1,23 +1,61 @@
 :root {
-    --topBarHeight: 43px;
-    --searchBarHeight: 36px;
-    /* search bar should be ~7px smaller than top bar */
+    --topBarHeight: 2em;
+    --searchBarHeight: 2em;
 }
 
 .topBar {
     position: fixed;
     top: 0px;
     text-align: center;
-    font-size: larger;
+    font-size: large;
     display: flex;
+    flex-direction: row;
     justify-content: center;
     gap: 5px;
     height: var(--topBarHeight);
-    background: #333333;
-    padding: 3px 0 3px 0;
+    background: var(--COLOR1);
+    padding: 3px 0px 3px 0px;
     box-shadow: 0 0 5px 0 black;
     z-index: 5;
     width: 100vw;
+}
+
+.topBar.mobile.landscape {
+    flex-direction: row;
+    height: var(--topBarHeight);
+}
+
+.topBar.filePageTopBar {
+    justify-content: flex-start;
+    flex-flow: row;
+}
+
+.topBar.filePageTopBar.mobile {
+    flex-flow: row;
+    justify-content: flex-start;
+    height:2em;
+}
+
+.topBar.filePageTopBar.mobile.landscape {
+    flex-flow: column;
+    width: 2em;
+    height: 100vh;
+    padding: 6px 3px 3px 3px;
+}
+
+.topBar.mobile {
+    padding: 3px 6px 3px 6px;
+    font-size: x-large;
+    flex-direction: column;
+    height:4.2em;
+}
+
+.buttonsBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    gap:5px;
+
 }
 
 .searchBar {
@@ -26,12 +64,19 @@
     display: flex;
     flex-flow: row;
     height: var(--searchBarHeight);
-    margin: 4px;
+    margin: 0px;
     min-width: 40%;
     max-width: 95vw;
     border-radius: 5px;
     overflow: auto hidden;
     flex-grow: 1;
+}
+
+.searchBar.mobile {
+    height: var(--searchBarHeight);
+    margin-left: auto;
+    margin-right:auto;
+    width:100vw;
 }
 
 .searchForm {
@@ -49,14 +94,14 @@
     border: none;
     border-radius: 5px;
     text-align: left;
-    font-size: 12px;
+    font-size: small;
     padding: 0px 0px 0px 3px;
     margin: 0px;
     outline: none;
 }
 
 .paddingDiv {
-    width: 45px;
+    width: 46px;
     height: inherit;
     flex-shrink: 0;
 }

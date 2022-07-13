@@ -16,9 +16,10 @@ import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
 import FullscreenButton from '../FullscreenButton';
 import { useNavigate } from "react-router-dom";
 
-import { isMobile } from '../styleUtils';
+import { isMobile, isLandscapeMode } from '../styleUtils';
 
 import './FilePage.css'
+import '../SearchPage/GroupButton.css'
 
 export function FilePage() {
   interface FilePageParams {
@@ -28,10 +29,14 @@ export function FilePage() {
   const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
   const [tags, setTags] = React.useState([]);
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
+
+  const [screenOrientation, setScreenOrientation] = React.useState(window.screen.orientation.type)
+
   const navigate = useNavigate()
 
   function getFilePageStyle(mobile: boolean): string {
     if (mobile) {
+      if (isLandscapeMode()) { return "filePage mobile landscape" }
       return "filePage mobile"
     }
     return "filePage"
@@ -41,6 +46,10 @@ export function FilePage() {
   React.useEffect(() => {
     loadTags();
   }, [fileHash])
+
+  React.useEffect(() => {
+    console.log('changed orientation of screen')
+  }, [screenOrientation])
 
   function returnFileLink(hash: string): string {
     return "/file/" + hash
@@ -84,18 +93,19 @@ export function FilePage() {
     setTags(tagTuples)
   }
 
-  function getRelatedStyle(mobile: boolean,visible: boolean): string {
-    if (mobile) {
-      if (!visible) {return "relatedStyle mobile hidden"}
-      return "relatedStyle mobile"
+  function getRelatedStyle(visible: boolean): string {
+    let className = 'relatedStyle'
+    if (isMobile()) {
+      className += ' mobile'
+      if (isLandscapeMode()) { className += ' landscape' }
     }
-    if (!visible) {return "relatedStyle hidden"}
-    return 'relatedStyle'
+    if (!visible) { className += ' hidden' }
+    return className
   }
 
   function getRelatedButtonStyle(enabled: boolean) {
-    if (enabled) { return "TopBarButton" }
-    return "TopBarButton transparent"
+    if (enabled) { return "topBarButton" }
+    return "topBarButton transparent"
   }
 
   interface RelatedFilesListProps {
@@ -137,6 +147,7 @@ export function FilePage() {
 
   function getContentStyle(mobile: boolean) {
     if (mobile) {
+      if (isLandscapeMode()) { return "fileContent mobile landscape" }
       return "fileContent mobile"
     }
     return "fileContent"
@@ -152,18 +163,39 @@ export function FilePage() {
     setRelateVisible(true)
   }
 
+  function getPaddingStyle() {
+    if (isMobile()) {
+      if (isLandscapeMode()) { return "barStylePadding mobile landscape" }
+      return "barStylePadding mobile"
+    }
+    return "barStylePadding"
+  }
+
+  function getTopBarStyle() {
+    if (isMobile()) {
+      if (isLandscapeMode()) { return "topBar filePageTopBar mobile landscape" }
+      return "topBar filePageTopBar mobile"
+    }
+    return "topBar filePageTopBar"
+  }
+
+  function getSideBarStyle() {
+    if (isMobile()) { return "contentSideBar mobile" }
+    return "contentSideBar"
+  }
+
   return <>
-    <div className="barStylePadding"></div>
-    <div className="barStyle" >
-      <div id='home-button-padding' className="TopBarButton" />
+    <div className={getPaddingStyle()}></div>
+    <div className={getTopBarStyle()}>
+      <div id='home-button-padding' className="topBarButton" />
       <img src={IconRelated} className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-      <img src={IconLeft} className="TopBarButton" onClick={() => { PreviousImage() }} />
-      <img src={IconRight} className="TopBarButton" onClick={() => { NextImage() }} />
-      <div className="TopBarButton"><FullscreenButton /></div>
+      <img src={IconLeft} className="topBarButton" onClick={() => { PreviousImage() }} />
+      <img src={IconRight} className="topBarButton" onClick={() => { NextImage() }} />
+      <FullscreenButton />
 
     </div>
     <div className={getFilePageStyle(isMobile())}>
-      <div>
+      <div className={getSideBarStyle()}>
         {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}
       </div>
@@ -178,7 +210,7 @@ export function FilePage() {
           />}
       </div>
 
-      <div className={getRelatedStyle(isMobile(),relatedVisible)}>
+      <div className={getRelatedStyle(relatedVisible)}>
 
         {RelatedFilesList({ fileHash: fileHash, tags: tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
       </div>

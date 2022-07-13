@@ -11,8 +11,8 @@ interface GroupButtonsProps {
 export function GroupButton(props: GroupButtonsProps) {
 
   function returnGroupButtonStyle(enabled: boolean) {
-    if (enabled) { return 'groupButton' }
-    return 'groupButton groupActive'
+    if (enabled) { return 'topBarButton' }
+    return 'topBarButton groupActive'
   }
 
   return <img

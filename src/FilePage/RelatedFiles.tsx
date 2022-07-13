@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { tagArrayToNestedArray } from '../TagTools';
 
 import "./RelatedFiles.css"
+import { isLandscapeMode } from '../styleUtils';
 
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
@@ -35,9 +36,9 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     function returnCurrentImage(hash: string) {
         if (props.currentHash === hash) {
-            return true
-        } else {
             return false
+        } else {
+            return true
         }
     }
 
@@ -62,6 +63,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     function returnStyle(mobile: boolean): string {
         if (mobile) {
+            if (isLandscapeMode()) {return "relatedThumbnails mobile landscape"}
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"

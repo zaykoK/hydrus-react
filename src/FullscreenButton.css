@@ -1,6 +1,6 @@
 .buttonFullscreen {
-    height: 1.5em;
-    width: 1.5em;
+    height: 1em;
+    width: auto;
     background: var(--COLOR2);
     margin: 0px;
     padding: 0px;

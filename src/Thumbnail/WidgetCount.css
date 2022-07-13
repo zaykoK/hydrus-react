@@ -9,6 +9,6 @@
     opacity: 1;
     width: min-content;
     pointer-events: none;
-    font-size: larger;
+    font-size: large;
     transition:all 0.25s;
 }

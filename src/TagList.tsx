@@ -60,15 +60,21 @@ export function TagList(props:TagListProps) {
 
     function createTagList(args:{tags:Array<TagTools.Tuple>,blacklist:Array<string>}) {
         let tagList = []
+
+        let currentNamespace = ''
+
         for (let element in args.tags) {
+            //At this point all the list should be sorted by namespaces meaning I can have a current namespace value
+
+
             //Don't display tags in certain namespaces like titles,page etc on overall list
             if (!args.blacklist.includes(args.tags[element].namespace)) {
                 tagList.push(
                     <p
-                        className='tagEntry'
+                        className='tagEntry blob'
                         onClick={() => { clickHandler(displayTagString(args.tags[element])) }}
                         key={displayTagString(args.tags[element])}
-                        style={TagTools.getTagTextStyle(args.tags[element].namespace)} >
+                        style={TagTools.getTagButtonStyle(args.tags[element].namespace)} >
                         {displayTagString(args.tags[element]) + displayTagCount(args.tags[element].count)}
                     </p>);
             }

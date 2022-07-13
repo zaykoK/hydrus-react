@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ImageWall } from "./ImageWall";
-import { SearchTags } from "./TagSearchbar";
+import { TagSearchBar } from "./TagSearchbar";
 import { useParams, useNavigate } from 'react-router-dom';
 import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools';
@@ -11,7 +11,7 @@ import { tagArrayToNestedArray } from '../TagTools';
 import { setPageTitle } from '../misc';
 
 import './SearchPage.css'
-import { isMobile } from '../styleUtils';
+import { isLandscapeMode, isMobile } from '../styleUtils';
 
 interface SearchPageProps {
   type: string;
@@ -35,6 +35,8 @@ export function SearchPage(props: SearchPageProps) {
   const [groupCount, setGroupCount] = useState(new Map())
 
   const { parm } = useParams<string>()
+
+  const [loaded,setLoaded] = useState(false)
 
   const navigate = useNavigate()
 
@@ -149,6 +151,7 @@ export function SearchPage(props: SearchPageProps) {
 
       setHashes(h)
     }
+    setLoaded(true)
   }
 
   function createListOfUniqueTags(responses: Array<API.MetadataResponse>): void {
@@ -217,11 +220,26 @@ export function SearchPage(props: SearchPageProps) {
 
   useEffect(() => {
     Search()
+
   }, [tags])
+
+  useEffect(() => {
+    window.scrollTo(0,restoreScroll())
+  },[loaded])
+
+  function restoreScroll() {
+    console.log('trying to restore scroll session')
+    console.log('scroll value is ' + sessionStorage.getItem('searchScroll') )
+    return parseInt(sessionStorage.getItem('searchScroll') || '0')
+  }
 
   function changePage(newPage: number) {
     let par = generateSearchURL(tags, newPage)
+    
     navigateTo(par)
+
+    sessionStorage.removeItem('searchScroll')
+    window.scrollTo(0,0)
   }
 
   function navigateTo(parameters: URLSearchParams) {
@@ -284,8 +302,8 @@ export function SearchPage(props: SearchPageProps) {
     return parameters
   }
 
-  function getContentStyle(mobile:boolean):string {
-    if (mobile) {
+  function getContentStyle():string {
+    if (isMobile()) {
       return "contentStyle mobile"
     }
     return "contentStyle"
@@ -294,25 +312,35 @@ export function SearchPage(props: SearchPageProps) {
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = getBlacklistedNamespaces()
 
-  function getGridStyleList(mobile: boolean) {
-    if (mobile) {
+  function getGridStyleList() {
+    if (isMobile()) {
       return "gridStyleList mobile"
     }
     return "gridStyleList"
   }
 
-  function getGridStyleThumbs(mobile: boolean):string {
-    if (mobile) {
+  function getGridStyleThumbs():string {
+    if (isMobile()) {
       return "gridStyleThumbs mobile"
     }
     return "gridStyleThumbs"
   }
 
+  function getTopBarPaddingStyle():string {
+    if (isMobile()) {
+      if(isLandscapeMode()) {return "topBarPadding mobile landscape"}
+      return "topBarPadding mobile"
+    }
+    return "topBarPadding"
+  }
+
+
+
   return <>
-    <div className="topBarPadding" />
-    {(tags) && <SearchTags groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
-    <div className={getContentStyle(isMobile())}>
-      <div className={getGridStyleList(isMobile())}>
+    <div className={getTopBarPaddingStyle()} />
+    {(tags) && <TagSearchBar groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+    <div className={getContentStyle()}>
+      <div className={getGridStyleList()}>
         {(fileTags != undefined) &&
           <TagList
             visibleCount={true}
@@ -322,7 +350,7 @@ export function SearchPage(props: SearchPageProps) {
             mobile={isMobile()}
           />}
       </div>
-      <div className={getGridStyleThumbs(isMobile())}>
+      <div className={getGridStyleThumbs()}>
         <ImageWall
           grouping={groupFiles}
           addTag={addTag}

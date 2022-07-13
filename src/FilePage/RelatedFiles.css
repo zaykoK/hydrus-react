@@ -4,12 +4,6 @@
     margin: 1px;
 }
 
-.relatedThumbnails.mobile {
-    display: flex;
-    gap: 5px;
-    flex-direction: row;
-}
-
 .relatedThumbnails {
     display: flex;
     flex-wrap: nowrap;
@@ -18,4 +12,12 @@
     flex-direction: column;
     overflow-x: auto;
     width: max-content;
+}
+
+.relatedThumbnails.mobile {
+    flex-direction: row;
+}
+
+.relatedThumbnails.mobile.landscape {
+    flex-direction: column;
 }

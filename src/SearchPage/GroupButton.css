@@ -1,8 +1,7 @@
-.groupButton {
-    height: 1.5em;
-    width: 1.5em;
+.topBarButton {
+    height: 1.4em;
+    width: 1.4em;
     background: var(--COLOR2);
-    margin: 2px;
     padding: 5px;
     border-radius: 10px;
     cursor: pointer;

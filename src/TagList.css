@@ -1,28 +1,23 @@
-.tagList.mobile {
-    padding: 5px;
-    margin: 5px;
-    min-height: auto;
-    max-height: 75vh;
-    width:96%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    font-size: 1.1em;
-    background-color: var(--COLOR2);
-    border-radius: 10px;
-    box-shadow: 0px 0px 2px 0px black;
-}
-
 .tagList {
     padding: 5px;
     margin: 5px;
-    min-height: 50vh;
     max-height: 92vh;
     overflow-y: auto;
     overflow-x: hidden;
-    font-size: 12px;
+    font-size: small;
     background-color: var(--COLOR2);
     border-radius: 10px;
     box-shadow: 0px 0px 2px 0px black;
+    display:flex;
+    flex-wrap:wrap;
+}
+
+.tagList.mobile {
+    min-height: auto;
+    max-height: 75vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 1.1em;
 }
 
 .tagEntry {
@@ -32,4 +27,17 @@
     width: fit-content;
     font-size: 1em;
     font-family: verdana, sans-serif, helvetica;
+}
+
+.tagEntry.blob {
+    border-radius: 5px;
+    place-self: center;
+    padding: 8px 3px 8px 3px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    text-align: center;
+}
+
+.tagEntry.blob:hover {
+    opacity: 0.8;
 }
