@@ -103,6 +103,8 @@ export const namespaceOrder = {
   "doujin-title": 3,
   'pixiv-title': 3.1,
   'kemono-title': 3.2,
+  'volume': 3.4,
+  'chapter': 3.4,
   'page': 3.5, //Thank god for fractions xd
   'creator': 4,
   'series': 5,
