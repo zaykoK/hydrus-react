@@ -1,6 +1,6 @@
 import * as API from '../hydrus-backend';
 import { ImageThumbnail } from '../Thumbnail/ImageThumbnail';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { tagArrayToNestedArray } from '../TagTools';
 
 import "./RelatedFiles.css"
@@ -17,6 +17,7 @@ interface RelatedFilesProps {
 export function RelatedFiles(props: RelatedFilesProps) {
     const [relatedHashes, setRelatedHashes] = useState<Array<string>>([])
     const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
+    const [scrollOffset, setScrollOffset] = useState<number>(0);
 
     async function Search() {
         if (props.tags === undefined) { return }
@@ -43,12 +44,18 @@ export function RelatedFiles(props: RelatedFilesProps) {
     }
 
     useEffect(() => {
+        let currentIndex = 0
+        const thumbHeight = 185
+
+
         if (relatedHashes.length > 1) {
             let temp = []
             for (let hash in relatedHashes) {
+                let current = returnCurrentImage(relatedHashes[hash])
+                if (current === false) { currentIndex = parseInt(hash) }
                 temp.push(
                     <ImageThumbnail
-                        currentImage={returnCurrentImage(relatedHashes[hash])}
+                        currentImage={current}
                         replace={true}
                         type='image'
                         key={relatedHashes[hash]}
@@ -59,20 +66,27 @@ export function RelatedFiles(props: RelatedFilesProps) {
             }
             setThumbs(temp)
         }
-    }, [relatedHashes, props])
+        setScrollOffset(currentIndex * thumbHeight)
+    }, [relatedHashes, props.currentHash])
 
-    function returnStyle(mobile: boolean): string {
+    useEffect(() => {
+        //This scrolls the div with every image change
+        const el = document.querySelector('.relatedStyle')
+        el?.scrollTo({ left: 0, top: scrollOffset - 290, behavior: 'smooth' })
+    }, [thumbs])
+
+    function getRelatedThumbsStyle(mobile: boolean): string {
         if (mobile) {
-            if (isLandscapeMode()) {return "relatedThumbnails mobile landscape"}
+            if (isLandscapeMode()) { return "relatedThumbnails mobile landscape" }
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"
     }
 
     return <>{
-        (thumbs.length != 0) &&
+        (thumbs.length > 0) &&
         (<>
             <p className="relatedTextStyle">Related Files for {props.space}</p>
-            <div className={returnStyle(props.mobile)}>{thumbs}</div></>)}
-        </>
+            <div className={getRelatedThumbsStyle(props.mobile)}>{thumbs}</div></>)}
+    </>
 }
