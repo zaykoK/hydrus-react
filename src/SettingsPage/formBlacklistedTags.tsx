@@ -17,24 +17,48 @@ function BlacklistedTagsInput() {
 
     function removeBlacklistedSpaceFromSettings(tag: string):void {
       let spaces = getBlacklistedNamespaces()
-
+      let returnSpaces: Array<Array<string>> = []
       let i = spaces.indexOf(tag);
       let afterRemove = spaces.slice();
       afterRemove.splice(i, 1);
-
-
-      
+      for (let space of afterRemove) {
+        returnSpaces.push([space+':*'])
+      }
       setBlacklistedNamespaces(afterRemove)
       setSpaces([afterRemove])
     }
 
+    function spacesToTags(spaces: Array<Array<string>>):Array<Array<string>>{
+      let tags: Array<Array<string>> = []
+      console.log(spaces)
+      for (let space of spaces) {
+        if (space[0].includes(':*')) {console.log('returning without change');return spaces}
+        tags.push([space[0]+':*'])
+      }
+
+      return tags
+    }
+
     function addBlacklistedSpaceToSettings(tag: string):Array<Array<string>> {
       let spaces = getBlacklistedNamespaces()
-      if (spaces.includes(tag)) { return [spaces] }
+      let returnSpaces: Array<Array<string>> = []
+      if (spaces.includes(tag)) {
+        
+        for (let space of spaces) {
+          returnSpaces.push([space])
+        }
+        return returnSpaces
+      }
       spaces.push(tag)
       setBlacklistedNamespaces(spaces)
-      return [spaces]
+
+      for (let space of spaces) {
+        returnSpaces.push([space])
+      }
+
+      return returnSpaces
     }
+
 
     useEffect(() => {
       let spaces = []
@@ -45,7 +69,7 @@ function BlacklistedTagsInput() {
     }, [])
 
     return <div className="searchBarSt">
-      <TagDisplay key={spaces.toString()} removeTag={removeBlacklistedSpaceFromSettings} tags={spaces} />
+      <TagDisplay key={spaces.toString()} removeTag={removeBlacklistedSpaceFromSettings} tags={spacesToTags(spaces)} />
       <form onSubmit={handleSubmit} className="formStyle">
         <label className="labelStyle">
           <input className="inputStyle"

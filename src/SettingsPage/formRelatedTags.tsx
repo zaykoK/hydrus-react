@@ -35,7 +35,6 @@ function RelatedGroupsInput() {
         if (space[0].includes(':*')) {console.log('returning without change');return spaces}
         tags.push([space[0]+':*'])
       }
-      console.log(tags)
 
       return tags
     }
