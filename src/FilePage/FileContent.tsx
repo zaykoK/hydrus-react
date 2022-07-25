@@ -14,7 +14,7 @@ interface FileContentProps {
   previousImage: Function;
 }
 
-export function FileContent (props: FileContentProps) {
+export function FileContent(props: FileContentProps) {
   const [content, setContent] = React.useState(API.api_get_file_address(props.hash));
 
   React.useEffect(() => {
@@ -26,7 +26,7 @@ export function FileContent (props: FileContentProps) {
     previousImage: Function;
     mobile: boolean;
     type: string;
-    content: string|undefined;
+    content: string | undefined;
     hash: string | undefined;
   }
 
@@ -52,6 +52,7 @@ export function FileContent (props: FileContentProps) {
         if (isLandscapeMode()) { return 'styleFitHeight mobile landscape' }
         return 'styleFitHeight mobile'
       }
+      if (sessionStorage.getItem('fullscreen-view') === 'true') { return 'styleFitWidth' }
       return 'styleFitHeight'
     }
 
@@ -63,12 +64,40 @@ export function FileContent (props: FileContentProps) {
       switch (style) {
         case 'styleFitHeight':
           changeStyle('styleFitWidth');
+          sessionStorage.setItem('fullscreen-view', 'true')
           break;
         case 'styleFitWidth':
           changeStyle('styleFitHeight');
+          sessionStorage.setItem('fullscreen-view', 'false')
           break;
       }
     }
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") { props.nextImage() }
+      if (e.key === "ArrowLeft") { props.previousImage() }
+    }
+
+    const handleMouseScroll = (e: WheelEvent) => {
+      //console.log(e.deltaY)
+      if (sessionStorage.getItem('fullscreen-view') === 'true') {
+        const el = document.querySelector('.styleFitWidth')
+        console.log(el)
+
+        if (e.deltaY > 0) { console.log('scrolling down') }
+        if (e.deltaY < 0) { console.log('scrolling up') }
+      }
+    }
+
+    React.useEffect(() => {
+      document.addEventListener('keydown', handleKeyPress)
+      document.addEventListener('wheel', handleMouseScroll)
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyPress)
+        document.removeEventListener('wheel', handleMouseScroll)
+      }
+    }, [])
 
     if (props.type.includes("image")) {
       return <img
@@ -93,8 +122,8 @@ export function FileContent (props: FileContentProps) {
       alt={props.hash} />
   }
 
-  function getContentWrapperStyle(){
-    if (isLandscapeMode()) {return "contentWrapper mobile landscape"}
+  function getContentWrapperStyle() {
+    if (isLandscapeMode()) { return "contentWrapper mobile landscape" }
     return "contentWrapper"
   }
 

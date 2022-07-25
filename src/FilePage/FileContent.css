@@ -13,7 +13,7 @@
 
 .styleFitHeight {
   padding: 0px;
-  height: 96.3vh;
+  height: 94vh;
   width: auto;
   max-width: 100%;
   object-fit: contain;
@@ -40,10 +40,17 @@
 }
 
 .styleFitWidth {
+  position:fixed;
+  top:0px;
+  bottom:0px;
+  right:0px;
+  left:0px;
   padding: 0px;
   height: 100%;
   width: 100%;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
   cursor: zoom-out;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.897);
 }
