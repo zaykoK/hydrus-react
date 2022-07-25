@@ -17,7 +17,7 @@
     max-height: 75vh;
     overflow-y: auto;
     overflow-x: hidden;
-    font-size: 1.1em;
+    font-size: 0.8em;
 }
 
 .tagEntry {
@@ -32,9 +32,9 @@
 .tagEntry.blob {
     border-radius: 5px;
     place-self: center;
-    padding: 8px 3px 8px 3px;
+    padding: 8px 1px 8px 1px;
     flex-grow: 1;
-    flex-shrink: 1;
+    flex-shrink: 2;
     text-align: center;
 }
 
