@@ -37,12 +37,12 @@
     grid-row: 1;
 }
 
-
 .gridStyleList {
     grid-column: 1;
     grid-row: 1;
     position: fixed;
     width:17%;
+    height:92vh;
 }
 
 .gridStyleList.mobile {

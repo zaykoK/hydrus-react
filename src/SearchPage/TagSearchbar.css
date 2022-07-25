@@ -28,6 +28,7 @@
 .topBar.filePageTopBar {
     justify-content: flex-start;
     flex-flow: row;
+    gap: 5px;
 }
 
 .topBar.filePageTopBar.mobile {
@@ -47,7 +48,8 @@
     padding: 3px 6px 3px 6px;
     font-size: x-large;
     flex-direction: column;
-    height:4.2em;
+    height:4.3em;
+    gap: 10px;
 }
 
 .buttonsBar {

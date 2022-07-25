@@ -24,7 +24,7 @@ export function ImageWall(props: ImageWallProps) {
   let elements = Math.floor( width/180);
   //console.log(elements)
 
-  let viewSize = 8*4;
+  let viewSize = 50;
   if (props.type === 'comic') {
     viewSize = 14
   }
