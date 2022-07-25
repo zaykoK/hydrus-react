@@ -11,6 +11,8 @@ import IconRelated from '../assets/related.svg'
 // @ts-ignore
 import IconLeft from '../assets/arrow-left.svg'
 // @ts-ignore
+import Info from '../assets/info.svg'
+// @ts-ignore
 import IconRight from '../assets/arrow-right.svg'
 import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
 import FullscreenButton from '../FullscreenButton';
@@ -29,6 +31,7 @@ export function FilePage() {
   const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
   const [tags, setTags] = React.useState([]);
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
+  const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
   const [screenOrientation, setScreenOrientation] = React.useState(window.screen.orientation.type)
 
@@ -179,9 +182,20 @@ export function FilePage() {
     return "topBar filePageTopBar"
   }
 
+  function isSidebarExpanded() {
+    if (sidebarVisible) {return true}
+    return false;
+  }
+
   function getSideBarStyle() {
-    if (isMobile()) { return "contentSideBar mobile" }
+    if (isMobile()) {
+        if (isSidebarExpanded()) { return "contentSideBar mobile active"}
+       return "contentSideBar mobile" }
     return "contentSideBar"
+  }
+
+  function switchSidebar() {
+    setSidebarVisible(!sidebarVisible);
   }
 
   return <>
@@ -192,6 +206,7 @@ export function FilePage() {
       <img src={IconLeft} className="topBarButton" onClick={() => { PreviousImage() }} />
       <img src={IconRight} className="topBarButton" onClick={() => { NextImage() }} />
       <FullscreenButton />
+      <img src={Info} className="topBarButton" onClick={() => { switchSidebar() }} />
 
     </div>
     <div className={getFilePageStyle(isMobile())}>

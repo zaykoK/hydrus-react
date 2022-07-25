@@ -50,7 +50,7 @@ export function FileContent (props: FileContentProps) {
     function getStartingStyle() {
       if (props.mobile) {
         if (isLandscapeMode()) { return 'styleFitHeight mobile landscape' }
-        return 'styleFitWidth'
+        return 'styleFitHeight mobile'
       }
       return 'styleFitHeight'
     }
