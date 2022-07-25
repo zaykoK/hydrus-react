@@ -51,7 +51,7 @@ export function FilePage() {
   }, [fileHash])
 
   React.useEffect(() => {
-    console.log('changed orientation of screen')
+    //console.log('changed orientation of screen')
   }, [screenOrientation])
 
   function returnFileLink(hash: string): string {
@@ -134,16 +134,21 @@ export function FilePage() {
     let returned = []
     //if (props.metadata == undefined) { return returned }
     let spaces = getRelatedNamespaces()
-    for (let element in spaces) {
-      let newElement = <RelatedFiles
-        id={'relatedElements' + element}
-        currentHash={props.fileHash}
-        key={spaces[element] + returnTagsFromNamespace(props.tags, spaces[element])}
-        tags={returnTagsFromNamespace(props.tags, spaces[element])}
-        space={spaces[element]}
-        mobile={isMobile()}
-      />
-      returned.push(newElement)
+    for (let element of spaces) {
+      //If no tags in namespace, don't add to the list
+      let tags = returnTagsFromNamespace(props.tags, element) || []
+      if (tags?.length > 0) {
+        let newElement = 
+        <RelatedFiles
+          id={'relatedElements' + element}
+          currentHash={props.fileHash}
+          key={element + returnTagsFromNamespace(props.tags, element)}
+          tags={tags}
+          space={element}
+          mobile={isMobile()}
+        />
+        returned.push(newElement)
+      }
     }
     return returned
   }
@@ -183,14 +188,15 @@ export function FilePage() {
   }
 
   function isSidebarExpanded() {
-    if (sidebarVisible) {return true}
+    if (sidebarVisible) { return true }
     return false;
   }
 
   function getSideBarStyle() {
     if (isMobile()) {
-        if (isSidebarExpanded()) { return "contentSideBar mobile active"}
-       return "contentSideBar mobile" }
+      if (isSidebarExpanded()) { return "contentSideBar mobile active" }
+      return "contentSideBar mobile"
+    }
     return "contentSideBar"
   }
 
@@ -206,7 +212,7 @@ export function FilePage() {
       <img src={IconLeft} className="topBarButton" onClick={() => { PreviousImage() }} />
       <img src={IconRight} className="topBarButton" onClick={() => { NextImage() }} />
       <FullscreenButton />
-      <img src={Info} className="topBarButton" onClick={() => { switchSidebar() }} />
+      {(isMobile()) && <img src={Info} className="topBarButton" onClick={() => { switchSidebar() }} />}
 
     </div>
     <div className={getFilePageStyle(isMobile())}>
