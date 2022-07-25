@@ -8,16 +8,20 @@ import Navigation from './NavBar';
 import * as API from './hydrus-backend'
 
 import './index.css'
+import { useEffect, useState } from 'react';
 
 API.sessionKeyRoutine()
 
-function handleKeyPress(event) {
-  console.log('doing something')
-  if (event.key === 'r') { console.log('pressed r') }
-}
+function App() {
+  const [globalState,setGlobalState] = useState({})
 
-const routerElement = (
-  <div className="app" tabIndex='0' onKeyPress={handleKeyPress}>
+  useEffect(() => {
+    //First Load stuff
+    //try to add verification of user
+    console.log('Starting HYDRUS-react')
+  },[])
+
+  return <div className="app" tabIndex='0'>
     <Router>
       <Navigation />
       <Routes>
@@ -29,7 +33,7 @@ const routerElement = (
       </Routes>
     </Router>
   </div>
-)
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(routerElement);
+root.render(<App />);
