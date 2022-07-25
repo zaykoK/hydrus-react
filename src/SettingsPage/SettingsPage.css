@@ -1,5 +1,7 @@
 .settingsPage {
     margin-top: 5%;
+    margin-left:auto;
+    margin-right:auto;
     text-align: right;
     font-size: large;
     gap: 15px;

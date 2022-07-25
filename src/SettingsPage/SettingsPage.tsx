@@ -4,8 +4,9 @@ import RelatedGroupsInput from './formRelatedTags';
 
 import './SettingsPage.css'
 
-import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress } from '../StorageUtils'
+import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings } from '../StorageUtils'
 import SettingInputSingle from './SettingsInputSingle';
+
 
 
 export function SettingsPage() {
@@ -19,6 +20,8 @@ export function SettingsPage() {
       <ApiTestButton />
       <RelatedGroupsInput />
       <BlacklistedTagsInput />
+      <a href={exportSettings()} download='hydrus-react-settings.json' >Export Settings</a>
+      <input type='file' />
     </div>
   </>;
 }

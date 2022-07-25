@@ -97,3 +97,33 @@ export function setAPIKey(key: string) {
   localStorage.setItem('hydrus-api-key', key)
 }
 
+export function exportSettings() {
+
+  //Server address
+  //Server Key
+  //Max results
+  //Group Namespaces
+  //Hidden Namespaces
+  //Comic Namespace
+  //Mobile Style
+
+  let settings = {
+    'hydrus-server-address': (localStorage.getItem('hydrus-server-address') || ''),
+    'hydrus-api-key': (localStorage.getItem('hydrus-api-key') || ''),
+    'hydrus-max-results': (localStorage.getItem('hydrus-max-results') || "5000"),
+    'group-namespace': (localStorage.getItem('group-namespace') || 'group-title'),
+    'blacklisted-namespaces': (localStorage.getItem('blacklisted-namespaces') || ''),
+    'comic-namespace': (localStorage.getItem('comic-namespace') || 'doujin-title'),
+    'mobile-mode': (localStorage.getItem('mobile-mode') || 'false')
+  }
+
+  let stringified = JSON.stringify(settings)
+
+  let objectURL = URL.createObjectURL(new Blob([stringified], { type: 'text/json' }))
+
+  console.log(stringified)
+
+  return objectURL
+
+}
+
