@@ -6,6 +6,7 @@ import './GroupButton.css'
 
 interface GroupButtonsProps {
   clickAction: Function;
+  icon: string;
 }
 
 export function GroupButton(props: GroupButtonsProps) {
@@ -17,7 +18,7 @@ export function GroupButton(props: GroupButtonsProps) {
 
   return <img
     className={returnGroupButtonStyle(getGroupingToggle())}
-    src={IconGroup}
+    src={props.icon || IconGroup}
     onClick={() => { props.clickAction() }} />
 }
 

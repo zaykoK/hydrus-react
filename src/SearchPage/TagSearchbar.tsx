@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import TagDisplay from '../TagDisplay';
 import GroupButton from './GroupButton';
+//@ts-ignore
+import IconInfo from '../assets/info.svg'
+//@ts-ignore
+import IconGroup from '../assets/group.svg'
 
 import './TagSearchbar.css'
 
@@ -10,6 +14,7 @@ interface SearchTagsProps {
   addTag: Function;
   groupAction: Function;
   removeTag: Function;
+  infoAction: Function;
 }
 
 export function TagSearchBar(props: SearchTagsProps) {
@@ -77,7 +82,8 @@ export function TagSearchBar(props: SearchTagsProps) {
   return <div className={getTopBarStyle()}>
     <div className="buttonsBar">
       <div className="topBarButton" />
-      <GroupButton clickAction={props.groupAction} />
+      <GroupButton icon={IconGroup} clickAction={props.groupAction} />
+      {(isMobile()) &&<GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
     {TagInput({ removeTag: props.removeTag, tags: tags })}
   </div>;

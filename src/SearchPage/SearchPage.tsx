@@ -36,7 +36,9 @@ export function SearchPage(props: SearchPageProps) {
 
   const { parm } = useParams<string>()
 
-  const [loaded,setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+
+  const [sideBarVisible, setSideBarVisible] = useState(false)
 
   const navigate = useNavigate()
 
@@ -52,7 +54,6 @@ export function SearchPage(props: SearchPageProps) {
     localStorage.setItem('group-toggle', (!groupFiles).toString())
     setGroupFiles(!groupFiles)
   }
-
 
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
     //console.time('grouping')
@@ -74,13 +75,10 @@ export function SearchPage(props: SearchPageProps) {
       //console.log(element)
       let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
       if (serviceKeys) {
-        //console.log(serviceKeys)
-
         let filter = TagTools.tagArrayToMap(serviceKeys[0] || [])
         let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
 
         let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
-
 
         if (filterTags.length !== 0) { //Don't create group for files with no group namespace
           let temp = groupMap.get(filterTags[0].value)
@@ -112,15 +110,14 @@ export function SearchPage(props: SearchPageProps) {
     return hashesCopy
   }
 
-
   async function Search() {
     //If there is nothing to search for or search is identical to previous don't do anything
     if (tags === undefined) {
-      console.log('not doing anything undefined');
+      //console.log('not doing anything undefined');
       return
     }
     if (JSON.stringify(tags) === JSON.stringify(lastSearch)) {
-      console.log("not doing anything same search")
+      //console.log("not doing anything same search")
       return
     }
 
@@ -128,7 +125,7 @@ export function SearchPage(props: SearchPageProps) {
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
 
-    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type:API.FileSortType.ImportTime });
+    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: API.FileSortType.ImportTime });
     let responseHashes = response.data.hashes
 
     setUngroupedHashes(responseHashes) //For use later with grouping
@@ -189,6 +186,12 @@ export function SearchPage(props: SearchPageProps) {
     if (parameters.getAll('tags').length != 0) {
       tags = tagArrayToNestedArray(parameters.getAll('tags'))
 
+      for (let tagArray in tags) {
+        for (let tag in tags[tagArray]) {
+          tags[tagArray][tag] = tags[tagArray][tag].replace('!ANDS', '&')
+        }
+      }
+
       //Returns all non empty results, since params sometimes have 'tags=' element
       tags = tags.filter(function (x) { return x[0] !== '' })
       let sortedTags: Array<Array<string>> = []
@@ -211,6 +214,10 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   useEffect(() => {
+    sessionStorage.removeItem('group-hashes')
+  }, [])
+
+  useEffect(() => {
     grabMetaData(ungroupedHashes)
   }, [groupFiles])
 
@@ -220,26 +227,24 @@ export function SearchPage(props: SearchPageProps) {
 
   useEffect(() => {
     Search()
-
   }, [tags])
 
   useEffect(() => {
-    window.scrollTo(0,restoreScroll())
-  },[loaded])
+    //Adding even slightiest timeout seem to actually make this work, weird
+    setTimeout(() => window.scrollTo(0, restoreScroll()), 625)
+  }, [loaded])
 
   function restoreScroll() {
-    console.log('trying to restore scroll session')
-    console.log('scroll value is ' + sessionStorage.getItem('searchScroll') )
     return parseInt(sessionStorage.getItem('searchScroll') || '0')
   }
 
   function changePage(newPage: number) {
     let par = generateSearchURL(tags, newPage)
-    
+
     navigateTo(par)
 
     sessionStorage.removeItem('searchScroll')
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0)
   }
 
   function navigateTo(parameters: URLSearchParams) {
@@ -295,14 +300,15 @@ export function SearchPage(props: SearchPageProps) {
           tagString += innerElement + ' OR '
         }
         tagString = tagString.slice(0, -4)
+        tagString = tagString.replace('&', '!ANDS')
+
         parameters.append('tags', tagString)
       }
     }
-
     return parameters
   }
 
-  function getContentStyle():string {
+  function getContentStyle(): string {
     if (isMobile()) {
       return "contentStyle mobile"
     }
@@ -312,23 +318,28 @@ export function SearchPage(props: SearchPageProps) {
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = getBlacklistedNamespaces()
 
+  function toggleSideBar() {
+    setSideBarVisible(!sideBarVisible)
+  }
+
   function getGridStyleList() {
     if (isMobile()) {
+      if (sideBarVisible) { return 'gridStyleList mobile active' }
       return "gridStyleList mobile"
     }
     return "gridStyleList"
   }
 
-  function getGridStyleThumbs():string {
+  function getGridStyleThumbs(): string {
     if (isMobile()) {
       return "gridStyleThumbs mobile"
     }
     return "gridStyleThumbs"
   }
 
-  function getTopBarPaddingStyle():string {
+  function getTopBarPaddingStyle(): string {
     if (isMobile()) {
-      if(isLandscapeMode()) {return "topBarPadding mobile landscape"}
+      if (isLandscapeMode()) { return "topBarPadding mobile landscape" }
       return "topBarPadding mobile"
     }
     return "topBarPadding"
@@ -338,7 +349,7 @@ export function SearchPage(props: SearchPageProps) {
 
   return <>
     <div className={getTopBarPaddingStyle()} />
-    {(tags) && <TagSearchBar groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+    {(tags) && <TagSearchBar infoAction={toggleSideBar} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
     <div className={getContentStyle()}>
       <div className={getGridStyleList()}>
         {(fileTags != undefined) &&

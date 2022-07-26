@@ -13,9 +13,8 @@
 }
 
 .tagList.mobile {
-    min-height: auto;
-    max-height: 75vh;
-    overflow-y: auto;
+    max-height: max-content;
+    overflow-y: hidden;
     overflow-x: hidden;
     font-size: 0.8em;
 }
