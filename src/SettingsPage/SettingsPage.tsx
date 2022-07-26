@@ -2,14 +2,22 @@ import ApiTestButton from './ButtonAPITest';
 import BlacklistedTagsInput from './formBlacklistedTags';
 import RelatedGroupsInput from './formRelatedTags';
 
+import { GlobalStateObject } from '../index.js';
+
 import './SettingsPage.css'
 
 import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings } from '../StorageUtils'
 import SettingInputSingle from './SettingsInputSingle';
 
 
+interface SettingsPageProps {
+  globalState:any;
+}
 
-export function SettingsPage() {
+export function SettingsPage(props:SettingsPageProps) {
+  console.log(props.globalState?.getGlobalValue())
+  props.globalState?.setGlobalValue('settings')
+
   return <>
     <div className="settingsPage">
       <SettingInputSingle initialValue={getServerAddress} type="text" label="Input Hydrus Server address:" setFunction={setServerAddress} />

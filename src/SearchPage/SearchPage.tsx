@@ -15,6 +15,7 @@ import { isLandscapeMode, isMobile } from '../styleUtils';
 
 interface SearchPageProps {
   type: string;
+  globalState:any;
 }
 
 type ParamsType = {
@@ -41,6 +42,9 @@ export function SearchPage(props: SearchPageProps) {
   const [sideBarVisible, setSideBarVisible] = useState(false)
 
   const navigate = useNavigate()
+
+  console.log(props.globalState?.getGlobalValue())
+  props.globalState?.setGlobalValue('search')
 
   function refreshParams(): void {
     let [paramsTags, paramsPage] = readParams(parm)
@@ -145,6 +149,8 @@ export function SearchPage(props: SearchPageProps) {
       createListOfUniqueTags(responses)
       let h = hashes
       if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
+
+      sessionStorage.setItem('hashes-search',JSON.stringify(h))
 
       setHashes(h)
     }
