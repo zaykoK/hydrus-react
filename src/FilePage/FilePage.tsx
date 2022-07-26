@@ -22,7 +22,11 @@ import './FilePage.css'
 import '../SearchPage/GroupButton.css'
 import { RelatedFilesSideBar } from './RelatedFilesSideBar';
 
-export function FilePage() {
+interface FilePageProps {
+  globalState: any;
+}
+
+export function FilePage(props: FilePageProps) {
   interface FilePageParams {
     hash: string | undefined;
   }
@@ -35,6 +39,9 @@ export function FilePage() {
   const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode())
 
   const navigate = useNavigate()
+
+  //console.log(props.globalState?.getGlobalValue())
+  //props.globalState?.setGlobalValue('filepage')
 
   function isLandscapeMode() {
     if (window.screen.orientation.type.includes('portrait')) { return false }
@@ -64,27 +71,95 @@ export function FilePage() {
     }
   }, [])
 
+  //"This is ... too much" - George L.
+  //TODO find some way to simplify this whole next/prev image
+
   function PreviousImage(): void {
-    //Grab image list
-    //Use SessionStorage?
-    if (sessionStorage.getItem('group-hashes') === null) { return }
-    let elementList = JSON.parse(sessionStorage.getItem('group-hashes') || '')
-    let index = elementList.indexOf(fileHash)
+    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage() }
+    let searchList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
+    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
+    let index = elementList.indexOf(fileHash || '')
     //Move to next
-    if (index - 1 < 0) { return }
+    if (index - 1 < 0) { return PreviousSearchImage() }
+    if (searchList.indexOf(elementList[index - 1]) === -1) {
+      if (searchList.indexOf(fileHash||'') !== -1) {
+        sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
+      }
+    }
     navigate(returnFileLink(elementList[index - 1]), { replace: true })
   }
 
   function NextImage(): void {
-    //Grab image list
-    //Use SessionStorage?
-    if (sessionStorage.getItem('group-hashes') === null) { return }
-    let elementList = JSON.parse(sessionStorage.getItem('group-hashes') || '')
-    let index = elementList.indexOf(fileHash)
+    if (sessionStorage.getItem('group-hashes') === null) { return NextSearchImage() }
+    let searchList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
+    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
+    let index = elementList.indexOf(fileHash || '')
     //Move to next
-    if (index + 1 >= elementList.length) { return }
+    if (index + 1 >= elementList.length) { return NextSearchImage() }
+    if (searchList.indexOf(elementList[index + 1]) === -1) {
+      if (searchList.indexOf(fileHash||'') !== -1) {
+        sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
+      }
+    }
     navigate(returnFileLink(elementList[index + 1]), { replace: true })
   }
+
+  function PreviousSearchImage(): void {
+    if (sessionStorage.getItem('hashes-search') === null) { return }
+    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
+    let index = elementList.indexOf(fileHash || '')
+    if (index === -1) {
+      if (sessionStorage.getItem('hashes-search-last-valid') !== null) {
+        index = elementList.indexOf(JSON.parse(sessionStorage.getItem('hashes-search-last-valid') || ''))
+      }
+      else {
+        return
+      }
+    }
+    //If first/last file in set don't do anything
+    if (index - 1 < 0) { return }
+    //If currently tracking group related files delete them
+    if (sessionStorage.getItem('group-hashes') !== null) {
+      let groupHashes: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
+      if (groupHashes.indexOf(elementList[index - 1]) === -1) { sessionStorage.removeItem('group-hashes') }
+    }
+    navigate(returnFileLink(elementList[index - 1]), { replace: true })
+  }
+
+  function NextSearchImage(): void {
+    if (sessionStorage.getItem('hashes-search') === null) { return }
+    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
+    let index = elementList.indexOf(fileHash || '')
+    if (index === -1) {
+      if (sessionStorage.getItem('hashes-search-last-valid') !== null) {
+        index = elementList.indexOf(JSON.parse(sessionStorage.getItem('hashes-search-last-valid') || ''))
+      }
+      else {
+        return
+      }
+    }
+    //If first/last file in set don't do anything
+    if (index + 1 >= elementList.length) { return }
+    //If currently tracking group related files delete them
+    if (sessionStorage.getItem('group-hashes') !== null) {
+      let groupHashes: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
+      if (groupHashes.indexOf(elementList[index + 1]) === -1) { sessionStorage.removeItem('group-hashes') }
+    }
+
+    navigate(returnFileLink(elementList[index + 1]), { replace: true })
+  }
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+
+  }
+
+  React.useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [])
 
   async function loadTags() {
     let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
@@ -106,7 +181,7 @@ export function FilePage() {
 
   function getFilePageStyle(mobile: boolean, landscape: boolean): string {
     if (mobile) {
-      if (metadata?.mime.includes('video')) {return 'filePage mobile'} //This exist so rotating screen doesn't break the video playback
+      if (metadata?.mime.includes('video')) { return 'filePage mobile' } //This exist so rotating screen doesn't break the video playback
       if (landscape) { return "filePage mobile landscape" }
       return "filePage mobile"
     }
@@ -187,6 +262,8 @@ export function FilePage() {
             mobile={isMobile()}
             previousImage={PreviousImage}
             nextImage={NextImage}
+            nextSearchImage={NextSearchImage}
+            previousSearchImage={PreviousSearchImage}
           />}
       </div>
 

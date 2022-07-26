@@ -14,6 +14,8 @@ interface FileContentProps {
   mobile: boolean;
   nextImage: Function;
   previousImage: Function;
+  nextSearchImage: Function;
+  previousSearchImage: Function;
 }
 
 export function FileContent(props: FileContentProps) {
@@ -26,6 +28,8 @@ export function FileContent(props: FileContentProps) {
   interface ContentProps {
     nextImage: Function;
     previousImage: Function;
+    nextSearchImage: Function;
+    previousSearchImage: Function;
     mobile: boolean;
     type: string;
     content: string | undefined;
@@ -77,6 +81,8 @@ export function FileContent(props: FileContentProps) {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") { props.nextImage() }
       if (e.key === "ArrowLeft") { props.previousImage() }
+      if (e.key === "ArrowUp") { props.nextSearchImage() }
+      if (e.key === "ArrowDown") { props.previousSearchImage() }
     }
 
     const handleMouseScroll = (e: WheelEvent) => {
@@ -145,7 +151,7 @@ export function FileContent(props: FileContentProps) {
 
   return (
     <div key={props.hash} className={getContentWrapperStyle()} >
-      <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} nextImage={props.nextImage} previousImage={props.previousImage} />
+      <Content type={props.type} content={content} hash={props.hash} mobile={props.mobile} nextImage={props.nextImage} previousImage={props.previousImage} nextSearchImage={props.nextSearchImage} previousSearchImage={props.previousSearchImage} />
     </div>
   );
 };
