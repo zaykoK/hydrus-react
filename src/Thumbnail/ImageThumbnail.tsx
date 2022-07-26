@@ -6,6 +6,7 @@ import WidgetCount from './WidgetCount';
 import WidgetFileType from './WidgetFileType';
 
 import './ImageThumbnail.css'
+import { isMobile } from '../styleUtils';
 
 // @ts-check
 
@@ -141,9 +142,9 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   return (
     <div className={getWrapperStyle(props.type)}
       key={"thumb-" + props.hash}>
-      <div className='topTags'>
+      {(isMobile() === false) && <div className='topTags'>
         {createTagPreview({ metadata: metadata, spaces: thumbnailTopTags })}
-      </div>
+      </div>}
       <div className='bottomTags'>
         <WidgetCount count={props.count} />
         <WidgetFileType metadata={metadata} />

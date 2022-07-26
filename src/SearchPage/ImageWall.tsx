@@ -20,9 +20,7 @@ interface ImageWallProps {
 
 export function ImageWall(props: ImageWallProps) {
   let width = (5/6) * (window.innerWidth);
-  //console.log(width)
   let elements = Math.floor( width/180);
-  //console.log(elements)
 
   let viewSize = 50;
   if (props.type === 'comic') {

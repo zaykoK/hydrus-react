@@ -1,0 +1,51 @@
+.relatedStyle {
+    background: var(--COLOR2);
+    padding: 5px;
+    border-radius: 10px;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    height: 99vh;
+    max-width: 27vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 0 5px 0 black;
+    font-size: 1em;
+    z-index: 30;
+    transition: all 0.5s;
+}
+
+.relatedStyle.hidden {
+    right: -35em;
+}
+
+.relatedStyle.mobile {
+    font-size: small;
+    bottom: 0px;
+    right: auto;
+    top: auto;
+    left: auto;
+    height: auto;
+    max-width: 100vw;
+    width: 100vw;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.relatedStyle.mobile.landscape {
+    height: 100vh;
+    width:auto;
+    max-width: 22vw;
+    right: 0px;
+    top: 0px;
+    bottom: auto;
+    left: auto;
+}
+
+.relatedStyle.mobile.hidden {
+    bottom: -35em;
+}
+
+.relatedStyle.mobile.landscape.hidden {
+    right: -35em;
+}

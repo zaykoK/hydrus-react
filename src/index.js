@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     //First Load stuff
     //try to add verification of user
-    console.log('Starting HYDRUS-react')
+    //console.log('Starting HYDRUS-react')
   },[])
 
   return <div className="app" tabIndex='0'>

@@ -6,7 +6,7 @@ import { isLandscapeMode, isMobile } from '../styleUtils';
 
 import './FileContent.css'
 
-import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
+import { TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
 
 interface FileContentProps {
   hash: string | undefined;
@@ -35,11 +35,9 @@ export function FileContent(props: FileContentProps) {
   function Content(props: ContentProps) {
     const swipeHandlers = useSwipeable({
       onSwipedLeft: (eventData) => {
-        //console.log("Swipe LEft",eventData);
         props.nextImage()
       },
       onSwipedRight: (eventData) => {
-        //console.log("Swipe Rite",eventData);
         props.previousImage()
       },
       onTap: (eventData) => {
@@ -141,7 +139,7 @@ export function FileContent(props: FileContentProps) {
   }
 
   function getContentWrapperStyle() {
-    if (isLandscapeMode()) { return "contentWrapper mobile landscape" }
+    if (isLandscapeMode() && !props.type.includes('video')) { return "contentWrapper mobile landscape" }
     return "contentWrapper"
   }
 
