@@ -30,9 +30,8 @@ function RelatedGroupsInput() {
 
     function spacesToTags(spaces: Array<Array<string>>):Array<Array<string>>{
       let tags: Array<Array<string>> = []
-      console.log(spaces)
       for (let space of spaces) {
-        if (space[0].includes(':*')) {console.log('returning without change');return spaces}
+        if (space[0].includes(':*')) {return spaces}
         tags.push([space[0]+':*'])
       }
 

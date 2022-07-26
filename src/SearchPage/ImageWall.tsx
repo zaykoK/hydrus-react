@@ -6,8 +6,6 @@ import './ImageWall.css'
 
 import {isMobile} from '../styleUtils'
 
-// @ts-check
-
 interface ImageWallProps {
   grouping: boolean;
   type: string;

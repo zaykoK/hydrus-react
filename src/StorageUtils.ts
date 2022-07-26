@@ -121,8 +121,6 @@ export function exportSettings() {
 
   let objectURL = URL.createObjectURL(new Blob([stringified], { type: 'text/json' }))
 
-  console.log(stringified)
-
   return objectURL
 
 }
