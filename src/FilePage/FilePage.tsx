@@ -18,7 +18,7 @@ import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
 import FullscreenButton from '../FullscreenButton';
 import { useNavigate } from "react-router-dom";
 
-import { isMobile, isLandscapeMode } from '../styleUtils';
+import { isLandscapeMode, isMobile } from '../styleUtils';
 
 import './FilePage.css'
 import '../SearchPage/GroupButton.css'
@@ -34,12 +34,18 @@ export function FilePage() {
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
   const [screenOrientation, setScreenOrientation] = React.useState(window.screen.orientation.type)
+  const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode())
 
   const navigate = useNavigate()
 
-  function getFilePageStyle(mobile: boolean): string {
+  function isLandscapeMode() {
+    if (window.screen.orientation.type.includes('portrait')) { return false }
+    return true
+  }
+
+  function getFilePageStyle(mobile: boolean, landscape: boolean): string {
     if (mobile) {
-      if (isLandscapeMode()) { return "filePage mobile landscape" }
+      if (landscape) { return "filePage mobile landscape" }
       return "filePage mobile"
     }
     return "filePage"
@@ -50,13 +56,23 @@ export function FilePage() {
     loadTags();
   }, [fileHash])
 
-  React.useEffect(() => {
-    //console.log('changed orientation of screen')
-  }, [screenOrientation])
-
   function returnFileLink(hash: string): string {
     return "/file/" + hash
   }
+
+  function handleScreenChange() {
+    if (window.screen.orientation.type.includes('portrait')) { setLandscape(false); document.exitFullscreen(); return }
+    setLandscape(true)
+    document.documentElement.requestFullscreen()
+
+  }
+
+  React.useEffect(() => {
+    window.screen.orientation.addEventListener('change', handleScreenChange)
+    return () => {
+      window.screen.orientation.removeEventListener('change', handleScreenChange)
+    }
+  }, [])
 
   function PreviousImage(): void {
     //Grab image list
@@ -138,15 +154,15 @@ export function FilePage() {
       //If no tags in namespace, don't add to the list
       let tags = returnTagsFromNamespace(props.tags, element) || []
       if (tags?.length > 0) {
-        let newElement = 
-        <RelatedFiles
-          id={'relatedElements' + element}
-          currentHash={props.fileHash}
-          key={element + returnTagsFromNamespace(props.tags, element)}
-          tags={tags}
-          space={element}
-          mobile={isMobile()}
-        />
+        let newElement =
+          <RelatedFiles
+            id={'relatedElements' + element}
+            currentHash={props.fileHash}
+            key={element + returnTagsFromNamespace(props.tags, element)}
+            tags={tags}
+            space={element}
+            mobile={isMobile()}
+          />
         returned.push(newElement)
       }
     }
@@ -211,11 +227,11 @@ export function FilePage() {
       <img src={IconRelated} className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
       <img src={IconLeft} className="topBarButton" onClick={() => { PreviousImage() }} />
       <img src={IconRight} className="topBarButton" onClick={() => { NextImage() }} />
-      <FullscreenButton />
+      {(isMobile()) && <FullscreenButton />}
       {(isMobile()) && <img src={Info} className="topBarButton" onClick={() => { switchSidebar() }} />}
 
     </div>
-    <div className={getFilePageStyle(isMobile())}>
+    <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
       <div className={getSideBarStyle()}>
         {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
         {(metadata != undefined) && <FileMetaData metadata={metadata} />}

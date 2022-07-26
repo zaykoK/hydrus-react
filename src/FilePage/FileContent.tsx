@@ -2,9 +2,11 @@ import * as React from 'react';
 import * as API from '../hydrus-backend';
 import { useSwipeable } from 'react-swipeable';
 
-import { isLandscapeMode } from '../styleUtils';
+import { isLandscapeMode, isMobile } from '../styleUtils';
 
 import './FileContent.css'
+
+import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
 
 interface FileContentProps {
   hash: string | undefined;
@@ -42,7 +44,8 @@ export function FileContent(props: FileContentProps) {
       },
       onTap: (eventData) => {
         changeZoom()
-      }
+      },
+      delta: 150
     })
 
     const [style, changeStyle] = React.useState(getStartingStyle())
@@ -82,7 +85,9 @@ export function FileContent(props: FileContentProps) {
       //console.log(e.deltaY)
       if (sessionStorage.getItem('fullscreen-view') === 'true') {
         const el = document.querySelector('.styleFitWidth')
-        console.log(el)
+        //console.log(el)
+
+        //What I want to get here is ability to zoom in/out with mouse scroll and pan with drag
 
         if (e.deltaY > 0) { console.log('scrolling down') }
         if (e.deltaY < 0) { console.log('scrolling up') }
@@ -91,25 +96,37 @@ export function FileContent(props: FileContentProps) {
 
     React.useEffect(() => {
       document.addEventListener('keydown', handleKeyPress)
-      document.addEventListener('wheel', handleMouseScroll)
+      //document.addEventListener('wheel', handleMouseScroll)
 
       return () => {
         document.removeEventListener('keydown', handleKeyPress)
-        document.removeEventListener('wheel', handleMouseScroll)
+        //document.removeEventListener('wheel', handleMouseScroll)
       }
     }, [])
 
+    //Basically in case of images
+    //When in portait mode
     if (props.type.includes("image")) {
-      return <img
+      let image = <img
         {...swipeHandlers}
         onClick={() => changeZoom()}
+        onContextMenu={(e) => e.preventDefault()}
         src={props.content}
         className={style}
         alt={props.hash} />
+      if (isLandscapeMode() && isMobile()) {
+        return <TransformWrapper
+          centerZoomedOut={true}
+          minScale={1}
+          initialScale={1}><TransformComponent>
+            {image}</TransformComponent></TransformWrapper>
+      }
+      return image
     }
     if (props.type.includes("video")) {
       return <video
         {...swipeHandlers}
+        onContextMenu={(e) => e.preventDefault()}
         className={style}
         autoPlay loop controls
         src={props.content} />
@@ -117,6 +134,7 @@ export function FileContent(props: FileContentProps) {
     //Default case - just use a thumbnail
     return <img
       {...swipeHandlers}
+      onContextMenu={(e) => e.preventDefault()}
       src={API.api_get_file_thumbnail_address(props.hash)}
       className={style}
       alt={props.hash} />
