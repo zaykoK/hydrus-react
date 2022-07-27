@@ -150,6 +150,13 @@ interface APISearchFilesProps {
   return_hashes: boolean
 }
 
+export enum ServiceStatusNumber {
+  Current = 0,
+  Pending,
+  Deleted,
+  Petitioned
+}
+
 export enum FileSortType {
   FileSize = 0,
   Duration,
