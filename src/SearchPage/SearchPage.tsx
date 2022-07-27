@@ -47,6 +47,8 @@ export function SearchPage(props: SearchPageProps) {
 
   //Results of previous search, used to check if on a new rerender a search changed
   const previousSearch = useRef<Array<Array<string>>>()
+  //Sorting order for grabbing files from hydrus API
+  const sortType = useRef<API.FileSortType>(API.FileSortType.ImportTime)
 
   const navigate = useNavigate()
 
@@ -66,26 +68,27 @@ export function SearchPage(props: SearchPageProps) {
     setGroupFiles(!groupFiles)
   }
 
+
+
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
-
-    //console.log(responses)
-
     let groupMap = new Map()
     let countMap = new Map()
     let hashesCopy = hashes.slice()
 
+    
+
     for (let element of responses) {
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
+      //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
       let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags');
-      if (!allKnownTagsKey) { allKnownTagsKey = '' }
-      //console.log(element)
+      if (!allKnownTagsKey) { allKnownTagsKey = '';console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
       let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
       if (serviceKeys) {
-        let filter = TagTools.tagArrayToMap(serviceKeys[0] || [])
+        let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
         let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
 
         let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
@@ -116,7 +119,6 @@ export function SearchPage(props: SearchPageProps) {
       }
     }
     setGroupCount(countMap)
-    //console.timeEnd('grouping')
     return hashesCopy
   }
 
@@ -135,7 +137,7 @@ export function SearchPage(props: SearchPageProps) {
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
 
-    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: API.FileSortType.ImportTime });
+    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
     let responseHashes = response.data.hashes
 
     setUngroupedHashes(responseHashes) //For use later with grouping
@@ -171,7 +173,7 @@ export function SearchPage(props: SearchPageProps) {
     if (!allKnownTagsKey) { allKnownTagsKey = '' }
     for (let element of responses) {
       let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
-      if (serviceKeys) { merged.push(serviceKeys[0] || []) }
+      if (serviceKeys) { merged.push(serviceKeys[API.ServiceStatusNumber.Current] || []) }
     }
     let map: Map<string, number> = TagTools.tagArrayToMap(merged.flat())
     merged = TagTools.transformIntoTuple(map)

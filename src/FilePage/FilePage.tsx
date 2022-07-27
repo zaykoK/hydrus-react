@@ -166,7 +166,7 @@ export function FilePage(props: FilePageProps) {
     if (!response) { return }
     let data: API.MetadataResponse = response.data.metadata[0]
     let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags') || '';
-    let responseTags = data.service_keys_to_statuses_to_display_tags[allKnownTags][0]
+    let responseTags = data.service_keys_to_statuses_to_display_tags[allKnownTags][API.ServiceStatusNumber.Current]
     let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
     tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
     setMetaData(response.data.metadata[0])

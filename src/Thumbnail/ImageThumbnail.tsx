@@ -65,7 +65,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       let index = sessionStorage.getItem('hydrus-all-known-tags')
       if (!index) { return }
 
-      let tags = args.metadata.service_keys_to_statuses_to_display_tags[index][0];
+      let tags = args.metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
 
       let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
       let tagArrays = []
