@@ -51,6 +51,8 @@ export function FileContent(props: FileContentProps) {
     })
 
     const [style, changeStyle] = React.useState(getStartingStyle())
+    const [src, setSrc] = React.useState(API.api_get_file_thumbnail_address(props.hash))
+    const [loaded, setLoaded] = React.useState<boolean>(false)
 
     function getStartingStyle() {
       if (props.mobile) {
@@ -60,7 +62,6 @@ export function FileContent(props: FileContentProps) {
       if (sessionStorage.getItem('fullscreen-view') === 'true') { return 'styleFitWidth' }
       return 'styleFitHeight'
     }
-
 
     function changeZoom() {
       if (props.mobile) {
@@ -98,9 +99,19 @@ export function FileContent(props: FileContentProps) {
       }
     }
 
+    function loadFullSizeImage():void {
+      const img = new Image()
+      img.src = props.content || ''
+      img.onload = () => {setSrc(img.src); setLoaded(true)}
+    }
+
     React.useEffect(() => {
       document.addEventListener('keydown', handleKeyPress)
       //document.addEventListener('wheel', handleMouseScroll)
+      
+      //Immediately start loading full size image, and when ready change to it
+      loadFullSizeImage()
+
 
       return () => {
         document.removeEventListener('keydown', handleKeyPress)
@@ -114,8 +125,9 @@ export function FileContent(props: FileContentProps) {
       let image = <img
         {...swipeHandlers}
         onClick={() => changeZoom()}
+        onLoad={() => console.log(props.content)}
         onContextMenu={(e) => e.preventDefault()}
-        src={props.content}
+        src={src}
         className={style}
         alt={props.hash} />
       if (isLandscapeMode() && isMobile()) {
