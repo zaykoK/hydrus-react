@@ -4,7 +4,7 @@ import PageButtons from './PageButtons';
 
 import './ImageWall.css'
 
-import {isMobile} from '../styleUtils'
+import { isMobile } from '../styleUtils'
 
 interface ImageWallProps {
   grouping: boolean;
@@ -17,8 +17,8 @@ interface ImageWallProps {
 }
 
 export function ImageWall(props: ImageWallProps) {
-  let width = (5/6) * (window.innerWidth);
-  let elements = Math.floor( width/180);
+  let width = (5 / 6) * (window.innerWidth);
+  let elements = Math.floor(width / 180);
 
   let viewSize = 50;
   if (props.type === 'comic') {
@@ -54,6 +54,28 @@ export function ImageWall(props: ImageWallProps) {
     return slices
   }
 
+
+
+  React.useEffect(() => {
+    function handleKeyPress(e: KeyboardEvent) {
+      function NextPage() {
+        if (props.page + 1 <= returnPageCount()) {props.changePage(props.page + 1)}
+      }
+      function PreviousPage() {
+        if (props.page - 1 > 0) { props.changePage(props.page - 1) }
+
+      }
+
+      if (e.key === "ArrowRight") { NextPage() }
+      if (e.key === "ArrowLeft") { PreviousPage() }
+    }
+
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  })
+
   //Redraw when image hashes or page changes
   React.useEffect(() => {
     setThumbs(CreateNewThumbnailList(props.page))
@@ -70,8 +92,8 @@ export function ImageWall(props: ImageWallProps) {
     );
   }
 
-  function getOffsetValue(mobile:boolean):number {
-    if (mobile) {return 2}
+  function getOffsetValue(mobile: boolean): number {
+    if (mobile) { return 2 }
     return 6
   }
 
