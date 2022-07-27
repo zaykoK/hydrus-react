@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ImageWall } from "./ImageWall";
 import { TagSearchBar } from "./TagSearchbar";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { isLandscapeMode, isMobile } from '../styleUtils';
 
 interface SearchPageProps {
   type: string;
-  globalState:any;
+  globalState: any;
 }
 
 type ParamsType = {
@@ -24,27 +24,34 @@ type ParamsType = {
 }
 
 export function SearchPage(props: SearchPageProps) {
-  const [tags, setTags] = useState<Array<Array<string>>>();
+  //Current search tags
+  const [tags, setTags] = useState<Array<Array<string>>>()
+  //Result of search for current search tags
   const [hashes, setHashes] = useState<Array<string>>([])
+  //Unfiltered result of search for current search tags
   const [ungroupedHashes, setUngroupedHashes] = useState([])
-  const [lastSearch, setLastSearch] = useState<Array<Array<string>>>()
+  //Current search parameters, tags(unused?) and current page of search results
   const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0 })
   //List of unique tags for given files
   const [fileTags, setFileTags] = useState<Array<TagTools.Tuple>>([])
-  const [groupFiles, setGroupFiles] = useState(getGroupingToggle())
-
-  const [groupCount, setGroupCount] = useState(new Map())
-
+  //Whether or not search results should be grouped
+  const [groupFiles, setGroupFiles] = useState<boolean>(getGroupingToggle())
+  //Map of grouped files count for each of the results
+  const [groupCount, setGroupCount] = useState<Map<any, any>>(new Map())
+  //Field that accesses "actual" current URL parameters
   const { parm } = useParams<string>()
+  //Whether page has finished loading or not (doesn't work that well now)
+  const [loaded, setLoaded] = useState<boolean>(false)
+  //Whether panel with tag info should show up (right now only mobile mode has this)
+  const [sideBarVisible, setSideBarVisible] = useState<boolean>(false)
 
-  const [loaded, setLoaded] = useState(false)
-
-  const [sideBarVisible, setSideBarVisible] = useState(false)
+  //Results of previous search, used to check if on a new rerender a search changed
+  const previousSearch = useRef<Array<Array<string>>>()
 
   const navigate = useNavigate()
 
-  console.log(props.globalState?.getGlobalValue())
-  props.globalState?.setGlobalValue('search')
+  //console.log(props.globalState?.getGlobalValue())
+  //props.globalState?.setGlobalValue('search')
 
   function refreshParams(): void {
     let [paramsTags, paramsPage] = readParams(parm)
@@ -60,7 +67,6 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
-    //console.time('grouping')
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
@@ -120,12 +126,12 @@ export function SearchPage(props: SearchPageProps) {
       //console.log('not doing anything undefined');
       return
     }
-    if (JSON.stringify(tags) === JSON.stringify(lastSearch)) {
+    if (JSON.stringify(tags) === JSON.stringify(previousSearch.current)) {
       //console.log("not doing anything same search")
       return
     }
 
-    setLastSearch(tags.slice())
+    previousSearch.current = tags.slice()
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
 
@@ -150,11 +156,12 @@ export function SearchPage(props: SearchPageProps) {
       let h = hashes
       if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
 
-      sessionStorage.setItem('hashes-search',JSON.stringify(h))
+      sessionStorage.setItem('hashes-search', JSON.stringify(h))
 
       setHashes(h)
+      setLoaded(true)
     }
-    setLoaded(true)
+
   }
 
   function createListOfUniqueTags(responses: Array<API.MetadataResponse>): void {
@@ -219,12 +226,13 @@ export function SearchPage(props: SearchPageProps) {
     return [tags, page]
   }
 
+  //Everytime user lands on search page, remove group-hashes item from sessionStorage
   useEffect(() => {
     sessionStorage.removeItem('group-hashes')
   }, [])
 
   useEffect(() => {
-    grabMetaData(ungroupedHashes)
+    if (ungroupedHashes?.length > 0) { grabMetaData(ungroupedHashes) }
   }, [groupFiles])
 
   useEffect(() => {
@@ -237,7 +245,7 @@ export function SearchPage(props: SearchPageProps) {
 
   useEffect(() => {
     //Adding even slightiest timeout seem to actually make this work, weird
-    setTimeout(() => window.scrollTo(0, restoreScroll()), 625)
+    setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
   }, [loaded])
 
   function restoreScroll() {
@@ -269,7 +277,6 @@ export function SearchPage(props: SearchPageProps) {
 
   function addTag(tag: string) {
     if (tags) {
-      //console.log('adding tag:' + tag)
       if (tag === '') { return; }
       let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
       if (newTags.includes([tag])) { return } //If tag exists in array don't add it
