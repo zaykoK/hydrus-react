@@ -23,13 +23,31 @@ type ParamsType = {
   page: number;
 }
 
+//Some testing stuff
+
+type Search = {
+  hashes: Array<Result>;
+  groupedHashes: Array<Result>;
+  metadataResponses: Array<API.MetadataResponse>;
+}
+
+
+export type Result = {
+  cover: string; //Representant of a result
+  entries: Array<API.MetadataResponse>; //List of Metadata responses since they have hash anyway already and this way i get access to all
+}
+
 export function SearchPage(props: SearchPageProps) {
+  //Search object
+  const [search, setSearch] = useState<Search>({ hashes: [], groupedHashes: [], metadataResponses: [] })
   //Current search tags
   const [tags, setTags] = useState<Array<Array<string>>>()
+
   //Result of search for current search tags
-  const [hashes, setHashes] = useState<Array<string>>([])
+  //const [hashes, setHashes] = useState<Array<string>>([])
   //Unfiltered result of search for current search tags
-  const [ungroupedHashes, setUngroupedHashes] = useState([])
+  //const [ungroupedHashes, setUngroupedHashes] = useState([])
+  
   //Current search parameters, tags(unused?) and current page of search results
   const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0 })
   //List of unique tags for given files
@@ -44,6 +62,7 @@ export function SearchPage(props: SearchPageProps) {
   const [loaded, setLoaded] = useState<boolean>(false)
   //Whether panel with tag info should show up (right now only mobile mode has this)
   const [sideBarVisible, setSideBarVisible] = useState<boolean>(false)
+
 
   //Results of previous search, used to check if on a new rerender a search changed
   const previousSearch = useRef<Array<Array<string>>>()
@@ -74,52 +93,72 @@ export function SearchPage(props: SearchPageProps) {
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
-    let groupMap = new Map()
-    let countMap = new Map()
-    let hashesCopy = hashes.slice()
+    let countMap = new Map() //This holds count of elements in each group entry, key is first entry in groupMap.hashes and value is count of items in groupMap.hashes, frankly probably unnecessary as I think i could just do a quick lenght read at the end and use that, we'll see
+    //let hashesCopy = hashes.slice() //This eventually becomes reduced with grouped images "hiding" behind a representant
+    //Sorting responses by time_modified so it matches actual hash list order
+    //TODO implement the rest of sorting schemes
+    let responsesSorted = responses.sort((a, b) => b.time_modified - a.time_modified) //Newest imported first
 
-    
+    let resultMap: Map<string, Result> = new Map<string, Result>()
 
-    for (let element of responses) {
+    let unsortedArray: Array<Result> = []
+
+
+    for (let element of responsesSorted) {
+      unsortedArray.push({ cover: element.hash, entries: [element] })
+      //if (element.hash === hashes[counter]) {console.log('order correct')}
+      //else {console.log('order incorrect')}
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
       //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
       let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags');
-      if (!allKnownTagsKey) { allKnownTagsKey = '';console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
+      if (!allKnownTagsKey) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
       let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
       if (serviceKeys) {
-        let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
-        let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
+        //For each entry in metadataResponses 
+        //Turn response into a tag map (key:'tag text', value:'counts of tag, should be 1 for everything anyway'),
+        //*this is used so it filters out duplicate tags?, not sure why i'm doing this here, probably just to easily move between coversion functions
+        //Then filter from those responses tags that match given namespace, here "whatever you set as your grouping namespace" and "page"
 
+
+        //This turns the responses into a map for later filtering
+        //transformIntoTuple could be done once frankly, saving some execution time
+        let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
+        //This gives all tags for grouping namespace, ideally only 1 result should exist
+        let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
+        //This gives the page tags for given file, ideally should exist only 1 but who knows
         let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
 
         if (filterTags.length !== 0) { //Don't create group for files with no group namespace
-          let temp = groupMap.get(filterTags[0].value)
-          if (temp != undefined) {
+          //Check if tag group already exist in groupMap
+          //If not create a new entry
+          //If exist update with appending a current one
+          let tempResult = resultMap.get(filterTags[0].value)
+          if (tempResult != undefined) {
             //Remove every next image belonging to the group
-            hashesCopy.splice(hashesCopy.indexOf(element.hash), 1)
-            countMap.set(temp.hashes[0], countMap.get(temp.hashes[0]) + 1)
-            groupMap.set(filterTags[0].value,
-              {
-                hashes: [...temp.hashes, element.hash],
-                pageTags: [...temp.pageTags, pageTags],
-                timeModified: [...temp.timeModified, element.time_modified]
-              })
+            //TO DELETEhashesCopy.splice(hashesCopy.indexOf(element.hash), 1)
+            resultMap.set(filterTags[0].value, { cover: tempResult.cover, entries: [...tempResult.entries, element] })
           }
-          else {
-            groupMap.set(filterTags[0].value,
-              {
-                hashes: [element.hash],
-                pageTags: [pageTags],
-                timeModified: [element.time_modified]
-              })
-            countMap.set(element.hash, 1)
+          else { //This branch creates a new entry in groupMap
+            resultMap.set(filterTags[0].value, { cover: element.hash, entries: [element] })
           }
+        }
+        else { //If no grouping namespaces just push a single
+          resultMap.set(element.hash, { cover: element.hash, entries: [element] })
         }
       }
     }
+    let returnHashes: Array<string> = []
+    let searchArray: Array<Result> = []
+    resultMap.forEach((entry) => {
+      returnHashes.push(entry.cover)
+      searchArray.push(entry)
+      countMap.set(entry.cover, entry.entries.length)
+    })
+
+    setSearch({ hashes: unsortedArray, metadataResponses: responsesSorted, groupedHashes: searchArray })
     setGroupCount(countMap)
-    return hashesCopy
+    return returnHashes //This is what will be displayed in the end
   }
 
   async function Search() {
@@ -140,13 +179,17 @@ export function SearchPage(props: SearchPageProps) {
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
     let responseHashes = response.data.hashes
 
-    setUngroupedHashes(responseHashes) //For use later with grouping
+
+
+    //setSearch({ ...search, hashes: responseHashes })
+    //setUngroupedHashes(responseHashes) //For use later with grouping
+
     grabMetaData(responseHashes)
   }
 
   async function grabMetaData(hashes: Array<string>) {
     const STEP = 100
-    let responses = []
+    let responses: Array<API.MetadataResponse> = []
     if (hashes.length > 0) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
         let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
@@ -160,7 +203,7 @@ export function SearchPage(props: SearchPageProps) {
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
 
-      setHashes(h)
+      //setHashes(h)
       setLoaded(true)
     }
 
@@ -234,7 +277,16 @@ export function SearchPage(props: SearchPageProps) {
   }, [])
 
   useEffect(() => {
-    if (ungroupedHashes?.length > 0) { grabMetaData(ungroupedHashes) }
+    function getHashArray(hashes: Array<Result>): Array<string> {
+      let hashArray: Array<string> = []
+      for (let element of hashes) {
+        hashArray.push(element.cover)
+      }
+
+      return hashArray
+    }
+
+    if (search.hashes?.length > 0) { grabMetaData(getHashArray(search.hashes)) }
   }, [groupFiles])
 
   useEffect(() => {
@@ -382,7 +434,7 @@ export function SearchPage(props: SearchPageProps) {
           addTag={addTag}
           type={props.type}
           page={params.page}
-          hashes={hashes}
+          hashes={(groupFiles) && search.groupedHashes || search.hashes}
           changePage={changePage}
           counts={groupCount}
         />

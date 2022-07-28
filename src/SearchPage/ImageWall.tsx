@@ -5,12 +5,13 @@ import PageButtons from './PageButtons';
 import './ImageWall.css'
 
 import { isMobile } from '../styleUtils'
+import { Result } from './SearchPage';
 
 interface ImageWallProps {
   grouping: boolean;
   type: string;
   page: number;
-  hashes: Array<string>;
+  hashes: Array<Result>;
   addTag: Function;
   changePage: Function;
   counts: Map<any, any>;
@@ -28,6 +29,8 @@ export function ImageWall(props: ImageWallProps) {
   const [thumbs, setThumbs] = React.useState(CreateNewThumbnailList(props.page))
 
   function CreateNewThumbnailList(page: number) {
+
+
     let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
     let list: Array<JSX.Element> = [];
     for (let hash of hashSlice) {
@@ -36,19 +39,19 @@ export function ImageWall(props: ImageWallProps) {
           loadMeta={true}
           type={props.type}
           addTag={props.addTag}
-          key={hash}
-          hash={hash}
-          count={props.counts.get(hash)}
+          key={hash.cover}
+          hash={hash.cover}
+          count={props.counts.get(hash.cover)}
           replace={false}
         />);
     }
     return list;
   }
 
-  function getHashSlice(hashes: Array<string>, page: number): string {
+  function getHashSlice(hashes: Array<Result>, page: number): string {
     let slices = ''
     for (let id = 0 + ((page - 1) * viewSize); id < Math.min((page) * viewSize, props.hashes.length); id++) {
-      slices += props.hashes[id]
+      slices += hashes[id]?.cover
     }
 
     return slices
