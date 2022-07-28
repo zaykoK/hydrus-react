@@ -42,12 +42,6 @@ export function SearchPage(props: SearchPageProps) {
   const [search, setSearch] = useState<Search>({ hashes: [], groupedHashes: [], metadataResponses: [] })
   //Current search tags
   const [tags, setTags] = useState<Array<Array<string>>>()
-
-  //Result of search for current search tags
-  //const [hashes, setHashes] = useState<Array<string>>([])
-  //Unfiltered result of search for current search tags
-  //const [ungroupedHashes, setUngroupedHashes] = useState([])
-  
   //Current search parameters, tags(unused?) and current page of search results
   const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0 })
   //List of unique tags for given files
@@ -93,14 +87,12 @@ export function SearchPage(props: SearchPageProps) {
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
-    let countMap = new Map() //This holds count of elements in each group entry, key is first entry in groupMap.hashes and value is count of items in groupMap.hashes, frankly probably unnecessary as I think i could just do a quick lenght read at the end and use that, we'll see
-    //let hashesCopy = hashes.slice() //This eventually becomes reduced with grouped images "hiding" behind a representant
+
     //Sorting responses by time_modified so it matches actual hash list order
     //TODO implement the rest of sorting schemes
     let responsesSorted = responses.sort((a, b) => b.time_modified - a.time_modified) //Newest imported first
 
     let resultMap: Map<string, Result> = new Map<string, Result>()
-
     let unsortedArray: Array<Result> = []
 
 
@@ -130,16 +122,11 @@ export function SearchPage(props: SearchPageProps) {
         let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
 
         if (filterTags.length !== 0) { //Don't create group for files with no group namespace
-          //Check if tag group already exist in groupMap
-          //If not create a new entry
-          //If exist update with appending a current one
-          let tempResult = resultMap.get(filterTags[0].value)
-          if (tempResult != undefined) {
-            //Remove every next image belonging to the group
-            //TO DELETEhashesCopy.splice(hashesCopy.indexOf(element.hash), 1)
+          let tempResult = resultMap.get(filterTags[0].value)           //Check if tag group already exist in tempResult
+          if (tempResult != undefined) {           //If exist update with appending a current one
             resultMap.set(filterTags[0].value, { cover: tempResult.cover, entries: [...tempResult.entries, element] })
           }
-          else { //This branch creates a new entry in groupMap
+          else {           //If not create a new entry
             resultMap.set(filterTags[0].value, { cover: element.hash, entries: [element] })
           }
         }
@@ -153,11 +140,9 @@ export function SearchPage(props: SearchPageProps) {
     resultMap.forEach((entry) => {
       returnHashes.push(entry.cover)
       searchArray.push(entry)
-      countMap.set(entry.cover, entry.entries.length)
     })
 
     setSearch({ hashes: unsortedArray, metadataResponses: responsesSorted, groupedHashes: searchArray })
-    setGroupCount(countMap)
     return returnHashes //This is what will be displayed in the end
   }
 
@@ -179,11 +164,6 @@ export function SearchPage(props: SearchPageProps) {
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
     let responseHashes = response.data.hashes
 
-
-
-    //setSearch({ ...search, hashes: responseHashes })
-    //setUngroupedHashes(responseHashes) //For use later with grouping
-
     grabMetaData(responseHashes)
   }
 
@@ -203,7 +183,6 @@ export function SearchPage(props: SearchPageProps) {
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
 
-      //setHashes(h)
       setLoaded(true)
     }
 
@@ -436,7 +415,6 @@ export function SearchPage(props: SearchPageProps) {
           page={params.page}
           hashes={(groupFiles) && search.groupedHashes || search.hashes}
           changePage={changePage}
-          counts={groupCount}
         />
       </div>
     </div>

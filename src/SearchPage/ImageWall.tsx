@@ -14,7 +14,6 @@ interface ImageWallProps {
   hashes: Array<Result>;
   addTag: Function;
   changePage: Function;
-  counts: Map<any, any>;
 }
 
 export function ImageWall(props: ImageWallProps) {
@@ -41,7 +40,7 @@ export function ImageWall(props: ImageWallProps) {
           addTag={props.addTag}
           key={hash.cover}
           hash={hash.cover}
-          count={props.counts.get(hash.cover)}
+          count={hash.entries.length}
           replace={false}
         />);
     }
