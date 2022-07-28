@@ -14,9 +14,13 @@ interface ImageWallProps {
   hashes: Array<Result>;
   addTag: Function;
   changePage: Function;
+  loadingProgress: string;
+  loaded: boolean;
 }
 
 export function ImageWall(props: ImageWallProps) {
+  const [loaded, setLoaded] = React.useState<boolean>(false)
+
   let width = (5 / 6) * (window.innerWidth);
   let elements = Math.floor(width / 180);
 
@@ -61,7 +65,7 @@ export function ImageWall(props: ImageWallProps) {
   React.useEffect(() => {
     function handleKeyPress(e: KeyboardEvent) {
       function NextPage() {
-        if (props.page + 1 <= returnPageCount()) {props.changePage(props.page + 1)}
+        if (props.page + 1 <= returnPageCount()) { props.changePage(props.page + 1) }
       }
       function PreviousPage() {
         if (props.page - 1 > 0) { props.changePage(props.page - 1) }
@@ -88,9 +92,9 @@ export function ImageWall(props: ImageWallProps) {
     return count
   }
 
-  function WrapperList(props: { thumbs: Array<JSX.Element> }) {
-    return (
-      <div className="WrapperList">{props.thumbs}</div>
+  function WrapperList(props: { thumbs: Array<JSX.Element>, loadingProgress: string, loaded: boolean }) {
+    return ((props.loaded && thumbs.length > 0) &&
+      <div className="WrapperList">{props.thumbs}</div> || <div className="WrapperList loading">LOADING {props.loadingProgress}</div>
     );
   }
 
@@ -103,7 +107,9 @@ export function ImageWall(props: ImageWallProps) {
     <div className='imageWall' >
       <WrapperList
         key={getHashSlice(props.hashes, props.page)}
-        thumbs={thumbs} />
+        thumbs={thumbs}
+        loadingProgress={props.loadingProgress}
+        loaded={props.loaded} />
       <PageButtons
         pages={returnPageCount()}
         offset={getOffsetValue(isMobile())}

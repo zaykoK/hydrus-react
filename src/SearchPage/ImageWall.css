@@ -6,6 +6,16 @@
     gap: 15px;
     border-radius: 15px;
 }
+.WrapperList.loading {
+    display: flex;
+    flex-flow: row wrap;
+    place-items: flex-start;
+    justify-content: center;
+    padding: 15px;
+    gap: 15px;
+    border-radius: 15px;
+}
+
 .WrapperList.mobile {
     justify-content: center;
 }

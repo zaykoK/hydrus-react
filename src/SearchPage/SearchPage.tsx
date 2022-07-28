@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImageWall } from "./ImageWall";
 import { TagSearchBar } from "./TagSearchbar";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -23,14 +23,11 @@ type ParamsType = {
   page: number;
 }
 
-//Some testing stuff
-
-type Search = {
-  hashes: Array<Result>;
-  groupedHashes: Array<Result>;
+type SearchResults = {
+  results: Array<Result>;
+  groupedResults: Array<Result>;
   metadataResponses: Array<API.MetadataResponse>;
 }
-
 
 export type Result = {
   cover: string; //Representant of a result
@@ -39,24 +36,23 @@ export type Result = {
 
 export function SearchPage(props: SearchPageProps) {
   //Search object
-  const [search, setSearch] = useState<Search>({ hashes: [], groupedHashes: [], metadataResponses: [] })
+  const [searchResults, setSearchResults] = useState<SearchResults>({ results: [], groupedResults: [], metadataResponses: [] })
   //Current search tags
   const [tags, setTags] = useState<Array<Array<string>>>()
-  //Current search parameters, tags(unused?) and current page of search results
-  const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0 })
   //List of unique tags for given files
   const [fileTags, setFileTags] = useState<Array<TagTools.Tuple>>([])
-  //Whether or not search results should be grouped
-  const [groupFiles, setGroupFiles] = useState<boolean>(getGroupingToggle())
-  //Map of grouped files count for each of the results
-  const [groupCount, setGroupCount] = useState<Map<any, any>>(new Map())
+  //Current search parameters, tags(unused?) and current page of search results
+  const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0 })
   //Field that accesses "actual" current URL parameters
   const { parm } = useParams<string>()
   //Whether page has finished loading or not (doesn't work that well now)
   const [loaded, setLoaded] = useState<boolean>(false)
   //Whether panel with tag info should show up (right now only mobile mode has this)
   const [sideBarVisible, setSideBarVisible] = useState<boolean>(false)
+  //Whether or not search results should be grouped
+  const [groupFiles, setGroupFiles] = useState<boolean>(getGroupingToggle())
 
+  const [loadingProgress, setLoadingProgress] = useState<string>('')
 
   //Results of previous search, used to check if on a new rerender a search changed
   const previousSearch = useRef<Array<Array<string>>>()
@@ -81,8 +77,6 @@ export function SearchPage(props: SearchPageProps) {
     setGroupFiles(!groupFiles)
   }
 
-
-
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
     //TODO
     //Sort tags in groups according to page(or some other) order
@@ -95,11 +89,8 @@ export function SearchPage(props: SearchPageProps) {
     let resultMap: Map<string, Result> = new Map<string, Result>()
     let unsortedArray: Array<Result> = []
 
-
     for (let element of responsesSorted) {
       unsortedArray.push({ cover: element.hash, entries: [element] })
-      //if (element.hash === hashes[counter]) {console.log('order correct')}
-      //else {console.log('order incorrect')}
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
       //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
@@ -119,7 +110,7 @@ export function SearchPage(props: SearchPageProps) {
         //This gives all tags for grouping namespace, ideally only 1 result should exist
         let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
         //This gives the page tags for given file, ideally should exist only 1 but who knows
-        let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
+        //let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
 
         if (filterTags.length !== 0) { //Don't create group for files with no group namespace
           let tempResult = resultMap.get(filterTags[0].value)           //Check if tag group already exist in tempResult
@@ -142,11 +133,11 @@ export function SearchPage(props: SearchPageProps) {
       searchArray.push(entry)
     })
 
-    setSearch({ hashes: unsortedArray, metadataResponses: responsesSorted, groupedHashes: searchArray })
+    setSearchResults({ results: unsortedArray, metadataResponses: responsesSorted, groupedResults: searchArray })
     return returnHashes //This is what will be displayed in the end
   }
 
-  async function Search() {
+  async function search() {
     //If there is nothing to search for or search is identical to previous don't do anything
     if (tags === undefined) {
       //console.log('not doing anything undefined');
@@ -156,13 +147,18 @@ export function SearchPage(props: SearchPageProps) {
       //console.log("not doing anything same search")
       return
     }
+    if (loaded) { sessionStorage.removeItem('searchScroll') }
+    setLoaded(false)
+
 
     previousSearch.current = tags.slice()
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
 
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
-    let responseHashes = response.data.hashes
+    let responseHashes: Array<string> = response.data.hashes
+
+    setLoadingProgress('0/' + responseHashes.length)
 
     grabMetaData(responseHashes)
   }
@@ -174,18 +170,18 @@ export function SearchPage(props: SearchPageProps) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
         let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
         if (response) { responses.push(response.data.metadata) }
+        setLoadingProgress(i + '/' + hashes.length)
       }
       responses = responses.flat()
+      setLoadingProgress(hashes.length + '/' + hashes.length)
 
       createListOfUniqueTags(responses)
       let h = hashes
       if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
-
       setLoaded(true)
     }
-
   }
 
   function createListOfUniqueTags(responses: Array<API.MetadataResponse>): void {
@@ -256,24 +252,11 @@ export function SearchPage(props: SearchPageProps) {
   }, [])
 
   useEffect(() => {
-    function getHashArray(hashes: Array<Result>): Array<string> {
-      let hashArray: Array<string> = []
-      for (let element of hashes) {
-        hashArray.push(element.cover)
-      }
-
-      return hashArray
-    }
-
-    if (search.hashes?.length > 0) { grabMetaData(getHashArray(search.hashes)) }
-  }, [groupFiles])
-
-  useEffect(() => {
     refreshParams()
   }, [parm])
 
   useEffect(() => {
-    Search()
+    search()
   }, [tags])
 
   useEffect(() => {
@@ -391,8 +374,6 @@ export function SearchPage(props: SearchPageProps) {
     return "topBarPadding"
   }
 
-
-
   return <>
     <div className={getTopBarPaddingStyle()} />
     {(tags) && <TagSearchBar infoAction={toggleSideBar} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
@@ -413,8 +394,10 @@ export function SearchPage(props: SearchPageProps) {
           addTag={addTag}
           type={props.type}
           page={params.page}
-          hashes={(groupFiles) && search.groupedHashes || search.hashes}
+          hashes={(groupFiles) && searchResults.groupedResults || searchResults.results}
           changePage={changePage}
+          loadingProgress={loadingProgress}
+          loaded={loaded}
         />
       </div>
     </div>
