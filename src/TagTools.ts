@@ -47,7 +47,10 @@ export function tagArrayToNestedArray(tagArray: Array<string>): Array<Array<stri
 }
 
 
-//Transforms tag array into a map with count of those tags
+
+/**
+ * Transforms tag array into a map with count of those tags
+ */
 export function tagArrayToMap(tags: Array<string>) {
   return tags.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map()); //I have no clue what this actually does, need to check it
 }
@@ -57,7 +60,12 @@ export type Tuple = {
   value: string;
   count: number;
 }
-
+/**
+ * This turns a tag Map into a Array of Tuples
+ * Map => [ namespace:'', value:'', count:1]
+ * @param tags 
+ * @returns 
+ */
 export function transformIntoTuple(tags: Map<string, number>): Array<Tuple> {
   let tagsSorted = []
 
