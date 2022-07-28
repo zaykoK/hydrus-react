@@ -125,7 +125,6 @@ export function FileContent(props: FileContentProps) {
       let image = <img
         {...swipeHandlers}
         onClick={() => changeZoom()}
-        onLoad={() => console.log(props.content)}
         onContextMenu={(e) => e.preventDefault()}
         src={src}
         className={style}
