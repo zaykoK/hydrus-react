@@ -24,7 +24,7 @@ export function ImageWall(props: ImageWallProps) {
   let width = (5 / 6) * (window.innerWidth);
   let elements = Math.floor(width / 180);
 
-  let viewSize = 50;
+  let viewSize = 1000;
   if (props.type === 'comic') {
     viewSize = 14
   }
@@ -46,6 +46,7 @@ export function ImageWall(props: ImageWallProps) {
           hash={hash.cover}
           count={hash.entries.length}
           replace={false}
+          metadata={hash.entries}
         />);
     }
     return list;

@@ -18,6 +18,7 @@ interface ImageThumbnailProps {
   replace: boolean;
   type: string;
   count?: number;
+  metadata?: Array<API.MetadataResponse>;
 }
 
 
@@ -104,10 +105,21 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   }
 
   async function GrabMetadata(hash: string) {
-    let responseMeta = await API.api_get_file_metadata({ hash: hash, hide_service_names_tags: true })
-    if (!responseMeta) { return }
-    let meta = responseMeta.data.metadata[0]
-
+    let meta
+    if (props.metadata !== undefined && props.metadata.length > 0) {
+      //Find index of hash
+      for (let element of props.metadata) {
+        if (element.hash == props.hash) { 
+          meta = element; 
+          break
+        }
+      }
+    }
+    else {
+      let responseMeta = await API.api_get_file_metadata({ hash: hash, hide_service_names_tags: true })
+      if (!responseMeta) { return }
+      meta = responseMeta.data.metadata[0]
+    }
     setMetadata(meta)
   }
 
