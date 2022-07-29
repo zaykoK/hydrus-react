@@ -54,7 +54,6 @@ export function api_version() {
 }
 
 export async function api_get_services() {
-  console.log('Grabbing all-tags service key')
   axios.get(server_address + '/get_services', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -66,51 +65,19 @@ export async function api_get_services() {
     })
     .catch(function (error) {
       // handle error
-      console.log(error);
+      console.error(error);
     })
     .then(function () {
       // always executed
     });
 }
 
-export function sessionKeyRoutine(): void {
-  if (sessionStorage.getItem('hydrus-all-known-tags') == null) {
-    api_get_services();
-  }
-
-  api_verify_access_key().then(function (response) {
-    //console.log(response)
-  })
-    .catch(function (error) {
-      // handle error
-      //console.log(error);
-      //console.log(error.message)
-      sessionStorage.removeItem('hydrus-session-key')
-    })
-
-  if (localStorage.getItem('hydrus-api-key') != null && sessionStorage.getItem('hydrus-session-key') == null) {
-    api_get_session_key();
-  }
-}
-
-export function api_get_session_key(): void {
-  axios.get(server_address + '/session_key', {
+export async function api_get_session_key() {
+  return axios.get(server_address + '/session_key', {
     params: {
       "Hydrus-Client-API-Access-Key": localStorage.getItem('hydrus-api-key')
     }
   })
-    .then(function (response) {
-      // handle success
-      //console.log(response);
-      sessionStorage.setItem("hydrus-session-key", response.data.session_key);
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .then(function () {
-      // always executed
-    });
 }
 
 interface ApiSearchTagsProps {
