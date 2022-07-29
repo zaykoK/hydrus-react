@@ -177,7 +177,7 @@ export function SearchPage(props: SearchPageProps) {
 
       createListOfUniqueTags(responses)
       let h = hashes
-      if (groupFiles == true) { h = groupImages(responses, hashes, getGroupNamespace()) }
+      h = groupImages(responses, hashes, getGroupNamespace())
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
