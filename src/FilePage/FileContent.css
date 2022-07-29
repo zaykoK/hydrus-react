@@ -15,7 +15,8 @@
   padding: 0px;
   height: 94vh;
   width: auto;
-  max-width: 100vw;
+  max-width: 100%;
+  object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
   cursor: zoom-in;
 }
