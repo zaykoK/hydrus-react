@@ -164,7 +164,7 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   async function grabMetaData(hashes: Array<string>) {
-    const STEP = 100
+    const STEP = 50
     let responses: Array<API.MetadataResponse> = []
     if (hashes.length > 0) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
