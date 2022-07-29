@@ -77,9 +77,9 @@ export function ImageWall(props: ImageWallProps) {
       if (e.key === "ArrowLeft") { PreviousPage() }
     }
 
-    document.addEventListener('keydown', handleKeyPress)
+    document.addEventListener('keyup', handleKeyPress)
     return () => {
-      document.removeEventListener('keydown', handleKeyPress)
+      document.removeEventListener('keyup', handleKeyPress)
     }
   })
 
