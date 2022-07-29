@@ -49,6 +49,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       case 'comic':
         return 'thumbnailWrapper thumbnailWrapperComic'
       default: //image
+        if(isMobile()) {return 'thumbnailWrapper mobile'}
         return 'thumbnailWrapper'
     }
   }

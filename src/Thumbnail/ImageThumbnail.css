@@ -20,11 +20,18 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0px 0px 5px 0px black;
-    height: 185px;
-    width: 185px;
+    min-height: 120px;
+    min-width: 120px;
+    height: calc(12.3vw - 30px);
+    width: calc(12.3vw - 30px);
     max-height: 43vw;
     max-width: 43vw;
     transition: all 1s;
+}
+.thumbnailWrapper.mobile {
+    height: 185px;
+    width: 185px;
+    border-radius: 10px;
 }
 
 .thumbnailWrapper:hover .widgetCount {
