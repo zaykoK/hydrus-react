@@ -5,10 +5,6 @@ import { getMobileStyle } from "./StorageUtils"
 export function isMobile() {
     if (getMobileStyle() == 'true') { return true }
     return false
-
-
-    //if (window.innerWidth < 610) { return true }
-    //return false
 }
 
 export function isLandscapeMode() {
