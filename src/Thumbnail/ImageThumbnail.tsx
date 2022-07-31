@@ -50,7 +50,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       case 'comic':
         return 'thumbnailWrapper thumbnailWrapperComic'
       default: //image
-        if(isMobile()) {return 'thumbnailWrapper mobile'}
+        if (isMobile()) { return 'thumbnailWrapper mobile' }
         return 'thumbnailWrapper'
     }
   }
@@ -80,7 +80,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
             tagStyle = {
               ...tagStyle,
               paddingRight: '5px',
-              cursor:'pointer'
+              cursor: 'pointer'
             }
           }
           innerArray.push(
@@ -109,8 +109,8 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     if (props.metadata !== undefined && props.metadata.length > 0) {
       //Find index of hash
       for (let element of props.metadata) {
-        if (element.hash == props.hash) { 
-          meta = element; 
+        if (element.hash == props.hash) {
+          meta = element;
           break
         }
       }
@@ -134,7 +134,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   }
 
   function ThumbContent(props: { thumbnail: string | undefined, type: string, hash: string, replace: boolean }) {
-
     function determineThumbNavigation(replace: boolean) {
       sessionStorage.setItem('searchScroll', window.scrollY.toString())
       navigate(returnFileLink(), { replace: replace })
@@ -151,6 +150,29 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
 
   const thumbnailTopTags: Array<string> = ['creator', 'series']
   const thumbnailBottomTags: Array<string> = []
+
+  interface ResultOverviewProps {
+    metadata:API.MetadataResponse
+  }
+
+  function ResultOverview(props:ResultOverviewProps) {
+
+    return <div className='resultOverview'>
+      <div className='metadataSection'>
+        <div className='coverSection'>
+
+        </div>
+        <div className='resultTags'>
+
+        </div>
+      </div>
+      <div className='resultList'>
+
+      </div>
+    </div>
+
+  }
+
 
   return (
     <div className={getWrapperStyle(props.type)}

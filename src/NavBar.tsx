@@ -39,19 +39,19 @@ function Navigation() {
   return (
     <nav className={returnBarStyle(expanded)}>
       <div className={getNavLinkStyle()}>
-        <img src={IconHamburger} className={getNavButtonStyle()} onClick={() => { setExpanded(!expanded) }} />
+        <img src={IconHamburger} alt='hamburger' className={getNavButtonStyle()} onClick={() => { setExpanded(!expanded) }} />
         <span className="navButtonLabel">Menu</span>
       </div>
       <NavLink className={getNavLinkStyle()} to="/">
-        <img src={IconHome} className={getNavButtonStyle()} />
+        <img src={IconHome} alt='home page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Home</div>
       </NavLink>
       <NavLink className={getNavLinkStyle()} to="/comics/page=1">
-        <img src={IconComics} className={getNavButtonStyle()} />
+        <img src={IconComics} alt='comic page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Comics</div>
       </NavLink>
       <NavLink className={getNavLinkStyle()} to="/settings">
-        <img src={IconSettings} className={getNavButtonStyle()} />
+        <img src={IconSettings} alt='settings page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Settings</div>
       </NavLink >
       <MobileModeButton />

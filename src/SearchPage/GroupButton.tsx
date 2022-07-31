@@ -16,6 +16,7 @@ export function GroupButton(props: GroupButtonsProps) {
   }
 
   return <img
+    alt='group button'
     className={returnGroupButtonStyle(getGroupingToggle())}
     src={props.icon || IconGroup}
     onClick={() => { props.clickAction() }} />

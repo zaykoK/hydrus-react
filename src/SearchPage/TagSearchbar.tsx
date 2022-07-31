@@ -47,12 +47,12 @@ export function TagSearchBar(props: SearchTagsProps) {
     if (JSON.stringify(props.tags) !== JSON.stringify(tags)) {
       setTags(props.tags)
     }
-  })
+  }, [props.tags, tags])
 
   function TagInput(props: { tags: Array<Array<string>>, removeTag: Function }) {
 
     function getSearchBarStyle() {
-      if (isMobile()) {return "searchBar mobile"}
+      if (isMobile()) { return "searchBar mobile" }
       return "searchBar"
     }
 
@@ -81,7 +81,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     <div className="buttonsBar">
       <div className="topBarButton" />
       <GroupButton icon={IconGroup} clickAction={props.groupAction} />
-      {(isMobile()) &&<GroupButton icon={IconInfo} clickAction={props.infoAction} />}
+      {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
     {TagInput({ removeTag: props.removeTag, tags: tags })}
   </div>;

@@ -32,7 +32,7 @@ export function MobileModeButton() {
   }
 
   function getLabelText() {
-    if (mobileMode) {return 'Mobile'}
+    if (mobileMode) { return 'Mobile' }
     return "Desktop"
   }
 
@@ -45,8 +45,9 @@ export function MobileModeButton() {
 
   return <div className={getNavLinkStyle()}>
     <img className={getNavButtonStyle()}
-         src={getIcon(mobileMode)}
-         onClick={() => { toggleMobileMode() }} />
+      alt='mobile mode button'
+      src={getIcon(mobileMode)}
+      onClick={() => { toggleMobileMode() }} />
     <div className="navButtonLabel">{getLabelText()}</div>
   </div>
 }

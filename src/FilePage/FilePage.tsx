@@ -11,10 +11,10 @@ import IconLeft from '../assets/arrow-left.svg'
 import Info from '../assets/info.svg'
 import IconRight from '../assets/arrow-right.svg'
 
-import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
+import { getRelatedVisibile } from '../StorageUtils';
 import { useNavigate } from "react-router-dom";
 
-import { isLandscapeMode, isMobile } from '../styleUtils';
+import { isMobile } from '../styleUtils';
 
 import './FilePage.css'
 import '../SearchPage/GroupButton.css'
@@ -46,11 +46,6 @@ export function FilePage(props: FilePageProps) {
     return true
   }
 
-  //If file hash changes reload tags
-  React.useEffect(() => {
-    loadTags();
-  }, [fileHash])
-
   function returnFileLink(hash: string): string {
     return "/file/" + hash
   }
@@ -61,13 +56,6 @@ export function FilePage(props: FilePageProps) {
     document.documentElement.requestFullscreen()
 
   }
-
-  React.useEffect(() => {
-    window.screen.orientation.addEventListener('change', handleScreenChange)
-    return () => {
-      window.screen.orientation.removeEventListener('change', handleScreenChange)
-    }
-  }, [])
 
   //"This is ... too much" - George L.
   //TODO find some way to simplify this whole next/prev image
@@ -80,7 +68,7 @@ export function FilePage(props: FilePageProps) {
     //Move to next
     if (index - 1 < 0) { return PreviousSearchImage() }
     if (searchList.indexOf(elementList[index - 1]) === -1) {
-      if (searchList.indexOf(fileHash||'') !== -1) {
+      if (searchList.indexOf(fileHash || '') !== -1) {
         sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
       }
     }
@@ -95,7 +83,7 @@ export function FilePage(props: FilePageProps) {
     //Move to next
     if (index + 1 >= elementList.length) { return NextSearchImage() }
     if (searchList.indexOf(elementList[index + 1]) === -1) {
-      if (searchList.indexOf(fileHash||'') !== -1) {
+      if (searchList.indexOf(fileHash || '') !== -1) {
         sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
       }
     }
@@ -153,11 +141,18 @@ export function FilePage(props: FilePageProps) {
 
   React.useEffect(() => {
     document.addEventListener('keydown', handleKeyPress)
+    window.screen.orientation.addEventListener('change', handleScreenChange)
 
     return () => {
       document.removeEventListener('keydown', handleKeyPress)
+      window.screen.orientation.removeEventListener('change', handleScreenChange)
     }
   }, [])
+
+  //If file hash changes reload tags
+  React.useEffect(() => {
+    loadTags();
+  }, [fileHash])
 
   async function loadTags() {
     let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
@@ -241,19 +236,19 @@ export function FilePage(props: FilePageProps) {
     <div className={getPaddingStyle()}></div>
     <div className={getTopBarStyle()}>
       <div id='home-button-padding' className="topBarButton" />
-      <img src={IconRelated} className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-      <img src={IconLeft} className="topBarButton" onClick={() => { PreviousImage() }} />
-      <img src={IconRight} className="topBarButton" onClick={() => { NextImage() }} />
-      {(isMobile()) && <img src={Info} className="topBarButton" onClick={() => { switchSidebar() }} />}
+      <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage() }} />
+      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage() }} />
+      {(isMobile()) && <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />}
 
     </div>
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
       <div className={getSideBarStyle()}>
-        {(tags != undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
-        {(metadata != undefined) && <FileMetaData metadata={metadata} />}
+        {(tags !== undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
+        {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
       </div>
       <div className={getContentStyle(isMobile())} >
-        {(metadata != undefined) &&
+        {(metadata !== undefined) &&
           <FileContent
             hash={fileHash}
             type={metadata.mime}

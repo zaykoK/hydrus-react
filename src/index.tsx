@@ -2,13 +2,13 @@ import ReactDOM from 'react-dom/client';
 import { SearchPage } from './SearchPage/SearchPage';
 import { FilePage } from './FilePage/FilePage';
 import { SettingsPage } from './SettingsPage/SettingsPage';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigate } from 'react-router-dom'
 import Navigation from './NavBar';
 import * as API from './hydrus-backend'
 
 import './index.css'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export class GlobalStateObject {
   //Stub of an idea to hold some data between pages
@@ -30,7 +30,7 @@ export class GlobalStateObject {
 }
 
 function App() {
-  const [globalState, setGlobalState] = useState<GlobalStateObject>(new GlobalStateObject())
+  const globalState = useRef<GlobalStateObject>(new GlobalStateObject())
   const [token, setToken] = useState<boolean>(false)
   const [settings, setSettings] = useState<boolean>(false)
 
@@ -71,14 +71,14 @@ function App() {
   return <div className="app">
     {(token) && <Router>
       <Navigation />
-      {(settings) &&
+      {((settings) &&
         <Routes>
           <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
           <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} />} />
           <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} />} />
           <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} />} />
           <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} />} />
-        </Routes> || <Routes>
+        </Routes>) || <Routes>
           <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} />} />
         </Routes>}
     </Router>}
