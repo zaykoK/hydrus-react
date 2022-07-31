@@ -12,7 +12,8 @@
       "allowSyntheticDefaultImports": true,
       "sourceMap": true,
       "module": "es2020",
-      "moduleResolution": "node"
+      "moduleResolution": "Node"
     },
-    "include": ["src","src/**/*"]
+    "include": ["src","src/**/*"],
+    "files": ["global.d.ts"]
   }

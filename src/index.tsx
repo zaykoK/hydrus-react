@@ -14,6 +14,8 @@ export class GlobalStateObject {
   //Stub of an idea to hold some data between pages
   //Could use this to keep search results etc.
 
+  globalValue: string;
+
   constructor() {
     this.globalValue = ''
   }
@@ -22,15 +24,15 @@ export class GlobalStateObject {
     return this.globalValue
   }
 
-  setGlobalValue(value) {
+  setGlobalValue(value: string) {
     this.globalValue = value
   }
 }
 
 function App() {
-  const [globalState, setGlobalState] = useState(new GlobalStateObject())
-  const [token, setToken] = useState(false)
-  const [settings, setSettings] = useState(false)
+  const [globalState, setGlobalState] = useState<GlobalStateObject>(new GlobalStateObject())
+  const [token, setToken] = useState<boolean>(false)
+  const [settings, setSettings] = useState<boolean>(false)
 
   async function sessionKeyRoutine() {
     //If no settings, automatically move to settings page
@@ -66,22 +68,26 @@ function App() {
 
   }, [])
 
-  return <div className="app" tabIndex='0'>
+  return <div className="app">
     {(token) && <Router>
       <Navigation />
       {(settings) &&
-      <Routes>
-        <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
-        <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} />} />
-        <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} />} />
-        <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} />} />
-        <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} />} />
-      </Routes> || <Routes>
-        <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} />} />
-      </Routes>}
+        <Routes>
+          <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
+          <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} />} />
+          <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} />} />
+          <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} />} />
+          <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} />} />
+        </Routes> || <Routes>
+          <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} />} />
+        </Routes>}
     </Router>}
   </div>
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+const rootElement = document.getElementById('root')
+
+if (rootElement !== null) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+}
