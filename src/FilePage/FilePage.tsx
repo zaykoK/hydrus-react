@@ -5,14 +5,12 @@ import { useParams } from 'react-router-dom';
 import * as TagTools from '../TagTools'
 import { TagList } from '../TagList'
 import * as API from '../hydrus-backend';
-// @ts-ignore
+
 import IconRelated from '../assets/related.svg'
-// @ts-ignore
 import IconLeft from '../assets/arrow-left.svg'
-// @ts-ignore
 import Info from '../assets/info.svg'
-// @ts-ignore
 import IconRight from '../assets/arrow-right.svg'
+
 import { getRelatedVisibile, getRelatedNamespaces } from '../StorageUtils';
 import { useNavigate } from "react-router-dom";
 

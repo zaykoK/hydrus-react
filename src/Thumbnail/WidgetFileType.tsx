@@ -1,8 +1,5 @@
-// @ts-ignore
 import IconImage from '../assets/filetype-picture.svg'
-// @ts-ignore
 import IconVideo from '../assets/filetype-video.svg'
-// @ts-ignore
 import IconOther from '../assets/filetype-unknown.svg'
 import { MetadataResponse } from '../hydrus-backend';
 import './WidgetFileType.css'

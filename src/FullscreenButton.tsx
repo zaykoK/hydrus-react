@@ -1,6 +1,4 @@
-// @ts-ignore
 import IconFullscreenOn from './assets/fullScreenOn.svg'
-// @ts-ignore
 import IconFullscreenOff from './assets/fullScreenOff.svg'
 import { useState } from 'react';
 

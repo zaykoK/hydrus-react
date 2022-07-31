@@ -1,5 +1,4 @@
 import { getGroupingToggle } from '../StorageUtils';
-// @ts-ignore
 import IconGroup from '../assets/group.svg'
 
 import './GroupButton.css'

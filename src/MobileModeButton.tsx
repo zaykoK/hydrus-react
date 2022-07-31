@@ -1,6 +1,4 @@
-// @ts-ignore
 import IconMobile from './assets/mode-mobile.svg'
-// @ts-ignore
 import IconDesktop from './assets/mode-desktop.svg'
 import { useState } from 'react';
 

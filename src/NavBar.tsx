@@ -1,12 +1,8 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
-// @ts-ignore
 import IconHome from './assets/menu-home.svg'
-// @ts-ignore
 import IconComics from './assets/filetype-picture.svg'
-// @ts-ignore
 import IconSettings from './assets/menu-settings.svg'
-// @ts-ignore
 import IconHamburger from './assets/menu-burger.svg'
 
 import "./NavBar.css"

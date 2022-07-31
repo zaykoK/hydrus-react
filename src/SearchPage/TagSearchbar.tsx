@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import TagDisplay from '../TagDisplay';
 import GroupButton from './GroupButton';
-//@ts-ignore
 import IconInfo from '../assets/info.svg'
-//@ts-ignore
 import IconGroup from '../assets/group.svg'
 
 import './TagSearchbar.css'
