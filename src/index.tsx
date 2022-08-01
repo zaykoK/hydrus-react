@@ -44,7 +44,11 @@ function App() {
     setSettings(true)
     //If session key exist, verify it
     if (sessionStorage.getItem('hydrus-session-key') != null) {
-      API.api_verify_access_key()
+      API.api_verify_access_key().catch(function (error) {
+        if (error.response.status === 419) { //Expired Session
+          sessionStorage.removeItem('hydrus-session-key') //Just remove it, it will get a new one in next step
+        }
+      })
     }
     //If verification fails get a new one
     if (sessionStorage.getItem('hydrus-session-key') === null) {
