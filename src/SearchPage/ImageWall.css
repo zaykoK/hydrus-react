@@ -7,7 +7,11 @@
     border-radius: 15px;
 }
 .WrapperList.loading {
+    margin: auto auto auto auto;
     justify-content: center;
+    text-align: center;
+    padding:4em;
+    font-size: x-large;
 }
 
 .WrapperList.mobile {
