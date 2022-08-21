@@ -38,6 +38,7 @@ export function SearchPage(props: SearchPageProps) {
   //Search object
   const [searchResults, setSearchResults] = useState<SearchResults>({ results: [], groupedResults: [], metadataResponses: [] })
   //Current search tags
+  const [emptySearch, setEmptySearch] = useState<boolean>(false)
   const [tags, setTags] = useState<Array<Array<string>>>()
   //List of unique tags for given files
   const [fileTags, setFileTags] = useState<Array<TagTools.Tuple>>([])
@@ -157,6 +158,12 @@ export function SearchPage(props: SearchPageProps) {
 
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
     let responseHashes: Array<string> = response.data.hashes
+    if (responseHashes.length === 0) {
+      setEmptySearch(true)
+    }
+    else {
+      setEmptySearch(false)
+    }
 
     setLoadingProgress('0/' + responseHashes.length)
 
@@ -166,6 +173,7 @@ export function SearchPage(props: SearchPageProps) {
   async function grabMetaData(hashes: Array<string>) {
     const STEP = 50
     let responses: Array<API.MetadataResponse> = []
+    let fileTags:Array<TagTools.Tuple> = []
     if (hashes.length > 0) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
         let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
@@ -175,16 +183,17 @@ export function SearchPage(props: SearchPageProps) {
       responses = responses.flat()
       setLoadingProgress(hashes.length + '/' + hashes.length)
 
-      createListOfUniqueTags(responses)
+      fileTags = createListOfUniqueTags(responses)
       let h = hashes
       h = groupImages(responses, hashes, getGroupNamespace())
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
     }
+    setFileTags(fileTags)
   }
 
-  function createListOfUniqueTags(responses: Array<API.MetadataResponse>): void {
+  function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Array<TagTools.Tuple> {
     //console.time('metajoin')
     let merged = []
     let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags')
@@ -197,7 +206,8 @@ export function SearchPage(props: SearchPageProps) {
     merged = TagTools.transformIntoTuple(map)
     merged.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.timeEnd('metajoin')
-    setFileTags(merged)
+    return merged
+    
   }
 
   function setDefaultSearch(): Array<Array<string>> {
@@ -398,6 +408,7 @@ export function SearchPage(props: SearchPageProps) {
           changePage={changePage}
           loadingProgress={loadingProgress}
           loaded={loaded}
+          empty={emptySearch}
         />
       </div>
     </div>
