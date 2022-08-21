@@ -16,6 +16,7 @@ interface ImageWallProps {
   changePage: Function;
   loadingProgress: string;
   loaded: boolean;
+  empty: boolean;
 }
 
 export function ImageWall(props: ImageWallProps) {
@@ -106,6 +107,7 @@ export function ImageWall(props: ImageWallProps) {
 
   return (
     <div className='imageWall' >
+      {(props.empty) && <div className='emptyStyle'>No results</div> || <>
       <WrapperList
         key={getHashSlice(props.hashes, props.page)}
         thumbs={thumbs}
@@ -115,7 +117,7 @@ export function ImageWall(props: ImageWallProps) {
         pages={returnPageCount()}
         offset={getOffsetValue(isMobile())}
         currentPage={props.page}
-        changePage={props.changePage} />
+        changePage={props.changePage} /></> }
     </div>
   );
 }
