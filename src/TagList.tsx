@@ -86,6 +86,6 @@ export function TagList(props:TagListProps) {
     }, [props])
 
     return (
-        <div className={getTagListStyle(props.mobile)}>{tags}</div>
+        (tags.length > 0) && <div className={getTagListStyle(props.mobile)}>{tags}</div> || <></>
     )
 }
