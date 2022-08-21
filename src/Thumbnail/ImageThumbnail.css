@@ -11,23 +11,31 @@
     object-fit: cover;
     background: var(--COLOR2);
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent; /* Disables ugly blue highlight on long press */
+    -webkit-tap-highlight-color: transparent;
+    /* Disables ugly blue highlight on long press */
+}
+
+.wrapperLabel {
+    position: absolute;
+    bottom: 0px;
 }
 
 .thumbnailWrapper {
     position: relative;
+    margin: 5px;
     background: var(--COLOR2);
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0px 0px 5px 0px black;
     min-height: 120px;
     min-width: 120px;
-    height: calc(12.3vw - 30px);
-    width: calc(12.3vw - 30px);
+    height: calc(11vw);
+    width: calc(11vw);
     max-height: 43vw;
     max-width: 43vw;
     transition: all 1s;
 }
+
 .thumbnailWrapper.mobile {
     height: 185px;
     width: 185px;
@@ -37,12 +45,15 @@
 .thumbnailWrapper:hover .widgetCount {
     opacity: 1;
 }
+
 .thumbnailWrapper:hover .WidgetFileTypeWrapper {
     opacity: 1;
 }
+
 .thumbnailWrapper:hover .topTags {
     opacity: 1;
 }
+
 .thumbnailWrapper:hover .bottomTags {
     opacity: 1;
 }
@@ -70,12 +81,13 @@
     color: white;
     position: absolute;
     top: 0px;
+    max-height: 35%;
     background: #000000d1;
     margin: 0px;
     width: 100%;
     text-align: center;
     font-size: 1em;
-    opacity:0;
+    opacity: 0;
 }
 
 .bottomTags {
@@ -86,5 +98,5 @@
     margin: 0px;
     width: 100%;
     text-align: center;
-    opacity:1;
+    opacity: 1;
 }
