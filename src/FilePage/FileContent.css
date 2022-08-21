@@ -12,6 +12,7 @@
 }
 
 .styleFitHeight {
+  display: block;
   padding: 0px;
   height: 94vh;
   width: auto;
@@ -37,6 +38,7 @@
 }
 
 .styleFitWidth {
+  display: block;
   position:fixed;
   top:0px;
   bottom:0px;
