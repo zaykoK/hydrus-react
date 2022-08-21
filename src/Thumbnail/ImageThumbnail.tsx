@@ -76,7 +76,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         let innerArray = []
         for (let element in t) {
           let tagStyle = TagTools.getTagTextStyle(t[element].namespace)
-          if (parseInt(element) != t.length) {
+          if (parseInt(element) !== t.length) {
             tagStyle = {
               ...tagStyle,
               paddingRight: '5px',
@@ -109,7 +109,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     if (props.metadata !== undefined && props.metadata.length > 0) {
       //Find index of hash
       for (let element of props.metadata) {
-        if (element.hash == props.hash) {
+        if (element.hash === props.hash) {
           meta = element;
           break
         }
@@ -191,6 +191,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         thumbnail={thumbnail}
         hash={props.hash}
       />
+      {/* <div className='wrapperLabel'>{createTagPreview({ metadata: metadata, spaces: ['group-title'] })}</div> */}
     </div>
   );
 });

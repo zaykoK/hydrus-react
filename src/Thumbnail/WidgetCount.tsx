@@ -8,7 +8,7 @@ function WidgetCount(props: WidgetCountProps) {
     if (props.count === undefined || props.count === 1) { return <></> }
 
     let count;
-    if (props.count != undefined) { count = props.count }
+    if (props.count !== undefined) { count = props.count }
 
     return <div className="widgetCount">{count}</div>
 }

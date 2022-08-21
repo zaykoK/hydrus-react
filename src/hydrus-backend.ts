@@ -35,11 +35,11 @@ export function api_version() {
       if (!warningSeen) { warningSeen = '0' }
 
 
-      if (API_TARGET > response.data.version && warningSeen != '1') {
+      if (API_TARGET > response.data.version && warningSeen !== '1') {
         alert("Connected HYDRUS instance is using lower API version that targeted, please update.")
         sessionStorage.setItem('hydrus-api-version-warning-seen', '1')
       }
-      if (API_TARGET < response.data.version && warningSeen != '1') {
+      if (API_TARGET < response.data.version && warningSeen !== '1') {
         alert("Connected HYDRUS instance is using higher API version that targeted, some thing might not work anymore.")
         sessionStorage.setItem('hydrus-api-version-warning-seen', '1')
       }
