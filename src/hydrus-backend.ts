@@ -20,7 +20,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 31
+  const API_TARGET = 32
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -33,7 +33,6 @@ export function api_version() {
 
       let warningSeen = sessionStorage.getItem('hydrus-api-version-warning-seen')
       if (!warningSeen) { warningSeen = '0' }
-
 
       if (API_TARGET > response.data.version && warningSeen !== '1') {
         alert("Connected HYDRUS instance is using lower API version that targeted, please update.")
