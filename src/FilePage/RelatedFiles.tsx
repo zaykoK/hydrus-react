@@ -27,7 +27,8 @@ export function RelatedFiles(props: RelatedFilesProps) {
             return
         }
         let response = await API.api_get_files_search_files({ tags: tagArrayToNestedArray(list), return_hashes: true, return_file_ids: false })
-        sessionStorage.setItem('group-hashes', JSON.stringify(response.data.hashes.reverse()))
+        let reverseHashes = response.data.hashes.slice()
+        sessionStorage.setItem('group-hashes', JSON.stringify(reverseHashes))
         setRelatedHashes(response.data.hashes)
     }
 
