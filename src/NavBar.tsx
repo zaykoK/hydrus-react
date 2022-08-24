@@ -10,7 +10,7 @@ import MobileModeButton from "./MobileModeButton";
 import { isMobile } from "./styleUtils";
 
 function Navigation() {
-  const [expanded, setExpanded] = React.useState(false)
+  const [expanded, setExpanded] = React.useState<boolean>(false)
 
   function returnBarStyle(expanded: boolean): string {
     if (isMobile()) {
@@ -38,8 +38,8 @@ function Navigation() {
 
   return (
     <nav className={returnBarStyle(expanded)}>
-      <div className={getNavLinkStyle()}>
-        <img src={IconHamburger} alt='hamburger' className={getNavButtonStyle()} onClick={() => { setExpanded(!expanded) }} />
+      <div className={getNavLinkStyle()} onClick={() => { setExpanded(!expanded)}}>
+        <img src={IconHamburger} alt='hamburger' className={getNavButtonStyle()} />
         <span className="navButtonLabel">Menu</span>
       </div>
       <NavLink className={getNavLinkStyle()} to="/">
