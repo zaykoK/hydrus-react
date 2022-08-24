@@ -59,6 +59,7 @@ function App() {
     if (sessionStorage.getItem('hydrus-all-known-tags') === null) {
       API.api_get_services();
     }
+    API.api_version()
     setToken(true)
   }
 
