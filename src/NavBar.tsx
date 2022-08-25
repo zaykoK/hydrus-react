@@ -56,7 +56,7 @@ function Navigation() {
       </NavLink >
       <MobileModeButton />
 
-    </nav >
+    </nav>
   );
 }
 
