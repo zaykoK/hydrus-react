@@ -3,6 +3,7 @@ import * as API from '../hydrus-backend';
 import { useNavigate } from "react-router-dom";
 import * as TagTools from '../TagTools'
 import WidgetCount from './WidgetCount';
+import WidgetCountTag from './WidgetCountTag';
 import WidgetFileType from './WidgetFileType';
 
 import './ImageThumbnail.css'
@@ -19,6 +20,7 @@ interface ImageThumbnailProps {
   type: string;
   count?: number;
   metadata?: Array<API.MetadataResponse>;
+  size?: number;
 }
 
 
@@ -46,13 +48,34 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   }
 
   function getWrapperStyle(type: string): string {
+    let style = "thumbnailWrapper"
+    if (props.size !== undefined) {
+      switch (props.size) {
+        case 0:
+          style += ' xsmall'
+          break
+        case 1:
+          style += ' small'
+          break
+        case 2:
+          style += ' medium'
+          break
+        case 3:
+          style += ' large'
+          break
+      }
+    }
+
     switch (type) {
       case 'comic':
-        return 'thumbnailWrapper thumbnailWrapperComic'
+        style += ' comic'
       default: //image
-        if (isMobile()) { return 'thumbnailWrapper mobile' }
-        return 'thumbnailWrapper'
+        if (isMobile()) {
+          style += ' mobile'
+        }
+
     }
+    return style
   }
 
   function createTagPreview(args: { metadata: API.MetadataResponse | undefined, spaces: Array<string> }) {
@@ -60,6 +83,22 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       return createTagList({ metadata: args.metadata, spaces: args.spaces });
     }
     return "";
+  }
+
+  function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
+    if (metadata != null) {
+      let index = sessionStorage.getItem('hydrus-all-known-tags')
+      if (!index) { return '' }
+
+      let tags = metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
+      let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
+      let t = tagsSorted.filter((element) => element["namespace"] === space)
+      if (spaceless) {
+        return t[0].value
+      }
+      return t[0].namespace + ':' + t[0].value
+    }
+    return ''
   }
 
   function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string> }) {
@@ -80,14 +119,21 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
             tagStyle = {
               ...tagStyle,
               paddingRight: '5px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }
           }
           innerArray.push(
             <span
               key={t[element].value}
               style={tagStyle}
-              onClick={(() => { props.addTag(args.spaces[space] + ':' + t[element].value) })}
+              onClick={(() => {
+                if (args.spaces[space] === '') {
+                  props.addTag(t[element].value)
+                }
+                else {
+                  props.addTag(args.spaces[space] + ':' + t[element].value)
+                }
+              })}
             >
               {t[element].value}
             </span>
@@ -97,7 +143,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       }
       let finalString = []
       for (let space in tagArrays) {
-        finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px' }}>{tagArrays[space]}</p>)
+        finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px',overflow:'hidden',display:'flex',flexWrap:'wrap' }}>{tagArrays[space]}</p>)
       }
       return finalString;
     }
@@ -152,10 +198,36 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
   const thumbnailBottomTags: Array<string> = []
 
   interface ResultOverviewProps {
-    metadata:API.MetadataResponse
+    metadata: API.MetadataResponse
   }
 
-  function ResultOverview(props:ResultOverviewProps) {
+  function getComicCardStyle() {
+    let style = 'comicCard'
+    if (isMobile()) {style += ' mobile'}
+    return style
+  }
+  function getComicCardTitleStyle() {
+    let style = 'comicCardTitle'
+    if (isMobile()) {style += ' mobile'}
+    return style
+  }
+  function getComicCardContentStyle() {
+    let style = 'comicCardContent'
+    if (isMobile()) {style += ' mobile'}
+    return style
+  }
+  function getComicCardThumbnailRowStyle() {
+    let style = 'comicCardThumbnailRow'
+    if (isMobile()) {style += ' mobile'}
+    return style
+  }
+  function getComicCardMetadataRowStyle() {
+    let style = 'comicCardMetadataRow'
+    if (isMobile()) {style += ' mobile'}
+    return style
+  }
+
+  function ResultOverview(props: ResultOverviewProps) {
 
     return <div className='resultOverview'>
       <div className='metadataSection'>
@@ -172,7 +244,31 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     </div>
 
   }
+  if (props.type === 'comic') {
+    return <div className={getComicCardStyle()}>
+      <div className={getComicCardTitleStyle()}>
+        {getComicTitle(metadata, 'doujin-title', true)}
+      </div>
+      <div className={getComicCardContentStyle()}>
+        <div className={getComicCardThumbnailRowStyle()}>
+          <ThumbContent
+            type={props.type}
+            replace={props.replace}
+            thumbnail={thumbnail}
+            hash={props.hash}
+          />
+        </div>
+        <div className={getComicCardMetadataRowStyle()}>
 
+          {createTagPreview({ metadata: metadata, spaces: ['creator'] })}
+          {createTagPreview({ metadata: metadata, spaces: ['series'] })}
+          <WidgetCountTag tag={getComicTitle(metadata, 'doujin-title', false)} />
+          {/* TODO Those tags should be limited to something like max 15-20 tags, and selection of which should be done by counting all tags on files in the collection (assuming that separate file tags differ from each other) and showing essentialy the 15-20 that happen most across all files in collection. Other solution is to use separate tag repository for group tags. Or keep as is and force users to tag 0/1st page with the correct comic tags OR maybe just maybe hydrus-dev will deliever nice support for image groups and this will be a single API call... ahh dreams. */}
+          {createTagPreview({ metadata: metadata, spaces: [''] })}
+        </div>
+      </div>
+    </div>
+  }
 
   return (
     <div className={getWrapperStyle(props.type)}

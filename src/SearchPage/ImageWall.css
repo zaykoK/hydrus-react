@@ -6,6 +6,19 @@
     gap: 0px;
     border-radius: 15px;
 }
+.WrapperList.comic {
+    padding:0px;
+    height:auto;
+    align-items: stretch;
+    aspect-ratio: auto;
+}
+.WrapperList.comic.mobile {
+    display:block;
+    padding: 0px;
+    gap: 0px;
+    height:auto;
+}
+
 .WrapperList.loading {
     margin: auto auto auto auto;
     justify-content: center;

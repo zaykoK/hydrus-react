@@ -171,26 +171,53 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   async function grabMetaData(hashes: Array<string>) {
-    const STEP = 50
+    //console.time('meta')
+    //Might require higher than default 'large_client_header_buffers' in nginx configuration if using ssl proxy
+    //Otherwise you will get an error when getting metadata with this large request
+    //Workaround - lower STEP variable to something like 50
+    const STEP = 1000
     let responses: Array<API.MetadataResponse> = []
-    let fileTags:Array<TagTools.Tuple> = []
+    let fileTags: Array<TagTools.Tuple> = []
+
+    let responseSize = 0
+    let responseSizeReadable = ''
+
+    let thingy = false
+
     if (hashes.length > 0) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
         let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
-        if (response) { responses.push(response.data.metadata) }
-        setLoadingProgress(i + '/' + hashes.length)
+        if (thingy === false) {console.log(response);thingy = true}
+        if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
+        if (responseSize > 512) { //KB
+          responseSizeReadable = (responseSize*2).toLocaleString().slice(0,-4) + 'kB'
+        }
+        if (responseSize > 1024*(512)) { //MB
+          responseSizeReadable = (responseSize*2).toLocaleString().slice(0,-4) + 'MB'
+        }
+        if (responseSize < 512) {
+          responseSizeReadable = (responseSize*2).toLocaleString() + 'B'
+        }
+        setLoadingProgress(i + '/' + hashes.length + ' (' + responseSizeReadable + ')')
       }
       responses = responses.flat()
-      setLoadingProgress(hashes.length + '/' + hashes.length)
+      setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
 
       fileTags = createListOfUniqueTags(responses)
       let h = hashes
-      h = groupImages(responses, hashes, getGroupNamespace())
+      if (props.type === 'comic') {
+        h = groupImages(responses, hashes, getComicNamespace())
+      }
+      else {
+        h = groupImages(responses, hashes, getGroupNamespace())
+      }
+      
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
     }
     setFileTags(fileTags)
+    //console.timeEnd('meta')
   }
 
   function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Array<TagTools.Tuple> {
@@ -207,7 +234,7 @@ export function SearchPage(props: SearchPageProps) {
     merged.sort((a, b) => TagTools.compareNamespaces(a, b))
     //console.timeEnd('metajoin')
     return merged
-    
+
   }
 
   function setDefaultSearch(): Array<Array<string>> {
@@ -348,10 +375,14 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   function getContentStyle(): string {
+    let style = 'contentStyle'
     if (isMobile()) {
-      return "contentStyle mobile"
+      style += " mobile"
     }
-    return "contentStyle"
+    if (props.type === 'comic') {
+      style += ' contentStyleComic'
+    }
+    return style
   }
 
   //Don't display those namespaces in tag list, eventually to move this into a setting
@@ -388,7 +419,7 @@ export function SearchPage(props: SearchPageProps) {
     <div className={getTopBarPaddingStyle()} />
     {(tags) && <TagSearchBar infoAction={toggleSideBar} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
     <div className={getContentStyle()}>
-      <div className={getGridStyleList()}>
+      {(props.type !== 'comic') && <div className={getGridStyleList()}>
         {(fileTags != undefined) &&
           <TagList
             visibleCount={true}
@@ -397,7 +428,7 @@ export function SearchPage(props: SearchPageProps) {
             clickFunction={addTag}
             mobile={isMobile()}
           />}
-      </div>
+      </div>}
       <div className={getGridStyleThumbs()}>
         <ImageWall
           grouping={groupFiles}

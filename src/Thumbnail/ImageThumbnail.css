@@ -20,6 +20,18 @@
     bottom: 0px;
 }
 
+/*  
+    DESKTOP
+    xsmall thumb - 100px
+    small thumb - 7.5vw
+    medium thumb - 11vw
+    large thumb - 15.5vw
+
+    MOBILE
+    thumb - 185px
+
+*/
+
 .thumbnailWrapper {
     position: relative;
     margin: 5px;
@@ -27,13 +39,33 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0px 0px 5px 0px black;
-    min-height: 120px;
-    min-width: 120px;
-    height: calc(11vw);
-    width: calc(11vw);
+    min-height: 100px;
+    min-width: 100px;
+    height: 11vw;
+    width: 11vw;
     max-height: 43vw;
     max-width: 43vw;
     transition: all 1s;
+}
+
+.xsmall {
+    width: 100px;
+    height: 100px;
+}
+
+.small {
+    width: 7.5vw;
+    height: 7.5vw;
+}
+
+.medium {
+    width: 11vw;
+    height: 11vw;
+}
+
+.large {
+    width: 15.5vw;
+    height: 15.5vw;
 }
 
 .thumbnailWrapper.mobile {
@@ -64,15 +96,21 @@
 }
 
 .thumbnailComic {
-    width: 250px;
-    height: 370px;
+    width: 100%;
+    height: auto;
 }
 
-.thumbnailWrapperComic {
-    width: 250px;
-    height: 370px;
+.comic {
+    width: auto;
+    height: auto;
+    aspect-ratio: 1/1.412;
     max-height: unset;
     max-width: unset;
+}
+
+.comic.mobile {
+    width: auto;
+    height: 100%;
 }
 
 .currentThumbnail {
@@ -101,4 +139,72 @@
     width: 100%;
     text-align: center;
     opacity: 1;
+}
+
+.comicCard {
+    background: var(--COLOR2);
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: auto;
+    max-width: 23vw;
+    padding: 5px;
+    margin:5px;
+    border-radius: 10px;
+}
+
+.comicCard.mobile {
+    background: var(--COLOR2);
+    width: 96vw;
+    max-width: 96vw;
+    min-height: 25vh;
+    padding: 5px;
+    padding-bottom: 15px;
+    margin-bottom: 5px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-radius: 10px;
+}
+
+.comicCardTitle {
+    padding: 3px;
+}
+
+.comicCardTitle.mobile {
+    font-size: x-large;
+    padding: 3px;
+}
+
+.comicCardContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.comicCardContent.mobile {
+    grid-template-columns: 2fr 3fr;
+    min-height: 24vh;
+}
+
+.comicCardThumbnailRow {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: center;
+    margin: 0px auto;
+}
+
+.comicCardThumbnailRow.mobile {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.comicCardMetadataRow {
+    overflow: hidden;
+    margin-left: 10px;
+    padding-right: 2px;
+    max-width: 100%;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.comicCardMetadataRow.mobile {
+    font-size: larger;
 }

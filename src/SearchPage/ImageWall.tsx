@@ -17,6 +17,7 @@ interface ImageWallProps {
   loadingProgress: string;
   loaded: boolean;
   empty: boolean;
+  thumbnailSize?:number;
 }
 
 export function ImageWall(props: ImageWallProps) {
@@ -27,7 +28,7 @@ export function ImageWall(props: ImageWallProps) {
 
   let viewSize = 1000;
   if (props.type === 'comic') {
-    viewSize = 14
+    viewSize = 50
   }
 
   const [thumbs, setThumbs] = React.useState(CreateNewThumbnailList(props.page))
@@ -94,9 +95,17 @@ export function ImageWall(props: ImageWallProps) {
     return count
   }
 
+  function getWrapperListStyle() {
+    let style = 'WrapperList'
+    if (props.type === 'comic') {
+      style += ' comic'
+    }
+    return style
+  }
+
   function WrapperList(props: { thumbs: Array<JSX.Element>, loadingProgress: string, loaded: boolean }) {
     return ((props.loaded && thumbs.length > 0) &&
-      <div className="WrapperList">{props.thumbs}</div> || <div className="WrapperList loading">LOADING {props.loadingProgress}</div>
+      <div className={getWrapperListStyle()}>{props.thumbs}</div> || <div className={getWrapperListStyle() + ' +loading'}>LOADING {props.loadingProgress}</div>
     );
   }
 

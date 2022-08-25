@@ -1,7 +1,7 @@
 import './WidgetCount.css'
 
 interface WidgetCountProps {
-    count: number|undefined;
+    count: number | undefined;
 }
 
 function WidgetCount(props: WidgetCountProps) {
