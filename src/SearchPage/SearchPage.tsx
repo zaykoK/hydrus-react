@@ -155,6 +155,10 @@ export function SearchPage(props: SearchPageProps) {
     previousSearch.current = tags.slice()
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
+    if (props.type === 'comic') {
+      searchTags.push([getComicNamespace() + ':*'])
+      searchTags.push(['page:0','page:1'])
+    }
 
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
     let responseHashes: Array<string> = response.data.hashes
@@ -242,7 +246,9 @@ export function SearchPage(props: SearchPageProps) {
       case 'image':
         return [[]]
       case 'comic':
-        return [[getComicNamespace() + ':*'], ['page:0', 'page:1']]
+        return [[]]
+        // Removed because I added it in search function, should be better user experience without those 2 queries visible
+        //return [[getComicNamespace() + ':*'], ['page:0', 'page:1']]
       default:
         return [[]]
     }
