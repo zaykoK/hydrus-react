@@ -15,8 +15,8 @@ interface SettingsPageProps {
 }
 
 export function SettingsPage(props:SettingsPageProps) {
-  console.log(props.globalState?.getGlobalValue())
-  props.globalState?.setGlobalValue('settings')
+  //console.log(props.globalState?.getGlobalValue())
+  //props.globalState?.setGlobalValue('settings')
 
   return <>
     <div className="settingsPage">
