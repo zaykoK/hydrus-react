@@ -143,7 +143,13 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       }
       let finalString = []
       for (let space in tagArrays) {
-        finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px',overflow:'hidden',display:'flex',flexWrap:'wrap' }}>{tagArrays[space]}</p>)
+        if (props.type === 'comic') {
+          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px',overflow:'hidden',display:'flex',flexWrap:'wrap' }}>{tagArrays[space]}</p>)
+        }
+        else {
+          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px'}}>{tagArrays[space]}</p>)
+        }
+        
       }
       return finalString;
     }
