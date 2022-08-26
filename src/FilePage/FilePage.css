@@ -21,8 +21,16 @@
     overflow-y: scroll;
 }
 
+.contentSideBar.mobile.sideBarLandscape {
+    width: calc(100vw - 4em);
+}
+
 .contentSideBar.mobile.active {
     bottom:0px;
+}
+
+.contentSideBar.mobile.active.sideBarLandscape {
+    width: calc(100vw - 4em);
 }
 
 .barStylePadding {

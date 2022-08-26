@@ -221,11 +221,17 @@ export function FilePage(props: FilePageProps) {
   }
 
   function getSideBarStyle() {
+    let style = 'contentSideBar'
     if (isMobile()) {
-      if (isSidebarExpanded()) { return "contentSideBar mobile active" }
-      return "contentSideBar mobile"
+      style += ' mobile'
     }
-    return "contentSideBar"
+    if (isSidebarExpanded()) { 
+      style += " active"
+    }
+    if (isLandscapeMode()) {
+      style += ' sideBarLandscape'
+    }
+    return style
   }
 
   function switchSidebar() {
