@@ -39,38 +39,53 @@
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0px 0px 5px 0px black;
-    min-height: 100px;
-    min-width: 100px;
     height: 11vw;
     width: 11vw;
-    max-height: 43vw;
-    max-width: 43vw;
+    max-height: 100%;
+    max-width: 100%;
     transition: all 1s;
 }
 
 .xsmall {
-    width: 100px;
-    height: 100px;
+    width: 7.5vw;
+    height: 7.5vw;
+}
+
+.xsmall.mobile {
+    width: 16vw;
+    height: 16vw;
 }
 
 .small {
     width: 7.5vw;
     height: 7.5vw;
 }
+.small.mobile {
+    width: 27vw;
+    height: 27vw;
+    max-height: 130px;
+    max-width: 130px;
+}
 
 .medium {
     width: 11vw;
     height: 11vw;
+}
+.medium.mobile {
+    width: 44vw;
+    height: 44vw;
 }
 
 .large {
     width: 15.5vw;
     height: 15.5vw;
 }
+.large.mobile {
+    width: 98vw;
+    height: 98vw;
+}
 
 .thumbnailWrapper.mobile {
-    height: 185px;
-    width: 185px;
     border-radius: 10px;
 }
 
