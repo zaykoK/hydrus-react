@@ -6,7 +6,7 @@ import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools';
 import { TagList } from '../TagList';
 
-import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace } from '../StorageUtils';
+import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace, getSortType, setSortType } from '../StorageUtils';
 import { tagArrayToNestedArray } from '../TagTools';
 import { setPageTitle } from '../misc';
 
@@ -57,13 +57,22 @@ export function SearchPage(props: SearchPageProps) {
 
   //Results of previous search, used to check if on a new rerender a search changed
   const previousSearch = useRef<Array<Array<string>>>()
+  //Previous search SortType
+  const previousSearchSortType = useRef<API.FileSortType>()
   //Sorting order for grabbing files from hydrus API
-  const sortType = useRef<API.FileSortType>(API.FileSortType.ImportTime)
+  const sortType = useRef<API.FileSortType>(getSortType())
 
   const navigate = useNavigate()
 
   //console.log(props.globalState?.getGlobalValue())
   //props.globalState?.setGlobalValue('search')
+
+  function changeSortType(newSortType:API.FileSortType) {
+    console.log('new sort type is ' + API.FileSortType[newSortType].toString())
+    sortType.current = newSortType
+    setSortType(newSortType)
+    search()
+  }
 
   function refreshParams(): void {
     let [paramsTags, paramsPage] = readParams(parm)
@@ -85,7 +94,26 @@ export function SearchPage(props: SearchPageProps) {
 
     //Sorting responses by time_modified so it matches actual hash list order
     //TODO implement the rest of sorting schemes
-    let responsesSorted = responses.sort((a, b) => b.time_modified - a.time_modified) //Newest imported first
+
+    //TODO BASICALLY RESORT METADATA TO FIT RECEIVED HASHES ORDER
+    let responsesResorted = []
+
+    let hashesCopy = hashes.slice()
+    let responsesCopy = responses.slice()
+
+    for (let hash in hashesCopy) {
+      for (let response in responsesCopy) {
+        if (hashesCopy[hash] === responsesCopy[response].hash) {
+          responsesResorted.push(responsesCopy.splice(parseInt(response),1)[0])
+        }
+      }
+    }
+
+    //console.log(responsesResorted)
+    //let responsesSorted = responses.sort((a, b) => b.time_modified - a.time_modified) //Newest imported first
+    let responsesSorted = responsesResorted
+    //responsesSorted = responses.sort((a, b) => b. - a.time_modified) //Newest imported first
+
 
     let resultMap: Map<string, Result> = new Map<string, Result>()
     let unsortedArray: Array<Result> = []
@@ -144,8 +172,8 @@ export function SearchPage(props: SearchPageProps) {
       //console.log('not doing anything undefined');
       return
     }
-    if (JSON.stringify(tags) === JSON.stringify(previousSearch.current)) {
-      //console.log("not doing anything same search")
+    if ((previousSearchSortType === sortType) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
+      console.log("not doing anything same search")
       return
     }
     if (loaded) { sessionStorage.removeItem('searchScroll') }
@@ -153,15 +181,18 @@ export function SearchPage(props: SearchPageProps) {
 
 
     previousSearch.current = tags.slice()
+    previousSearchSortType.current = sortType.current
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
     if (props.type === 'comic') {
       searchTags.push([getComicNamespace() + ':*'])
       searchTags.push(['page:0','page:1'])
     }
-
+    //console.log('actually searching')
+    //console.log(sortType.current)
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
     let responseHashes: Array<string> = response.data.hashes
+    //console.log(responseHashes)
     if (responseHashes.length === 0) {
       setEmptySearch(true)
     }
@@ -191,7 +222,7 @@ export function SearchPage(props: SearchPageProps) {
     if (hashes.length > 0) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
         let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
-        if (thingy === false) {console.log(response);thingy = true}
+        if (thingy === false) {thingy = true}
         if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
         if (responseSize > 512) { //KB
           responseSizeReadable = (responseSize*2).toLocaleString().slice(0,-4) + 'kB'
@@ -300,7 +331,8 @@ export function SearchPage(props: SearchPageProps) {
 
   useEffect(() => {
     search()
-  }, [tags])
+    console.log('doing search cause sortType or tags changed')
+  }, [tags, sortType])
 
   useEffect(() => {
     //Adding even slightiest timeout seem to actually make this work, weird
@@ -423,7 +455,7 @@ export function SearchPage(props: SearchPageProps) {
 
   return <>
     <div className={getTopBarPaddingStyle()} />
-    {(tags) && <TagSearchBar infoAction={toggleSideBar} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+    {(tags) && <TagSearchBar infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
     <div className={getContentStyle()}>
       {(props.type !== 'comic') && <div className={getGridStyleList()}>
         {(fileTags != undefined) &&

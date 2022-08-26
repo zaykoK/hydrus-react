@@ -20,6 +20,7 @@
     margin: 5px 0px 0px 0px;
 }
 .contentStyle.contentStyleComic {
+    display: block;
     grid-template-columns: 1fr;
 }
 

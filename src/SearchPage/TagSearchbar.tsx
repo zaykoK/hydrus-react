@@ -5,6 +5,9 @@ import GroupButton from './GroupButton';
 import IconInfo from '../assets/info.svg'
 import IconGroup from '../assets/group.svg'
 
+import DropdownSorting from './SortingDropdown';
+import * as API from '../hydrus-backend'
+
 import './TagSearchbar.css'
 
 interface SearchTagsProps {
@@ -13,6 +16,7 @@ interface SearchTagsProps {
   groupAction: Function;
   removeTag: Function;
   infoAction: Function;
+  sortTypeChange: Function;
 }
 
 export function TagSearchBar(props: SearchTagsProps) {
@@ -81,6 +85,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     <div className="buttonsBar">
       <div className="topBarButton" />
       <GroupButton icon={IconGroup} clickAction={props.groupAction} />
+      <DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />
       {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
     {TagInput({ removeTag: props.removeTag, tags: tags })}
