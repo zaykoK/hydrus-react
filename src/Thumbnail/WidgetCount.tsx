@@ -11,9 +11,8 @@ function WidgetCount(props: WidgetCountProps) {
     const [tagCount,setTagCount] = useState<number>(0)
 
     async function getFileCount(tag:string) {
-        console.log(tag)
+        if (tag === '' || tagCount !== 0) {return}
         let response = await API.api_get_files_search_files({tags:[[tag]],return_hashes:true})
-        console.log(response.data.hashes.length)
         setTagCount(response.data.hashes.length)
     }
 
