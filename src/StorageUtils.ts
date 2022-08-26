@@ -50,6 +50,16 @@ export function setGroupNamespace(namespace: string) {
   localStorage.setItem('group-namespace', namespace)
 }
 
+export function setSortType(sortType:number) {
+  localStorage.setItem('sortType', sortType.toString())
+}
+
+export function getSortType():number {
+  let returned = localStorage.getItem('sortType') || '2';
+  return parseInt(returned)
+}
+
+
 export function getMaxResults(): string {
   return localStorage.getItem('hydrus-max-results') || "5000";
 }
