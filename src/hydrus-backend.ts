@@ -146,6 +146,11 @@ export enum FileSortType {
   HashHex
 }
 
+export function enumToArray(enumerator:{ [s: number]: string }):Array<string> {
+  //@ts-ignore
+  return Object.keys(enumerator).filter((key) => !isNaN(Number(enumerator[key])))
+}
+
 export async function api_get_files_search_files(props: APISearchFilesProps) {
   let sentTags:Array<Array<string>|string> = []
   if (localStorage.getItem('hydrus-max-results') != undefined) {
@@ -157,7 +162,7 @@ export async function api_get_files_search_files(props: APISearchFilesProps) {
     sentTags = props.tags.slice()
     sentTags.push('system:limit=5000')
   }
-
+  
   return axios.get(server_address + '/get_files/search_files', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
