@@ -7,19 +7,19 @@ import './SortingDropdown.css'
 import { getSortType } from "../StorageUtils";
 
 interface DropdownSortingProps {
-    options:Array<string | FileSortType>;
-    clickFunction:Function;
+    options: Array<string | FileSortType>;
+    clickFunction: Function;
 }
 
-function DropdownSorting (props:DropdownSortingProps) {
-    const [current,setCurrent] = useState<number>(getSortType())
+function DropdownSorting(props: DropdownSortingProps) {
+    const [current, setCurrent] = useState<number>(getSortType())
     const [expanded, setExpanded] = useState(false)
 
     function createDropdownSelectionList() {
         let finalComponent = []
         for (let option in props.options) {
             finalComponent.push(
-                <div className='dropdownMenuOption' onClick={() => {setCurrent(parseInt(option));setExpanded(false);props.clickFunction(parseInt(option))}}>
+                <div key={props.options[option]} className='dropdownMenuOption' onClick={() => { setCurrent(parseInt(option)); setExpanded(false); props.clickFunction(parseInt(option)) }}>
                     <span>{props.options[option]}</span>
                 </div>
             )
@@ -29,13 +29,13 @@ function DropdownSorting (props:DropdownSortingProps) {
 
     function getMenuStyle() {
         let style = 'dropdownMenu'
-        if (expanded) {style += ' expanded'}
+        if (expanded) { style += ' expanded' }
         return style
     }
 
     function getOptionsStyle() {
         let style = 'dropdownMenuOptions'
-        if (expanded) {style += ' expanded'}
+        if (expanded) { style += ' expanded' }
         return style
     }
 
@@ -45,11 +45,11 @@ function DropdownSorting (props:DropdownSortingProps) {
 
     return <div className={getMenuStyle()}>
         <div className='dropdownMenuCurrent' onClick={expandElement}>
-                <span>{API.FileSortType[current]}</span>
+            <span>{API.FileSortType[current]}</span>
         </div>
         <div className={getOptionsStyle()}>
-                {createDropdownSelectionList()}
-            </div>
+            {createDropdownSelectionList()}
+        </div>
     </div>
 }
 
