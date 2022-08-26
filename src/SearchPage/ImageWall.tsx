@@ -28,7 +28,7 @@ export function ImageWall(props: ImageWallProps) {
 
   let viewSize = 1000;
   if (props.type === 'comic') {
-    viewSize = 50
+    viewSize = 60
   }
 
   const [thumbs, setThumbs] = React.useState(CreateNewThumbnailList(props.page))
