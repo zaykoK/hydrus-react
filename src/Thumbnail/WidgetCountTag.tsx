@@ -9,9 +9,7 @@ interface WidgetCountTagProps {
 export function WidgetCountTag(props:WidgetCountTagProps) {
     const [count,setCount] = useState<number>(0)
     async function getFileCount(tag:string) {
-        console.log(tag)
         let response = await API.api_get_files_search_files({tags:[[tag]],return_hashes:true})
-        console.log(response.data.hashes.length)
         setCount(response.data.hashes.length)
     }
     useEffect(() => {
