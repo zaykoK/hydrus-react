@@ -49,6 +49,7 @@ export function ImageWall(props: ImageWallProps) {
           count={hash.entries.length}
           replace={false}
           metadata={hash.entries}
+          size={2}
         />);
     }
     return list;
@@ -99,6 +100,9 @@ export function ImageWall(props: ImageWallProps) {
     let style = 'WrapperList'
     if (props.type === 'comic') {
       style += ' comic'
+    }
+    if(isMobile()) {
+      style += ' mobile'
     }
     return style
   }

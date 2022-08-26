@@ -16,6 +16,8 @@
     display:block;
     padding: 0px;
     gap: 0px;
+    padding-top: 15px;
+    padding-bottom: 25px;
     height:auto;
 }
 
@@ -29,6 +31,9 @@
 
 .WrapperList.mobile {
     justify-content: center;
+    padding: 0px;
+    padding-top: 15px;
+    padding-bottom: 25px;
 }
 
 .imageWall {
