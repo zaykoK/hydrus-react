@@ -29,10 +29,10 @@ export function RelatedFiles(props: RelatedFilesProps) {
         //Get file hashes
         let response = await API.api_get_files_search_files({ tags: tagArrayToNestedArray(list), return_hashes: true, return_file_ids: false })
         //For visual purpose reverse the order
-        let reverseHashes = response.data.hashes.slice()
+        let reverseHashes = response.data.hashes.slice().reverse()
         //Put hashes in session storage for other elements to use
         sessionStorage.setItem('group-hashes', JSON.stringify(reverseHashes))
-        setRelatedHashes(response.data.hashes)
+        setRelatedHashes(reverseHashes)
     }
 
     useEffect(() => {
