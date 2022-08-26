@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { tagArrayToNestedArray } from '../TagTools';
 
 import "./RelatedFiles.css"
-import { isLandscapeMode } from '../styleUtils';
+import { isLandscapeMode, isMobile } from '../styleUtils';
 
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
@@ -49,7 +49,21 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     useEffect(() => {
         let currentIndex = 0
-        const thumbHeight = 185
+        const windowSize = window.innerWidth
+        // 27vw m
+        // 7.5vw d
+        let thumbHeight = 0
+        if (isMobile()) {
+            thumbHeight = Math.min(130,((windowSize * (27/100)))) + 10
+        }
+        else {
+            thumbHeight = windowSize * (7.5/100) + 10
+        }
+        console.log(thumbHeight)
+
+        const SIZEOFLABEL = 18
+
+        const OFFSET=100
 
 
         if (relatedHashes.length > 1) {
@@ -71,13 +85,26 @@ export function RelatedFiles(props: RelatedFilesProps) {
             }
             setThumbs(temp)
         }
-        setScrollOffset(currentIndex * thumbHeight)
+        if (isMobile() && !isLandscapeMode()) {
+            setScrollOffset((currentIndex * thumbHeight))
+        }
+        else {
+            setScrollOffset(SIZEOFLABEL + (currentIndex * thumbHeight))
+        }
+        
     }, [relatedHashes, props.currentHash])
 
     useEffect(() => {
         //This scrolls the div with every image change
         const el = document.querySelector('.relatedStyle')
-        el?.scrollTo({ left: 0, top: scrollOffset - 290, behavior: 'smooth' })
+        if (isMobile() && !isLandscapeMode()) {
+            el?.scrollTo({ left: scrollOffset, top: 0, behavior: 'smooth' })
+        }
+        else{
+            el?.scrollTo({ left: 0, top: scrollOffset, behavior: 'smooth' })
+        }
+        
+
     }, [thumbs])
 
     function getRelatedThumbsStyle(mobile: boolean): string {
