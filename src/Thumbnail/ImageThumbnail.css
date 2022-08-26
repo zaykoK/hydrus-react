@@ -166,7 +166,7 @@
 }
 
 .comicCardTitle {
-    padding: 3px;
+    padding: 3px 3px 1em 0px;
 }
 
 .comicCardTitle.mobile {
@@ -194,6 +194,10 @@
 .comicCardThumbnailRow.mobile {
     grid-column: 1;
     grid-row: 1;
+}
+
+.comicCardThumbnailRowMetadata {
+    padding:5px;
 }
 
 .comicCardMetadataRow {
