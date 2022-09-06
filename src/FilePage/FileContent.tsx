@@ -128,7 +128,7 @@ export function FileContent(props: FileContentProps) {
         onContextMenu={(e) => e.preventDefault()}
         src={src}
         className={style}
-        alt={props.hash} />
+        alt={props.hash} />       
       if (isLandscapeMode() && isMobile()) {
         return <TransformWrapper
           centerZoomedOut={true}

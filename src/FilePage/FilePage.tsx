@@ -34,12 +34,9 @@ export function FilePage(props: FilePageProps) {
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
-  const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode())
+  const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode()) //This exists so page redraws on orientation change
 
   const navigate = useNavigate()
-
-  //console.log(props.globalState?.getGlobalValue())
-  //props.globalState?.setGlobalValue('filepage')
 
   function isLandscapeMode() {
     if (window.screen.orientation.type.includes('portrait')) { return false }
@@ -51,10 +48,13 @@ export function FilePage(props: FilePageProps) {
   }
 
   function handleScreenChange() {
-    if (window.screen.orientation.type.includes('portrait')) { setLandscape(false); document.exitFullscreen(); return }
+    if (window.screen.orientation.type.includes('portrait')) {
+      setLandscape(false); 
+      document.exitFullscreen(); 
+      return 
+    }
     setLandscape(true)
     document.documentElement.requestFullscreen()
-
   }
 
   //"This is ... too much" - George L.
@@ -181,12 +181,15 @@ export function FilePage(props: FilePageProps) {
     return "filePage"
   }
 
-  function getContentStyle(mobile: boolean) {
-    if (mobile) {
-      if (isLandscapeMode()) { return "fileContent mobile landscape" }
-      return "fileContent mobile"
+  function generateClassName(name:string):string {
+    let className = name
+    if (isMobile()) {
+      className += ' mobile'
+      if (isLandscapeMode()) {
+        className += ' landscape'
+      }
     }
-    return "fileContent"
+    return className
   }
 
   function switchRelatedVisible() {
@@ -197,22 +200,6 @@ export function FilePage(props: FilePageProps) {
     }
     localStorage.setItem('related-visible', 'true')
     setRelateVisible(true)
-  }
-
-  function getPaddingStyle() {
-    if (isMobile()) {
-      if (isLandscapeMode()) { return "barStylePadding mobile landscape" }
-      return "barStylePadding mobile"
-    }
-    return "barStylePadding"
-  }
-
-  function getTopBarStyle() {
-    if (isMobile()) {
-      if (isLandscapeMode()) { return "topBar filePageTopBar mobile landscape" }
-      return "topBar filePageTopBar mobile"
-    }
-    return "topBar filePageTopBar"
   }
 
   function isSidebarExpanded() {
@@ -239,8 +226,8 @@ export function FilePage(props: FilePageProps) {
   }
 
   return <>
-    <div className={getPaddingStyle()}></div>
-    <div className={getTopBarStyle()}>
+    <div className={generateClassName('barStylePadding')}></div>
+    <div className={generateClassName('topBar filePageTopBar')}>
       <div id='home-button-padding' className="topBarButton" />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
       <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage() }} />
@@ -253,7 +240,7 @@ export function FilePage(props: FilePageProps) {
         {(tags !== undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
         {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
       </div>
-      <div className={getContentStyle(isMobile())} >
+      <div className={generateClassName('fileContent')} >
         {(metadata !== undefined) &&
           <FileContent
             hash={fileHash}

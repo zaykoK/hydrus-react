@@ -119,6 +119,7 @@
 .fileContent.mobile {
     grid-row: 1;
     grid-column: 1;
+    background-color: black;
 }
 
 .fileContent {
