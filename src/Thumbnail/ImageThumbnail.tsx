@@ -10,6 +10,8 @@ import './ImageThumbnail.css'
 import { isMobile } from '../styleUtils';
 import { getComicNamespace, getGroupNamespace } from '../StorageUtils';
 
+import TagLink from './TagLink';
+
 // @ts-check
 
 interface ImageThumbnailProps {
@@ -92,12 +94,12 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       if (!index) { return '' }
 
       let tags = metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
-      if (tags === undefined){
+      if (tags === undefined) {
         tags = []
       }
       let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
       let t = tagsSorted.filter((element) => element["namespace"] === space)
-      if (t[0] === undefined){
+      if (t[0] === undefined) {
         return ''
       }
       if (spaceless) {
@@ -107,6 +109,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
     return ''
   }
+
 
   function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string> }) {
     if (args.metadata != null) {
@@ -140,22 +143,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
               cursor: 'pointer',
             }
           }
-          innerArray.push(
-            <span
-              key={t[element].value}
-              style={tagStyle}
-              onClick={(() => {
-                if (args.spaces[space] === '') {
-                  props.addTag(t[element].value)
-                }
-                else {
-                  props.addTag(args.spaces[space] + ':' + t[element].value)
-                }
-              })}
-            >
-              {t[element].value}
-            </span>
-          );
+          innerArray.push(TagLink({ style: tagStyle, addTag: props.addTag, tag: t[element].value, namespace: t[element].namespace }))
           limitCount += 1
         }
         tagArrays.push(innerArray)
@@ -163,12 +151,12 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       let finalString = []
       for (let space in tagArrays) {
         if (props.type === 'comic') {
-          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px',overflow:'hidden',display:'flex',flexWrap:'wrap' }}>{tagArrays[space]}</p>)
+          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap' }}>{tagArrays[space]}</p>)
         }
         else {
-          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px'}}>{tagArrays[space]}</p>)
+          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px' }}>{tagArrays[space]}</p>)
         }
-        
+
       }
       return finalString;
     }
@@ -219,37 +207,37 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       alt={props.hash} />
   }
 
-  const thumbnailTopTags: Array<string> = ['creator','person', 'series']
+  const thumbnailTopTags: Array<string> = ['creator', 'person', 'series']
   const thumbnailBottomTags: Array<string> = []
 
   function getComicCardStyle() {
     let style = 'comicCard'
-    if (isMobile()) {style += ' mobile'}
+    if (isMobile()) { style += ' mobile' }
     return style
   }
   function getComicCardTitleStyle() {
     let style = 'comicCardTitle'
-    if (isMobile()) {style += ' mobile'}
+    if (isMobile()) { style += ' mobile' }
     return style
   }
   function getComicCardContentStyle() {
     let style = 'comicCardContent'
-    if (isMobile()) {style += ' mobile'}
+    if (isMobile()) { style += ' mobile' }
     return style
   }
   function getComicCardThumbnailRowStyle() {
     let style = 'comicCardThumbnailRow'
-    if (isMobile()) {style += ' mobile'}
+    if (isMobile()) { style += ' mobile' }
     return style
   }
   function getComicCardMetadataRowStyle() {
     let style = 'comicCardMetadataRow'
-    if (isMobile()) {style += ' mobile'}
+    if (isMobile()) { style += ' mobile' }
     return style
   }
   function getComicCardThumbnailRowMetadataStyle() {
     let style = 'comicCardThumbnailRowMetadata'
-    if (isMobile()) {style += ' mobile'}
+    if (isMobile()) { style += ' mobile' }
     return style
   }
 
@@ -267,9 +255,9 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
             hash={props.hash}
           />
           <div className={getComicCardThumbnailRowMetadataStyle()}>
-          {createTagPreview({ metadata: metadata, spaces: ['language'] })}
+            {createTagPreview({ metadata: metadata, spaces: ['language'] })}
           </div>
-          
+
         </div>
         <div className={getComicCardMetadataRowStyle()}>
 
@@ -278,8 +266,8 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
           {createTagPreview({ metadata: metadata, spaces: ['series'] })}
           <WidgetCountTag tag={getComicTitle(metadata, getComicNamespace(), false)} />
           {/* TODO Those tags should be limited to something like max 15-20 tags, and selection of which should be done by counting all tags on files in the collection (assuming that separate file tags differ from each other) and showing essentialy the 15-20 that happen most across all files in collection. Other solution is to use separate tag repository for group tags. Or keep as is and force users to tag 0/1st page with the correct comic tags OR maybe just maybe hydrus-dev will deliever nice support for image groups and this will be a single API call... ahh dreams. */}
-          <div style={{fontSize:'small'}}>
-          {createTagPreview({ metadata: metadata, spaces: [''] })}
+          <div style={{ fontSize: 'small' }}>
+            {createTagPreview({ metadata: metadata, spaces: [''] })}
           </div>
         </div>
       </div>
@@ -293,7 +281,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         {createTagPreview({ metadata: metadata, spaces: thumbnailTopTags })}
       </div>}
       <div className='bottomTags'>
-        <WidgetCount count={props.count} tag={getComicTitle(metadata, getGroupNamespace(), false)}/>
+        <WidgetCount count={props.count} tag={getComicTitle(metadata, getGroupNamespace(), false)} />
         <WidgetFileType metadata={metadata} />
         {createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags })}
       </div>
