@@ -146,6 +146,7 @@ export enum FileSortType {
   HashHex
 }
 
+/* Converts enum (like one above) into an array of strings */
 export function enumToArray(enumerator:{ [s: number]: string }):Array<string> {
   //@ts-ignore
   return Object.keys(enumerator).filter((key) => !isNaN(Number(enumerator[key])))
