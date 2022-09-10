@@ -36,18 +36,18 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
 
 
   function getThumbStyle(type: string): string {
+    let style = 'thumbnail'
     //console.log(type)
     switch (type) {
       case 'comic':
-        return "thumbnail thumbnailComic"
+        style += " thumbnailComic"
       default: //case 'image':
+        style += " thumbnailImage"
         if (props.currentImage) {
-          return "thumbnail thumbnailImage currentThumbnail"
-        }
-        else {
-          return "thumbnail thumbnailImage"
+          style += " currentThumbnail"
         }
     }
+    return style
   }
 
   function getWrapperStyle(type: string): string {
@@ -188,14 +188,14 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
   }, []);
 
-  function returnFileLink() {
+  function returnFilePageURL() {
     return "/file/" + props.hash
   }
 
   function ThumbContent(props: { thumbnail: string | undefined, type: string, hash: string, replace: boolean }) {
     function determineThumbNavigation(replace: boolean) {
       sessionStorage.setItem('searchScroll', window.scrollY.toString())
-      navigate(returnFileLink(), { replace: replace })
+      navigate(returnFilePageURL(), { replace: replace })
     }
 
     return <img
