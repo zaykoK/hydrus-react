@@ -46,41 +46,41 @@
     transition: all 1s;
 }
 
-.xsmall {
+.thumbnailWrapper.xsmall {
     width: 7.5vw;
     height: 7.5vw;
 }
 
-.xsmall.mobile {
+.thumbnailWrapper.xsmall.mobile {
     width: 16vw;
     height: 16vw;
 }
 
-.small {
+.thumbnailWrapper.small {
     width: 7.5vw;
     height: 7.5vw;
 }
-.small.mobile {
+.thumbnailWrapper.small.mobile {
     width: 27vw;
     height: 27vw;
     max-height: 130px;
     max-width: 130px;
 }
 
-.medium {
+.thumbnailWrapper.medium {
     width: 11vw;
     height: 11vw;
 }
-.medium.mobile {
+.thumbnailWrapper.medium.mobile {
     width: 44vw;
     height: 44vw;
 }
 
-.large {
+.thumbnailWrapper.large {
     width: 15.5vw;
     height: 15.5vw;
 }
-.large.mobile {
+.thumbnailWrapper.large.mobile {
     width: 98vw;
     height: 98vw;
 }
@@ -109,6 +109,9 @@
     width: 100%;
     height: 100%;
 }
+.thumbnailImage.currentThumbnail {
+    opacity: 0.3;
+}
 
 .thumbnailComic {
     width: 100%;
@@ -126,10 +129,6 @@
 .comic.mobile {
     width: auto;
     height: 100%;
-}
-
-.currentThumbnail {
-    opacity: 0.3;
 }
 
 .topTags {
