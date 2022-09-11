@@ -109,7 +109,7 @@
     width: 100%;
     height: 100%;
 }
-.thumbnailImage.currentThumbnail {
+.thumbnailImage.inactiveThumbnail {
     opacity: 0.3;
 }
 

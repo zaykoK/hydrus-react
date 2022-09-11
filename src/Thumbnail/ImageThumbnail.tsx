@@ -42,8 +42,8 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         style += " thumbnailComic"
       default: //case 'image':
         style += " thumbnailImage"
-        if (props.currentImage) {
-          style += " currentThumbnail"
+        if (!props.currentImage) {
+          style += " inactiveThumbnail"
         }
     }
     return style
