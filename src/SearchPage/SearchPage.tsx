@@ -92,32 +92,65 @@ export function SearchPage(props: SearchPageProps) {
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
 
-    //Sorting responses by time_modified so it matches actual hash list order
-    //TODO implement the rest of sorting schemes
-
-    //TODO BASICALLY RESORT METADATA TO FIT RECEIVED HASHES ORDER
+    //BASICALLY RESORT METADATA TO FIT RECEIVED HASHES ORDER
     let responsesResorted = []
 
     let hashesCopy = hashes.slice()
     let responsesCopy = responses.slice()
 
-    console.time('Resorting')
+    let i = 0
+    let testSort2 = []
+    let testSort3 = []
 
+    console.time('Resorting#2')
+    i = 0
+    //Approach #2
+    //Add break to second loop
+    //Keep this for a while until I'm sure there's no problems with approach #3
+    /*
     for (let hash in hashesCopy) {
       for (let response in responsesCopy) {
+        i += 1
+
         if (hashesCopy[hash] === responsesCopy[response].hash) {
-          responsesResorted.push(responsesCopy.splice(parseInt(response), 1)[0])
+          testSort2.push(responsesCopy.splice(parseInt(response), 1)[0])
+          break
         }
       }
     }
+    console.timeEnd('Resorting#2')
+    console.log('Steps:' + i)
+    */
 
-    console.timeEnd('Resorting')
+    console.time('Resorting#3')
+    //Approach #3
+    //Custom Sort function
+    //Convert array into a hash map with given order for each hash
+    let hashMap: Map<string, number> = new Map<string, number>()
+    hashesCopy.map((value, index, array) => { hashMap.set(value, index) })
 
-    //console.log(responsesResorted)
-    //let responsesSorted = responses.sort((a, b) => b.time_modified - a.time_modified) //Newest imported first
+    /* This function checks  */
+    function compareResponsesByHash(a: API.MetadataResponse, b: API.MetadataResponse): number {
+      let hashA = hashMap.get(a.hash)
+      let hashB = hashMap.get(b.hash)
+      //If for some reason one of the hashes doesn't exist consider equal
+      if ((hashA === undefined) || (hashB === undefined)) {
+        console.warn('Hashes: \n' + a.hash + "\n" + 'b.hash\n' + 'did not get a result in initial search.')
+        return 0
+      }
+      if (hashA < hashB) { return -1 }
+      if (hashA > hashB) { return 1 }
+      return 0
+    }
+    testSort3 = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
+    console.timeEnd('Resorting#3')
+
+    //console.log("Are sorting results same?")
+    //console.log(JSON.stringify(testSort2) === JSON.stringify(testSort3))
+
+    responsesResorted = testSort3
+
     let responsesSorted = responsesResorted
-    //responsesSorted = responses.sort((a, b) => b. - a.time_modified) //Newest imported first
-
 
     let resultMap: Map<string, Result> = new Map<string, Result>()
     let unsortedArray: Array<Result> = []
@@ -183,7 +216,7 @@ export function SearchPage(props: SearchPageProps) {
     //console.log('are searches equal?')
     //console.log(JSON.stringify(tags) === JSON.stringify(previousSearch.current))
 
-    if ((previousSearchSortType.current === sortType.current ) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
+    if ((previousSearchSortType.current === sortType.current) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
       console.log("not doing anything same search")
       return
     }
@@ -249,6 +282,8 @@ export function SearchPage(props: SearchPageProps) {
       responses = responses.flat()
       setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
 
+      console.time('GroupImages')
+
       fileTags = createListOfUniqueTags(responses)
       let h = hashes
       if (props.type === 'comic') {
@@ -258,6 +293,7 @@ export function SearchPage(props: SearchPageProps) {
         h = groupImages(responses, hashes, getGroupNamespace())
       }
 
+      console.timeEnd('GroupImages')
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
@@ -379,7 +415,7 @@ export function SearchPage(props: SearchPageProps) {
     }
   }
 
-  function newAddTag(tag: string,tags:Array<Array<string>>) {
+  function newAddTag(tag: string, tags: Array<Array<string>>) {
     if (tags) {
       if (tag === '') { return; }
       let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
@@ -405,10 +441,10 @@ export function SearchPage(props: SearchPageProps) {
     }
   }
 
-  const addTagCallback = useCallback((tag:string) => {
+  const addTagCallback = useCallback((tag: string) => {
     console.log('doing sometinhg')
     addTag(tag)
-  },[])
+  }, [])
 
   function removeTag(tag: Array<string>) {
     if (tags) {
