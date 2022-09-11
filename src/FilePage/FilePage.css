@@ -15,7 +15,7 @@
     z-index: 5;
     background: var(--COLOR1);
     border-radius: 5px;
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.3s ease-in-out;
     transform: translateY(100%);
     max-height: 75vh;
     height: auto;

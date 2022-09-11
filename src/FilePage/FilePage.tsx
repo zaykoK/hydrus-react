@@ -118,6 +118,9 @@ export function FilePage(props: FilePageProps) {
   }
 
   function switchRelatedVisible() {
+    if (sidebarVisible) {
+      setSidebarVisible(!sidebarVisible)
+    }
     if (relatedVisible) {
       localStorage.setItem('related-visible', 'false')
       setRelateVisible(false)
@@ -147,6 +150,9 @@ export function FilePage(props: FilePageProps) {
   }
 
   function switchSidebar() {
+    if (relatedVisible) {
+      setRelateVisible(!relatedVisible)
+    }
     setSidebarVisible(!sidebarVisible);
   }
 
