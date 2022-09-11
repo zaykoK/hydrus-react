@@ -142,6 +142,7 @@
     text-align: center;
     font-size: 1em;
     opacity: 0;
+    overflow: hidden;
 }
 
 .bottomTags {
