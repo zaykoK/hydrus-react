@@ -93,8 +93,11 @@ export function FilePage(props: FilePageProps) {
   }
 
   function getRelatedButtonStyle(enabled: boolean) {
-    if (enabled) { return "topBarButton" }
-    return "topBarButton transparent"
+    let style = 'topBarButton relatedButton'
+    if (!enabled) { style += " inactive" }
+    if (isMobile()) { style += ' mobile'}
+    if (isLandscapeMode()) { style += ' landscape'}
+    return style
   }
 
   function getFilePageStyle(mobile: boolean, landscape: boolean): string {

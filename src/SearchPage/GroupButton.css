@@ -8,6 +8,10 @@
     opacity: 0.7;
 }
 
+.TopBarButton.inactive {
+    opacity: 0.3;
+}
+
 .groupActive {
     opacity: 0.3;
 }

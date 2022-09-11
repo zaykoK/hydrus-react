@@ -1,5 +1,8 @@
-.TopBarButton.transparent {
-    opacity: 0.3;
+.relatedButton.mobile {
+    transform: rotate(90deg);
+}
+.relatedButton.mobile.landscape {
+    transform: none;
 }
 
 .contentSideBar {
