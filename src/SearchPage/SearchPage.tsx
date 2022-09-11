@@ -98,12 +98,12 @@ export function SearchPage(props: SearchPageProps) {
     let hashesCopy = hashes.slice()
     let responsesCopy = responses.slice()
 
-    let i = 0
-    let testSort2 = []
+    //let i = 0
+    //let testSort2 = []
     let testSort3 = []
 
-    console.time('Resorting#2')
-    i = 0
+    //console.time('Resorting#2')
+    //i = 0
     //Approach #2
     //Add break to second loop
     //Keep this for a while until I'm sure there's no problems with approach #3
@@ -122,14 +122,14 @@ export function SearchPage(props: SearchPageProps) {
     console.log('Steps:' + i)
     */
 
-    console.time('Resorting#3')
+    //console.time('Resorting#3')
     //Approach #3
     //Custom Sort function
     //Convert array into a hash map with given order for each hash
     let hashMap: Map<string, number> = new Map<string, number>()
     hashesCopy.map((value, index, array) => { hashMap.set(value, index) })
 
-    /* This function checks  */
+    /* This function compares order of hashes */
     function compareResponsesByHash(a: API.MetadataResponse, b: API.MetadataResponse): number {
       let hashA = hashMap.get(a.hash)
       let hashB = hashMap.get(b.hash)
@@ -143,7 +143,7 @@ export function SearchPage(props: SearchPageProps) {
       return 0
     }
     testSort3 = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
-    console.timeEnd('Resorting#3')
+    //console.timeEnd('Resorting#3')
 
     //console.log("Are sorting results same?")
     //console.log(JSON.stringify(testSort2) === JSON.stringify(testSort3))
@@ -373,17 +373,14 @@ export function SearchPage(props: SearchPageProps) {
   }, [])
 
   useEffect(() => {
-    console.log('parm changed')
     refreshParams()
   }, [parm])
 
   useEffect(() => {
     search()
-    console.log('doing search cause sortType or tags changed')
   }, [tags, sortType])
 
   useEffect(() => {
-    console.log('changed')
     //Adding even slightiest timeout seem to actually make this work, weird
     setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
   }, [loaded])
