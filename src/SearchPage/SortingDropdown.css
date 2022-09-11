@@ -19,6 +19,8 @@
     border-radius: 5px;
     padding-left: 1em;
     padding-right: 1em;
+    padding-top:6px;
+    padding-bottom:6px;
     transition: all 0.25s ease-in-out;
     cursor:pointer;
     height: inherit;
@@ -30,9 +32,9 @@
 
 .dropdownMenuOptions {
     display: block;
-    transition: all 0.25s ease-in-out;
+    transition: height 0.25s ease-in-out;
     height: 0px;
-    overflow: hidden;
+    overflow: scroll;
     background-color: var(--COLOR3);
 }
 
@@ -51,8 +53,8 @@
     transition: all 0.25s ease-in-out;
     padding-left: 1em;
     padding-right: 1em;
-    padding-top:3px;
-    padding-bottom:3px;
+    padding-top:6px;
+    padding-bottom:6px;
     border-radius: 5px;
     cursor:pointer;
 }

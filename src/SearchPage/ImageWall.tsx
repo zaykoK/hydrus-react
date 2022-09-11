@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { ImageThumbnail } from '../Thumbnail/ImageThumbnail';
+import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
 import PageButtons from './PageButtons';
 
 import './ImageWall.css'
 
 import { isMobile } from '../styleUtils'
 import { Result } from './SearchPage';
+import { MemoWrapperList as WrapperList } from './WrapperList';
 
 interface ImageWallProps {
   grouping: boolean;
@@ -31,10 +32,10 @@ export function ImageWall(props: ImageWallProps) {
     viewSize = 60
   }
 
-  const [thumbs, setThumbs] = React.useState(CreateNewThumbnailList(props.page))
+  const [thumbs, setThumbs] = React.useState<JSX.Element[]>([]) //Used to have 
 
   function CreateNewThumbnailList(page: number) {
-
+    console.log('wha')
 
     let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
     let list: Array<JSX.Element> = [];
@@ -46,7 +47,6 @@ export function ImageWall(props: ImageWallProps) {
           addTag={props.addTag}
           key={hash.cover}
           hash={hash.cover}
-          count={hash.entries.length}
           replace={false}
           metadata={hash.entries}
           size={2}
@@ -96,34 +96,21 @@ export function ImageWall(props: ImageWallProps) {
     return count
   }
 
-  function getWrapperListStyle() {
-    let style = 'WrapperList'
-    if (props.type === 'comic') {
-      style += ' comic'
-    }
-    if(isMobile()) {
-      style += ' mobile'
-    }
-    return style
-  }
-
-  function WrapperList(props: { thumbs: Array<JSX.Element>, loadingProgress: string, loaded: boolean }) {
-    return ((props.loaded && thumbs.length > 0) &&
-      <div className={getWrapperListStyle()}>{props.thumbs}</div> || <div className={getWrapperListStyle() + ' +loading'}>LOADING {props.loadingProgress}</div>
-    );
-  }
 
   function getOffsetValue(mobile: boolean): number {
     if (mobile) { return 2 }
     return 6
   }
 
+  const sm = getHashSlice(props.hashes, props.page)
+
   return (
     <div className='imageWall' >
       {(props.empty) && <div className='emptyStyle'>No results</div> || <>
       <WrapperList
-        key={getHashSlice(props.hashes, props.page)}
+        key={sm}
         thumbs={thumbs}
+        type={props.type}
         loadingProgress={props.loadingProgress}
         loaded={props.loaded} />
       <PageButtons

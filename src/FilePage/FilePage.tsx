@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { FileContent } from './FileContent';
+import { MemoFileContent as FileContent } from './FileContent';
+//import { FileContent } from './FileContent';
 import { FileMetaData } from './FileMetaData';
 import { useParams } from 'react-router-dom';
 import * as TagTools from '../TagTools'
@@ -19,6 +20,7 @@ import { isMobile } from '../styleUtils';
 import './FilePage.css'
 import '../SearchPage/GroupButton.css'
 import { RelatedFilesSideBar } from './RelatedFilesSideBar';
+import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage } from './ImageControls';
 
 interface FilePageProps {
   globalState: any;
@@ -34,6 +36,8 @@ export function FilePage(props: FilePageProps) {
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
+  const emptyBlacklist = React.useRef([])
+
   const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode()) //This exists so page redraws on orientation change
 
   const navigate = useNavigate()
@@ -43,97 +47,18 @@ export function FilePage(props: FilePageProps) {
     return true
   }
 
-  function returnFileLink(hash: string): string {
-    return "/file/" + hash
-  }
 
   function handleScreenChange() {
     if (window.screen.orientation.type.includes('portrait')) {
-      setLandscape(false); 
-      document.exitFullscreen(); 
-      return 
+      setLandscape(false);
+      document.exitFullscreen();
+      return
     }
     setLandscape(true)
     document.documentElement.requestFullscreen()
   }
 
-  //"This is ... too much" - George L.
-  //TODO find some way to simplify this whole next/prev image
-
-  function PreviousImage(): void {
-    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage() }
-    let searchList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
-    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
-    let index = elementList.indexOf(fileHash || '')
-    //Move to next
-    if (index - 1 < 0) { return PreviousSearchImage() }
-    if (searchList.indexOf(elementList[index - 1]) === -1) {
-      if (searchList.indexOf(fileHash || '') !== -1) {
-        sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
-      }
-    }
-    navigate(returnFileLink(elementList[index - 1]), { replace: true })
-  }
-
-  function NextImage(): void {
-    if (sessionStorage.getItem('group-hashes') === null) { return NextSearchImage() }
-    let searchList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
-    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
-    let index = elementList.indexOf(fileHash || '')
-    //Move to next
-    if (index + 1 >= elementList.length) { return NextSearchImage() }
-    if (searchList.indexOf(elementList[index + 1]) === -1) {
-      if (searchList.indexOf(fileHash || '') !== -1) {
-        sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
-      }
-    }
-    navigate(returnFileLink(elementList[index + 1]), { replace: true })
-  }
-
-  function PreviousSearchImage(): void {
-    if (sessionStorage.getItem('hashes-search') === null) { return }
-    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
-    let index = elementList.indexOf(fileHash || '')
-    if (index === -1) {
-      if (sessionStorage.getItem('hashes-search-last-valid') !== null) {
-        index = elementList.indexOf(JSON.parse(sessionStorage.getItem('hashes-search-last-valid') || ''))
-      }
-      else {
-        return
-      }
-    }
-    //If first/last file in set don't do anything
-    if (index - 1 < 0) { return }
-    //If currently tracking group related files delete them
-    if (sessionStorage.getItem('group-hashes') !== null) {
-      let groupHashes: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
-      if (groupHashes.indexOf(elementList[index - 1]) === -1) { sessionStorage.removeItem('group-hashes') }
-    }
-    navigate(returnFileLink(elementList[index - 1]), { replace: true })
-  }
-
-  function NextSearchImage(): void {
-    if (sessionStorage.getItem('hashes-search') === null) { return }
-    let elementList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
-    let index = elementList.indexOf(fileHash || '')
-    if (index === -1) {
-      if (sessionStorage.getItem('hashes-search-last-valid') !== null) {
-        index = elementList.indexOf(JSON.parse(sessionStorage.getItem('hashes-search-last-valid') || ''))
-      }
-      else {
-        return
-      }
-    }
-    //If first/last file in set don't do anything
-    if (index + 1 >= elementList.length) { return }
-    //If currently tracking group related files delete them
-    if (sessionStorage.getItem('group-hashes') !== null) {
-      let groupHashes: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
-      if (groupHashes.indexOf(elementList[index + 1]) === -1) { sessionStorage.removeItem('group-hashes') }
-    }
-
-    navigate(returnFileLink(elementList[index + 1]), { replace: true })
-  }
+ 
 
   const handleKeyPress = (e: KeyboardEvent) => {
 
@@ -181,7 +106,7 @@ export function FilePage(props: FilePageProps) {
     return "filePage"
   }
 
-  function generateClassName(name:string):string {
+  function generateClassName(name: string): string {
     let className = name
     if (isMobile()) {
       className += ' mobile'
@@ -212,7 +137,7 @@ export function FilePage(props: FilePageProps) {
     if (isMobile()) {
       style += ' mobile'
     }
-    if (isSidebarExpanded()) { 
+    if (isSidebarExpanded()) {
       style += " active"
     }
     if (isLandscapeMode()) {
@@ -225,27 +150,61 @@ export function FilePage(props: FilePageProps) {
     setSidebarVisible(!sidebarVisible);
   }
 
+  if (isMobile()) {
+    return <>
+      <div className={getSideBarStyle()}>
+        {(tags !== undefined) && <TagList tags={tags} visibleCount={false} />}
+        {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
+      </div>
+
+      <div className={generateClassName('barStylePadding')}></div>
+      <div className={generateClassName('topBar filePageTopBar')}>
+        <div id='home-button-padding' className="topBarButton" />
+        <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+        <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
+        <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
+        {(isMobile()) && <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />}
+
+      </div>
+      <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
+        <div className={generateClassName('fileContent')} >
+          {(metadata !== undefined) &&
+            <FileContent
+              hash={fileHash}
+              type={metadata.mime}
+              previousImage={PreviousImage}
+              nextImage={NextImage}
+              nextSearchImage={NextSearchImage}
+              previousSearchImage={PreviousSearchImage}
+            />}
+        </div>
+        
+        <RelatedFilesSideBar visible={relatedVisible} fileHash={fileHash} tags={tags} />
+      </div>
+    </>;
+  }
+
+
   return <>
     <div className={generateClassName('barStylePadding')}></div>
     <div className={generateClassName('topBar filePageTopBar')}>
       <div id='home-button-padding' className="topBarButton" />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage() }} />
-      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage() }} />
+      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
+      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
       {(isMobile()) && <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />}
 
     </div>
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
       <div className={getSideBarStyle()}>
-        {(tags !== undefined) && <TagList tags={tags} blacklist={[]} visibleCount={false} mobile={isMobile()} />}
+        {(tags !== undefined) && <TagList tags={tags} visibleCount={false} />}
         {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
       </div>
-      <div className={generateClassName('fileContent')} >
+      <div key={'FilePageContentWrapper' + fileHash + isMobile().toString()} className={generateClassName('fileContent')} >
         {(metadata !== undefined) &&
           <FileContent
             hash={fileHash}
             type={metadata.mime}
-            mobile={isMobile()}
             previousImage={PreviousImage}
             nextImage={NextImage}
             nextSearchImage={NextSearchImage}

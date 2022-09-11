@@ -19,13 +19,14 @@
     grid-template-columns: minmax(auto, 1fr) minmax(auto, 5fr);
     margin: 5px 0px 0px 0px;
 }
+
 .contentStyle.contentStyleComic {
     display: block;
     grid-template-columns: 1fr;
 }
 
 .contentStyle.mobile {
-    display: grid;
+    display:block;
     width: 100vw;
     overflow-x: hidden;
     grid-template-columns: auto;
@@ -53,18 +54,20 @@
 .gridStyleList.mobile {
     position: fixed;
     overflow-y: scroll;
-    bottom: -90vh;
+    bottom: 0px;
     z-index: 35;
-    grid-column: 1;
-    grid-row: 2;
     width: auto;
-    max-height:86vh;
-    height:auto;
-    background:var(--COLOR1);
+    max-height: 86vh;
+    height: auto;
+    background: var(--COLOR1);
     box-shadow: 0px 0px 5px 0px black;
-    transition: all 1s;
+    transition: transform 0.2s ease-in-out;
+    transform: translateY(100%);
+    will-change: transform;
+
 }
 
 .gridStyleList.mobile.active {
-    bottom: 0px;
+    transform: none;
+    transition: transform 0.2s ease-in-out;
 }

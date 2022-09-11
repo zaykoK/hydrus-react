@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import './TagList.css'
+import { isMobile } from './styleUtils';
 
 interface TagListProps {
     tags: Array<TagTools.Tuple>;
-    mobile:boolean;
     clickFunction?: Function;
     visibleCount: boolean;
-    blacklist: Array<string>; // tag namespaces to skip
+    blacklist?: Array<string>; // tag namespaces to skip
 }
 
 export function TagList(props:TagListProps) {
@@ -51,11 +51,12 @@ export function TagList(props:TagListProps) {
         return ''
     }
 
-    function getTagListStyle(mobile:boolean) {
-        if (mobile) {
-            return "tagList mobile"
+    function getTagListStyle() {
+        let style = 'tagList'
+        if (isMobile()) {
+            style += " mobile"
         }
-        return "tagList"
+        return style
     }
 
     function createTagList(args:{tags:Array<TagTools.Tuple>,blacklist:Array<string>}) {
@@ -82,10 +83,10 @@ export function TagList(props:TagListProps) {
         return tagList;
     }
     useEffect(() => {
-        setTags(createTagList({ blacklist: props.blacklist, tags: props.tags }))
+        setTags(createTagList({ blacklist: props.blacklist||[], tags: props.tags }))
     }, [props])
 
     return (
-        (tags.length > 0) && <div className={getTagListStyle(props.mobile)}>{tags}</div> || <></>
+        (tags.length > 0) && <div className={getTagListStyle()}>{tags}</div> || <></>
     )
 }

@@ -3,29 +3,22 @@ import './WidgetCount.css'
 import * as API from '../hydrus-backend'
 
 interface WidgetCountProps {
-    count: number | undefined;
-    tag?: string;
+    tag: string;
 }
 
 function WidgetCount(props: WidgetCountProps) {
-    const [tagCount,setTagCount] = useState<number>(0)
+    const [tagCount, setTagCount] = useState<number>(0)
 
-    async function getFileCount(tag:string) {
-        if (tag === '' || tagCount !== 0) {return}
-        let response = await API.api_get_files_search_files({tags:[[tag]],return_hashes:true})
+    async function getFileCount(tag: string) {
+        if (tag === '' || tagCount !== 0) { return }
+        let response = await API.api_get_files_search_files({ tags: [[tag]], return_hashes: true })
         setTagCount(response.data.hashes.length)
     }
 
     useEffect(() => {
-        if (props.tag !== undefined){
-            getFileCount(props.tag)
-        }
-    })
+        getFileCount(props.tag)
+    }, [props.tag])
 
-    if (props.count === undefined || props.count === 1) { return <></> }
-    let count;
-    if (props.count !== undefined) { count = props.count }
-
-    return <div className="widgetCount">{tagCount}</div>
+    return <>{(tagCount !== 0) && <div key={'widgetCount-' + tagCount} className="widgetCount">{tagCount}</div>}</>
 }
 export default WidgetCount

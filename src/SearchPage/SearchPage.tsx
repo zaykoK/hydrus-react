@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageWall } from "./ImageWall";
 import { TagSearchBar } from "./TagSearchbar";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -67,7 +67,7 @@ export function SearchPage(props: SearchPageProps) {
   //console.log(props.globalState?.getGlobalValue())
   //props.globalState?.setGlobalValue('search')
 
-  function changeSortType(newSortType:API.FileSortType) {
+  function changeSortType(newSortType: API.FileSortType) {
     console.log('new sort type is ' + API.FileSortType[newSortType].toString())
     sortType.current = newSortType
     setSortType(newSortType)
@@ -101,13 +101,17 @@ export function SearchPage(props: SearchPageProps) {
     let hashesCopy = hashes.slice()
     let responsesCopy = responses.slice()
 
+    console.time('Resorting')
+
     for (let hash in hashesCopy) {
       for (let response in responsesCopy) {
         if (hashesCopy[hash] === responsesCopy[response].hash) {
-          responsesResorted.push(responsesCopy.splice(parseInt(response),1)[0])
+          responsesResorted.push(responsesCopy.splice(parseInt(response), 1)[0])
         }
       }
     }
+
+    console.timeEnd('Resorting')
 
     //console.log(responsesResorted)
     //let responsesSorted = responses.sort((a, b) => b.time_modified - a.time_modified) //Newest imported first
@@ -172,7 +176,14 @@ export function SearchPage(props: SearchPageProps) {
       //console.log('not doing anything undefined');
       return
     }
-    if ((previousSearchSortType === sortType) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
+
+    //console.log(previousSearchSortType.current )
+    //console.log(sortType.current )
+    //console.log(previousSearchSortType.current  === sortType.current )
+    //console.log('are searches equal?')
+    //console.log(JSON.stringify(tags) === JSON.stringify(previousSearch.current))
+
+    if ((previousSearchSortType.current === sortType.current ) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
       console.log("not doing anything same search")
       return
     }
@@ -186,7 +197,7 @@ export function SearchPage(props: SearchPageProps) {
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
     if (props.type === 'comic') {
       searchTags.push([getComicNamespace() + ':*'])
-      searchTags.push(['page:0','page:1'])
+      searchTags.push(['page:0', 'page:1'])
     }
     //console.log('actually searching')
     //console.log(sortType.current)
@@ -222,16 +233,16 @@ export function SearchPage(props: SearchPageProps) {
     if (hashes.length > 0) {
       for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
         let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
-        if (thingy === false) {thingy = true}
+        if (thingy === false) { thingy = true }
         if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
         if (responseSize > 512) { //KB
-          responseSizeReadable = (responseSize*2).toLocaleString().slice(0,-4) + 'kB'
+          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
         }
-        if (responseSize > 1024*(512)) { //MB
-          responseSizeReadable = (responseSize*2).toLocaleString().slice(0,-4) + 'MB'
+        if (responseSize > 1024 * (512)) { //MB
+          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'MB'
         }
         if (responseSize < 512) {
-          responseSizeReadable = (responseSize*2).toLocaleString() + 'B'
+          responseSizeReadable = (responseSize * 2).toLocaleString() + 'B'
         }
         setLoadingProgress(i + '/' + hashes.length + ' (' + responseSizeReadable + ')')
       }
@@ -246,7 +257,7 @@ export function SearchPage(props: SearchPageProps) {
       else {
         h = groupImages(responses, hashes, getGroupNamespace())
       }
-      
+
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
@@ -278,8 +289,8 @@ export function SearchPage(props: SearchPageProps) {
         return [[]]
       case 'comic':
         return [[]]
-        // Removed because I added it in search function, should be better user experience without those 2 queries visible
-        //return [[getComicNamespace() + ':*'], ['page:0', 'page:1']]
+      // Removed because I added it in search function, should be better user experience without those 2 queries visible
+      //return [[getComicNamespace() + ':*'], ['page:0', 'page:1']]
       default:
         return [[]]
     }
@@ -326,6 +337,7 @@ export function SearchPage(props: SearchPageProps) {
   }, [])
 
   useEffect(() => {
+    console.log('parm changed')
     refreshParams()
   }, [parm])
 
@@ -335,6 +347,7 @@ export function SearchPage(props: SearchPageProps) {
   }, [tags, sortType])
 
   useEffect(() => {
+    console.log('changed')
     //Adding even slightiest timeout seem to actually make this work, weird
     setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
   }, [loaded])
@@ -366,6 +379,19 @@ export function SearchPage(props: SearchPageProps) {
     }
   }
 
+  function newAddTag(tag: string,tags:Array<Array<string>>) {
+    if (tags) {
+      if (tag === '') { return; }
+      let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
+      if (newTags.includes([tag])) { return } //If tag exists in array don't add it
+      //TODO process certain unique tags that user shouldn't be able to add
+      newTags.push([tag]);
+
+      let par = generateSearchURL(newTags, 1)
+      navigateTo(par)
+    }
+  }
+
   function addTag(tag: string) {
     if (tags) {
       if (tag === '') { return; }
@@ -378,6 +404,11 @@ export function SearchPage(props: SearchPageProps) {
       navigateTo(par)
     }
   }
+
+  const addTagCallback = useCallback((tag:string) => {
+    console.log('doing sometinhg')
+    addTag(tag)
+  },[])
 
   function removeTag(tag: Array<string>) {
     if (tags) {
@@ -424,7 +455,7 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   //Don't display those namespaces in tag list, eventually to move this into a setting
-  const tagBlacklist = getBlacklistedNamespaces()
+  const tagBlacklist = useRef(getBlacklistedNamespaces())
 
   function toggleSideBar() {
     setSideBarVisible(!sideBarVisible)
@@ -453,6 +484,36 @@ export function SearchPage(props: SearchPageProps) {
     return "topBarPadding"
   }
 
+  /* Mobile Layout */
+  if (isMobile()) {
+    return <>
+      <div className={getGridStyleList()}>
+        {(fileTags != undefined) &&
+          <TagList
+            visibleCount={true}
+            tags={fileTags}
+            blacklist={tagBlacklist.current}
+            clickFunction={addTag}
+          />}
+      </div>
+
+      <div className={getTopBarPaddingStyle()} />
+      {(tags) && <TagSearchBar infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+      <ImageWall
+        grouping={groupFiles}
+        addTag={addTag}
+        type={props.type}
+        page={params.page}
+        hashes={(groupFiles) && searchResults.groupedResults || searchResults.results}
+        changePage={changePage}
+        loadingProgress={loadingProgress}
+        loaded={loaded}
+        empty={emptySearch}
+      />
+    </>;
+  }
+  console.log('desktop layout')
+  /* Desktop Layout */
   return <>
     <div className={getTopBarPaddingStyle()} />
     {(tags) && <TagSearchBar infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
@@ -462,9 +523,8 @@ export function SearchPage(props: SearchPageProps) {
           <TagList
             visibleCount={true}
             tags={fileTags}
-            blacklist={tagBlacklist}
+            blacklist={tagBlacklist.current}
             clickFunction={addTag}
-            mobile={isMobile()}
           />}
       </div>}
       <div className={getGridStyleThumbs()}>

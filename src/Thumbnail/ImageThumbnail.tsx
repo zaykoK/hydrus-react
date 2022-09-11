@@ -21,7 +21,6 @@ interface ImageThumbnailProps {
   addTag: Function;
   replace: boolean;
   type: string;
-  count?: number;
   metadata?: Array<API.MetadataResponse>;
   size?: number;
 }
@@ -151,10 +150,10 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       let finalString = []
       for (let space in tagArrays) {
         if (props.type === 'comic') {
-          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap' }}>{tagArrays[space]}</p>)
+          finalString.push(<p onContextMenu={(e) => e.preventDefault()} key={props.hash + args.spaces[space]} style={{ margin: '0px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap' }}>{tagArrays[space]}</p>)
         }
         else {
-          finalString.push(<p key={props.hash + args.spaces[space]} style={{ margin: '0px' }}>{tagArrays[space]}</p>)
+          finalString.push(<p onContextMenu={(e) => e.preventDefault()} key={props.hash + args.spaces[space]} style={{ margin: '0px' }}>{tagArrays[space]}</p>)
         }
 
       }
@@ -281,7 +280,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         {createTagPreview({ metadata: metadata, spaces: thumbnailTopTags })}
       </div>}
       <div className='bottomTags'>
-        <WidgetCount count={props.count} tag={getComicTitle(metadata, getGroupNamespace(), false)} />
+        <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} />
         <WidgetFileType metadata={metadata} />
         {createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags })}
       </div>

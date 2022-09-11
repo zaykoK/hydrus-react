@@ -19,7 +19,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
     const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
     const [scrollOffset, setScrollOffset] = useState<number>(0);
 
-    
+
 
     useEffect(() => {
         async function Search() {
@@ -41,7 +41,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
         Search()
     }, [props.tags])
 
-    
+
 
     useEffect(() => {
         function isCurrentImage(hash: string) {
@@ -99,7 +99,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     useEffect(() => {
         //This scrolls the div with every image change
-        const el = document.querySelector('.relatedStyle')
+        const el = document.querySelector('.relatedStyleThumbsWrapper')
         //Scroll vertically
         if (isMobile() && !isLandscapeMode()) {
             el?.scrollTo({ left: scrollOffset, top: 0, behavior: 'smooth' })
@@ -110,7 +110,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
         }
 
 
-    }, [thumbs,scrollOffset])
+    }, [thumbs, scrollOffset])
 
     function getRelatedThumbsStyle(mobile: boolean): string {
         if (mobile) {
@@ -122,8 +122,11 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     return <>{
         (thumbs.length > 0) &&
-        (<>
+        (<div>
             <p className="relatedTextStyle">Related Files for {props.space}</p>
-            <div className={getRelatedThumbsStyle(props.mobile)}>{thumbs}</div></>)}
+            <div className='relatedStyleThumbsWrapper'>
+                <div className={getRelatedThumbsStyle(props.mobile)}>{thumbs}</div>
+            </div>
+        </div>)}
     </>
 }
