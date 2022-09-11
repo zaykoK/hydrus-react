@@ -85,7 +85,6 @@ function Content(props: ContentProps) {
     React.useEffect(() => {
         function loadFullSizeImage(): void {
             const img = new Image()
-            console.log(props.hash)
             img.src = API.api_get_file_address(props.hash) || ''
             img.onload = () => { setSrc(img.src); setLoaded(true) }
         }
