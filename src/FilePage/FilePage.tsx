@@ -11,6 +11,8 @@ import IconRelated from '../assets/related.svg'
 import IconLeft from '../assets/arrow-left.svg'
 import Info from '../assets/info.svg'
 import IconRight from '../assets/arrow-right.svg'
+import IconDoubleLeft from '../assets/arrow-double-left.svg'
+import IconDoubleRight from '../assets/arrow-double-right.svg'
 
 import { getRelatedVisibile } from '../StorageUtils';
 import { useNavigate } from "react-router-dom";
@@ -26,6 +28,11 @@ interface FilePageProps {
   globalState: any;
 }
 
+export type relatedDataCartType = {
+  hash:string;
+  tags:Array<TagTools.Tuple>;
+}
+
 export function FilePage(props: FilePageProps) {
   interface FilePageParams {
     hash: string | undefined;
@@ -33,6 +40,13 @@ export function FilePage(props: FilePageProps) {
   const { fileHash } = useParams();
   const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
   const [tags, setTags] = React.useState([]);
+
+
+
+
+
+  const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({hash:'',tags:[]})
+
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
@@ -90,6 +104,7 @@ export function FilePage(props: FilePageProps) {
     setMetaData(response.data.metadata[0])
     // @ts-ignore
     setTags(tagTuples)
+    setRelatedDatacart({hash:fileHash||'',tags:tagTuples})
   }
 
   function getRelatedButtonStyle(enabled: boolean) {
@@ -178,10 +193,10 @@ export function FilePage(props: FilePageProps) {
       <div className={generateClassName('topBar filePageTopBar')}>
         <div id='home-button-padding' className="topBarButton" />
         <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-        <img src={IconLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash,navigate) }} />
+        <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash,navigate) }} />
         <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
         <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
-        <img src={IconRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
+        <img src={IconDoubleRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
         <img src={Info} alt='sidebar switch' className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
 
       </div>
@@ -194,11 +209,11 @@ export function FilePage(props: FilePageProps) {
             />}
         </div>
         
-        <RelatedFilesSideBar visible={relatedVisible} fileHash={fileHash} tags={tags} />
+        <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} />
       </div>
     </>;
   }
-
+  //<RelatedFilesSideBar visible={relatedVisible} fileHash={fileHash} tags={tags} />
 
   return <>
     <div className={generateClassName('barStylePadding')}></div>
@@ -224,7 +239,7 @@ export function FilePage(props: FilePageProps) {
           />}
       </div>
 
-      <RelatedFilesSideBar visible={relatedVisible} fileHash={fileHash} tags={tags} />
+      <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} />
     </div>
   </>;
 }

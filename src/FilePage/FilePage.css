@@ -27,7 +27,11 @@
 }
 
 .contentSideBar.mobile.sideBarLandscape {
-    width: calc(100vw - 4em);
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin:auto;
+    width: calc(100vw - 6em);
 }
 
 .contentSideBar.mobile.active {
@@ -35,7 +39,7 @@
 }
 
 .contentSideBar.mobile.active.sideBarLandscape {
-    width: calc(100vw - 4em);
+    width: calc(100vw - 6em);
 }
 
 .barStylePadding {
@@ -61,19 +65,17 @@
     display: block;
     grid-template-columns: auto;
     grid-template-rows: auto auto auto;
+    background-color: black;
 }
 
 .filePage.mobile.landscape {
     font-size: x-large;
-    margin-left: 2.5em;
-    margin-right: 1em;
+    padding-left: 2.5em;
 }
 
 .fileContent.mobile {
     grid-row: 1;
     grid-column: 1;
-    background-color: black;
-    height: calc(100vh - 3.7em)
 }
 
 .fileContent {

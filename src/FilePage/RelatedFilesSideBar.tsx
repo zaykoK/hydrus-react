@@ -1,14 +1,14 @@
-import { group } from "console";
 import { useEffect, useState } from "react";
 import { getRelatedNamespaces } from "../StorageUtils";
 import { isLandscapeMode, isMobile } from "../styleUtils";
+import { relatedDataCartType } from "./FilePage";
 import { RelatedFiles } from "./RelatedFiles"
 
 import './RelatedFilesSideBar.css'
 
 interface RelatedFilesListProps {
-    fileHash: string | undefined;
-    tags: Array<string>
+    relatedData: relatedDataCartType;
+
 }
 
 ///TODO
@@ -17,6 +17,7 @@ interface RelatedFilesListProps {
 
 function RelatedFilesList(props: RelatedFilesListProps) {
     const [relatedList, setRelatedList] = useState<Array<JSX.Element>>([])
+    const [relatedListTags, setRelatedListTags] = useState<Array<Array<string>>>([])
 
     const [currentTags, setCurrentTags] = useState<Array<Array<string>>>([])
 
@@ -38,17 +39,22 @@ function RelatedFilesList(props: RelatedFilesListProps) {
     //Which is if between two files group-title tags are same don't do anything
 
     useEffect(() => {
+        let dataTags = props.relatedData.tags
+        let dataHash = props.relatedData.hash
+
         //if (JSON.stringify(props.tags))
         let shouldUpdate = true
-        let groupTags:Array<Array<string>> = []
+        let groupTags: Array<Array<string>> = []
 
         let returned: Array<JSX.Element> = []
+        let returnedTags: Array<Array<string>> = []
         //if (props.metadata == undefined) { return returned }
         let spaces = getRelatedNamespaces()
         let i = 0
         for (let element of spaces) {
             //If no tags in namespace, don't add to the list
-            let tags = returnTagsFromNamespace(props.tags, element) || []
+            //@ts-ignore
+            let tags = returnTagsFromNamespace(dataTags, element) || []
             //console.log(tags)
             groupTags.push(tags)
             if (tags?.length > 0) { // && (JSON.stringify(currentTags[i]) !== JSON.stringify(tags))) {
@@ -57,17 +63,21 @@ function RelatedFilesList(props: RelatedFilesListProps) {
                 let newElement =
                     <RelatedFiles
                         id={'relatedElements' + element}
-                        currentHash={props.fileHash}
+                        currentHash={dataHash}
                         key={element + tags}
                         tags={tags}
                         space={element}
                     />
                 returned.push(newElement)
+                returnedTags.push(tags)
             }
             i += 1
         }
-        if (shouldUpdate) { setRelatedList(returned);setCurrentTags(groupTags) } 
-    }, [props.tags])
+        console.log(relatedListTags)
+        console.log(returnedTags)
+        //if (JSON.stringify(relatedListTags) === JSON.stringify(returnedTags)) { shouldUpdate = false }
+        if (shouldUpdate) { console.log('setting new relatedList');setRelatedList(returned); setRelatedListTags(returnedTags) }
+    }, [props.relatedData])
 
 
     return <>{relatedList}</>
@@ -75,8 +85,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
 
 interface RelatedFilesSideBarProps {
     visible: boolean;
-    fileHash: string | undefined;
-    tags: Array<string>;
+    relatedData: relatedDataCartType;
 }
 
 export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
@@ -90,13 +99,13 @@ export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
         return className
     }
 
-    console.log(props.tags)
+    //console.log(props.tags)
 
     //{RelatedFilesList({ fileHash: props.fileHash, tags: props.tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
 
 
     return <div className={getRelatedStyle(props.visible)}>
-        <RelatedFilesList fileHash={props.fileHash} tags={props.tags} /> {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
+        <RelatedFilesList relatedData={props.relatedData} /> {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
     </div>
 }
 

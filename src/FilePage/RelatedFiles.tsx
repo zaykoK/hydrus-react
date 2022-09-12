@@ -13,6 +13,10 @@ interface RelatedFilesProps {
     space: string;
 }
 
+function emptyFunction() {
+
+}
+
 export function RelatedFiles(props: RelatedFilesProps) {
     const [relatedHashes, setRelatedHashes] = useState<Array<string>>([])
     const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
@@ -87,7 +91,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
                         key={relatedHashes[hash]}
                         hash={relatedHashes[hash]}
                         loadMeta={false}
-                        addTag={() => { return }}
+                        addTag={emptyFunction}
                         size={1}
                     />)
             }

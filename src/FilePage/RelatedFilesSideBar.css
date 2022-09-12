@@ -16,7 +16,7 @@
 }
 
 .relatedStyle.hidden {
-    transform: translateX(100%);
+    transform: translateX(105%);
     transition: transform 0.3s ease-in-out;
 }
 
@@ -43,11 +43,11 @@
 }
 
 .relatedStyle.mobile.hidden {
-    transform: translateY(100%);
+    transform: translateY(105%);
     transition: transform 0.3s ease-in-out;
 }
 
 .relatedStyle.mobile.landscape.hidden {
-    transform: translateX(100%);
+    transform: translateX(105%);
     transition: transform 0.3s ease-in-out;
 }
