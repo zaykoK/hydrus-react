@@ -1,5 +1,6 @@
 import { MetadataResponse } from "../hydrus-backend";
 import './FileMetaData.css'
+
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 function formatBytes(bytes: number, decimals: number = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -11,6 +12,20 @@ function formatBytes(bytes: number, decimals: number = 2) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+//lifted from https://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
+function timeConverter(UNIX_timestamp: number): string {
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var sec = a.getSeconds();
+    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+    return time;
 }
 
 interface FileMetaDataProps {
@@ -27,20 +42,6 @@ export function FileMetaData(props: FileMetaDataProps) {
     const size = props.metadata.size
     const hash = props.metadata.hash
     const date = props.metadata.time_modified
-
-    //lifted from https://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
-    function timeConverter(UNIX_timestamp: number): string {
-        var a = new Date(UNIX_timestamp * 1000);
-        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        var year = a.getFullYear();
-        var month = months[a.getMonth()];
-        var date = a.getDate();
-        var hour = a.getHours();
-        var min = a.getMinutes();
-        var sec = a.getSeconds();
-        var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
-        return time;
-    }
 
     let links = []
     for (let el in urls) {
