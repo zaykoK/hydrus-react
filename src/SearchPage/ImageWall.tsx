@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
+import { ImageThumbnail } from '../Thumbnail/ImageThumbnail';
 import PageButtons from './PageButtons';
 
 import './ImageWall.css'
@@ -35,7 +35,6 @@ export function ImageWall(props: ImageWallProps) {
   const [thumbs, setThumbs] = React.useState<JSX.Element[]>([]) //Used to have 
 
   function CreateNewThumbnailList(page: number) {
-    console.log('wha')
 
     let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
     let list: Array<JSX.Element> = [];
