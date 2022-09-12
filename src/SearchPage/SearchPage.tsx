@@ -12,6 +12,7 @@ import { setPageTitle } from '../misc';
 
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils';
+import localforage from 'localforage';
 
 interface SearchPageProps {
   type: string;
@@ -201,7 +202,7 @@ export function SearchPage(props: SearchPageProps) {
       //#3. Some hybrid way of putting all page tag containing images first in proper order then putting all non page number having at the end in order of date
       //Altough not sure if it's necessary here as right now all I care about is proper group cover
 
-      entry.entries.sort((a,b) => {return a.time_modified - b.time_modified})
+      entry.entries.sort((a, b) => { return a.time_modified - b.time_modified })
       entry.cover = entry.entries[0].hash
 
       returnHashes.push(entry.cover)
@@ -272,24 +273,43 @@ export function SearchPage(props: SearchPageProps) {
 
     let thingy = false
 
+
+
     if (hashes.length > 0) {
-      for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
-        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
-        if (thingy === false) { thingy = true }
-        if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
-        if (responseSize > 512) { //KB
-          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
-        }
-        if (responseSize > 1024 * (512)) { //MB
-          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'MB'
-        }
-        if (responseSize < 512) {
-          responseSizeReadable = (responseSize * 2).toLocaleString() + 'B'
-        }
-        setLoadingProgress(i + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+      //Load the session storage metadata if exist
+      let cacheHashes = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
+      let cacheResponses = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
+
+
+      //If current hashes matches cached search result just use that
+      if (JSON.stringify(cacheHashes) === JSON.stringify(hashes)) {
+        console.log('loading cached results')
+        responses = cacheResponses
       }
-      responses = responses.flat()
-      setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+      //Else load them from the server and then add do indexedDB
+      else {
+        for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
+          let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
+          if (thingy === false) { thingy = true }
+          if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
+          if (responseSize > 512) { //KB
+            responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
+          }
+          if (responseSize > 1024 * (512)) { //MB
+            responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'MB'
+          }
+          if (responseSize < 512) {
+            responseSizeReadable = (responseSize * 2).toLocaleString() + 'B'
+          }
+          setLoadingProgress(i + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+        }
+        responses = responses.flat()
+        //Save results for later
+        localforage.setItem('search-metadata-cache-hashes', JSON.stringify(hashes))
+        localforage.setItem('search-metadata-cache-responses', JSON.stringify(responses))
+
+        setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+      }
 
       console.time('GroupImages')
 
