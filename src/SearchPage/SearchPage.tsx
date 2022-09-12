@@ -195,6 +195,15 @@ export function SearchPage(props: SearchPageProps) {
     let returnHashes: Array<string> = []
     let searchArray: Array<Result> = []
     resultMap.forEach((entry) => {
+      //Potential Sortings
+      //#1. By date (usually images are imported in canon order)
+      //#2. By page number (for comics/ordered image groups)
+      //#3. Some hybrid way of putting all page tag containing images first in proper order then putting all non page number having at the end in order of date
+      //Altough not sure if it's necessary here as right now all I care about is proper group cover
+
+      entry.entries.sort((a,b) => {return a.time_modified - b.time_modified})
+      entry.cover = entry.entries[0].hash
+
       returnHashes.push(entry.cover)
       searchArray.push(entry)
     })
