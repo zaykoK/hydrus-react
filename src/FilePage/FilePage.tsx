@@ -170,9 +170,11 @@ export function FilePage(props: FilePageProps) {
       <div className={generateClassName('topBar filePageTopBar')}>
         <div id='home-button-padding' className="topBarButton" />
         <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+        <img src={IconLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash,navigate) }} />
         <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
         <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
-        {(isMobile()) && <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />}
+        <img src={IconRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
+        <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />
 
       </div>
       <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
@@ -181,10 +183,6 @@ export function FilePage(props: FilePageProps) {
             <FileContent
               hash={fileHash}
               type={metadata.mime}
-              previousImage={PreviousImage}
-              nextImage={NextImage}
-              nextSearchImage={NextSearchImage}
-              previousSearchImage={PreviousSearchImage}
             />}
         </div>
         
@@ -199,9 +197,10 @@ export function FilePage(props: FilePageProps) {
     <div className={generateClassName('topBar filePageTopBar')}>
       <div id='home-button-padding' className="topBarButton" />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+      <img src={IconLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash,navigate) }} />
       <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
       <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
-      {(isMobile()) && <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />}
+      <img src={IconRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
 
     </div>
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
@@ -214,10 +213,6 @@ export function FilePage(props: FilePageProps) {
           <FileContent
             hash={fileHash}
             type={metadata.mime}
-            previousImage={PreviousImage}
-            nextImage={NextImage}
-            nextSearchImage={NextSearchImage}
-            previousSearchImage={PreviousSearchImage}
           />}
       </div>
 
