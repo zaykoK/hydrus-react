@@ -25,14 +25,19 @@ interface ImageThumbnailProps {
   size?: number;
 }
 
+const EMPTYSTRING = ''
 
-export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
-  const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
-  const [metadata, setMetadata] = React.useState();
 
+function returnFilePageURL(hash: string) {
+  return "/file/" + hash
+}
+
+function ThumbContent(props: { thumbnail: string | undefined, type: string, hash: string, replace: boolean, currentImage?:boolean }) {
   const navigate = useNavigate();
-
-
+  function determineThumbNavigation(replace: boolean) {
+    sessionStorage.setItem('searchScroll', window.scrollY.toString())
+    navigate(returnFilePageURL(props.hash), { replace: replace })
+  }
 
   function getThumbStyle(type: string): string {
     let style = 'thumbnail'
@@ -48,6 +53,20 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
     return style
   }
+
+  return <img
+    className={getThumbStyle(props.type)}
+    onContextMenu={(e) => e.preventDefault()}
+    onClick={() => { determineThumbNavigation(props.replace) }}
+    loading='lazy'
+    src={props.thumbnail}
+    alt={props.hash} />
+}
+
+
+export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
+  const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
+  const [metadata, setMetadata] = React.useState<API.MetadataResponse>();
 
   function getWrapperStyle(type: string): string {
     let style = "thumbnailWrapper"
@@ -187,25 +206,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
   }, []);
 
-  function returnFilePageURL() {
-    return "/file/" + props.hash
-  }
-
-  function ThumbContent(props: { thumbnail: string | undefined, type: string, hash: string, replace: boolean }) {
-    function determineThumbNavigation(replace: boolean) {
-      sessionStorage.setItem('searchScroll', window.scrollY.toString())
-      navigate(returnFilePageURL(), { replace: replace })
-    }
-
-    return <img
-      className={getThumbStyle(props.type)}
-      onContextMenu={(e) => e.preventDefault()}
-      onClick={() => { determineThumbNavigation(props.replace) }}
-      loading='lazy'
-      src={props.thumbnail}
-      alt={props.hash} />
-  }
-
   const thumbnailTopTags: Array<string> = ['creator', 'person', 'series']
   const thumbnailBottomTags: Array<string> = []
 
@@ -281,7 +281,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       </div>}
       <div className='bottomTags'>
         <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} />
-        <WidgetFileType metadata={metadata} />
+        <WidgetFileType mime={metadata?.mime || EMPTYSTRING} />
         {createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags })}
       </div>
       <ThumbContent
@@ -289,10 +289,9 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         replace={props.replace}
         thumbnail={thumbnail}
         hash={props.hash}
+        currentImage={props.currentImage}
       />
       {/* <div className='wrapperLabel'>{createTagPreview({ metadata: metadata, spaces: ['group-title'] })}</div> */}
     </div>
   );
 });
-
-export const MemoThumbnail = React.memo(ImageThumbnail);

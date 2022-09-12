@@ -1,12 +1,11 @@
 .WidgetFileTypeWrapper {
-    
     position: absolute;
     bottom: 5px;
     left: 5px;
     background: #000000d1;
     margin: auto auto;
     padding: 2px 2px 2px 2px;
-    border-radius: 5px 5px 5px 5px;
+    border-radius: 0.3em;
     opacity: 0.15;
     pointer-events: none;
     transition:all 0.25s;
