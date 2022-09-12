@@ -61,8 +61,8 @@ function Content(props: ContentProps) {
     const handleKeyPress = (e: KeyboardEvent) => {
         if (e.key === "ArrowRight") { NextImage(props.hash, navigate) }
         if (e.key === "ArrowLeft") { PreviousImage(props.hash, navigate) }
-        if (e.key === "ArrowUp") { NextSearchImage(props.hash, navigate) }
-        if (e.key === "ArrowDown") { PreviousSearchImage(props.hash, navigate) }
+        if (e.key === "ArrowDown") { NextSearchImage(props.hash, navigate) }
+        if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate) }
     }
 
     const handleMouseScroll = (e: WheelEvent) => {
