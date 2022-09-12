@@ -20,7 +20,17 @@
 }
 
 .relatedStyleThumbsWrapper {
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 97%;
+}
+.relatedStyleThumbsWrapper.mobile {
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+.relatedStyleThumbsWrapper.mobile.landscape {
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 

@@ -10,15 +10,15 @@ function returnFileLink(hash: string): string {
 //"This is ... too much" - George L.
 //TODO find some way to simplify this whole next/prev image
 
-export function PreviousImage(fileHash: string | undefined,navigate:NavigateFunction): void {
+export function PreviousImage(fileHash: string | undefined, navigate: NavigateFunction): void {
 
     if (fileHash === undefined) { return }
-    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage(fileHash,navigate) }
+    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage(fileHash, navigate) }
     let searchList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
     let elementList: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
     let index = elementList.indexOf(fileHash || '')
     //Move to next
-    if (index - 1 < 0) { return PreviousSearchImage(fileHash,navigate) }
+    if (index - 1 < 0) { return PreviousSearchImage(fileHash, navigate) }
     if (searchList.indexOf(elementList[index - 1]) === -1) {
         if (searchList.indexOf(fileHash || '') !== -1) {
             sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
@@ -27,14 +27,14 @@ export function PreviousImage(fileHash: string | undefined,navigate:NavigateFunc
     navigate(returnFileLink(elementList[index - 1]), { replace: true })
 }
 
-export function NextImage(fileHash: string | undefined,navigate:NavigateFunction): void {
+export function NextImage(fileHash: string | undefined, navigate: NavigateFunction): void {
     if (fileHash === undefined) { return }
-    if (sessionStorage.getItem('group-hashes') === null) { return NextSearchImage(fileHash,navigate) }
+    if (sessionStorage.getItem('group-hashes') === null) { return NextSearchImage(fileHash, navigate) }
     let searchList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
     let elementList: Array<string> = JSON.parse(sessionStorage.getItem('group-hashes') || '')
     let index = elementList.indexOf(fileHash || '')
     //Move to next
-    if (index + 1 >= elementList.length) { return NextSearchImage(fileHash,navigate) }
+    if (index + 1 >= elementList.length) { return NextSearchImage(fileHash, navigate) }
     if (searchList.indexOf(elementList[index + 1]) === -1) {
         if (searchList.indexOf(fileHash || '') !== -1) {
             sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
@@ -43,7 +43,7 @@ export function NextImage(fileHash: string | undefined,navigate:NavigateFunction
     navigate(returnFileLink(elementList[index + 1]), { replace: true })
 }
 
-export function PreviousSearchImage(fileHash: string | undefined,navigate:NavigateFunction): void {
+export function PreviousSearchImage(fileHash: string | undefined, navigate: NavigateFunction): void {
     if (fileHash === undefined) { return }
     if (sessionStorage.getItem('hashes-search') === null) { return }
     let elementList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')
@@ -66,7 +66,7 @@ export function PreviousSearchImage(fileHash: string | undefined,navigate:Naviga
     navigate(returnFileLink(elementList[index - 1]), { replace: true })
 }
 
-export function NextSearchImage(fileHash: string | undefined,navigate:NavigateFunction): void {
+export function NextSearchImage(fileHash: string | undefined, navigate: NavigateFunction): void {
     if (fileHash === undefined) { return }
     if (sessionStorage.getItem('hashes-search') === null) { return }
     let elementList: Array<string> = JSON.parse(sessionStorage.getItem('hashes-search') || '')

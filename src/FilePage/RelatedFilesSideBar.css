@@ -6,8 +6,7 @@
     top: 0px;
     height: 99vh;
     max-width: 27vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     box-shadow: 0 0 5px 0 black;
     font-size: 1em;
     z-index: 30;

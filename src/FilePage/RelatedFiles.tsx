@@ -11,7 +11,6 @@ interface RelatedFilesProps {
     currentHash: string | undefined;
     id: string;
     space: string;
-    mobile: boolean;
 }
 
 export function RelatedFiles(props: RelatedFilesProps) {
@@ -23,10 +22,14 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     useEffect(() => {
         async function Search() {
+            console.log('settings new group hashes to storage')
+            console.log(props.tags)
+
             if (props.tags === undefined) { return }
             let list = props.tags
             if (list.length === 0 || list === undefined) {
                 setRelatedHashes(list)
+                sessionStorage.setItem('group-hashes', JSON.stringify([props.currentHash]))
                 return
             }
             //Get file hashes
@@ -34,6 +37,8 @@ export function RelatedFiles(props: RelatedFilesProps) {
             //For visual purpose reverse the order
             let reverseHashes = response.data.hashes.slice().reverse()
             //Put hashes in session storage for other elements to use
+            
+
             sessionStorage.setItem('group-hashes', JSON.stringify(reverseHashes))
             setRelatedHashes(reverseHashes)
         }
@@ -92,7 +97,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
             setScrollOffset((currentIndex * thumbHeight))
         }
         else {
-            setScrollOffset(SIZEOFLABEL + (currentIndex * thumbHeight))
+            setScrollOffset((currentIndex * thumbHeight))
         }
 
     }, [relatedHashes, props.currentHash])
@@ -112,21 +117,32 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     }, [thumbs, scrollOffset])
 
-    function getRelatedThumbsStyle(mobile: boolean): string {
-        if (mobile) {
+    function getRelatedThumbsStyle(): string {
+        if (isMobile()) {
             if (isLandscapeMode()) { return "relatedThumbnails mobile landscape" }
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"
     }
 
+    function getRelatedThumbsWrapperStyle():string {
+        let style = 'relatedStyleThumbsWrapper'
+        if (isMobile()) {
+            style += ' mobile'
+            if (isLandscapeMode()) {
+                style += ' landscape'
+            }
+        }
+        return style
+    }
+
     return <>{
         (thumbs.length > 0) &&
-        (<div>
+        (<>
             <p className="relatedTextStyle">Related Files for {props.space}</p>
-            <div className='relatedStyleThumbsWrapper'>
-                <div className={getRelatedThumbsStyle(props.mobile)}>{thumbs}</div>
+            <div className={getRelatedThumbsWrapperStyle()}>
+                <div className={getRelatedThumbsStyle()}>{thumbs}</div>
             </div>
-        </div>)}
+        </>)}
     </>
 }
