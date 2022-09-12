@@ -227,7 +227,7 @@ export function SearchPage(props: SearchPageProps) {
     //console.log(JSON.stringify(tags) === JSON.stringify(previousSearch.current))
 
     if ((previousSearchSortType.current === sortType.current) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
-      console.log("not doing anything same search")
+      //console.log("not doing anything same search")
       return
     }
     if (loaded) { sessionStorage.removeItem('searchScroll') }
@@ -274,12 +274,12 @@ export function SearchPage(props: SearchPageProps) {
     let thingy = false
 
 
-
+    //If there are any results
     if (hashes.length > 0) {
       //Load the session storage metadata if exist
       let cacheHashes = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
       let cacheResponses = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
-
+      
 
       //If current hashes matches cached search result just use that
       if (JSON.stringify(cacheHashes) === JSON.stringify(hashes)) {
@@ -574,7 +574,6 @@ export function SearchPage(props: SearchPageProps) {
       />
     </>;
   }
-  console.log('desktop layout')
   /* Desktop Layout */
   return <>
     <div className={getTopBarPaddingStyle()} />
