@@ -9,10 +9,6 @@ import { NavigateFunction, useNavigate } from "react-router-dom"
 import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage } from './ImageControls';
 
 interface ContentProps {
-    nextImage: Function;
-    previousImage: Function;
-    nextSearchImage: Function;
-    previousSearchImage: Function;
     type: string;
     hash: string | undefined;
 }

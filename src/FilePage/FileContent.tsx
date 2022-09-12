@@ -10,10 +10,6 @@ import Content from './Content';
 interface FileContentProps {
   hash: string | undefined;
   type: string;
-  nextImage: Function;
-  previousImage: Function;
-  nextSearchImage: Function;
-  previousSearchImage: Function;
 }
 
 export function FileContent(props: FileContentProps) {
@@ -24,7 +20,7 @@ export function FileContent(props: FileContentProps) {
   }
   return (
     <div id={"FileContent-" + props.hash} key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
-      <Content type={props.type} hash={props.hash} nextImage={props.nextImage} previousImage={props.previousImage} nextSearchImage={props.nextSearchImage} previousSearchImage={props.previousSearchImage} />
+      <Content type={props.type} hash={props.hash} />
     </div>
   );
 };
