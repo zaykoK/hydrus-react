@@ -159,6 +159,14 @@ export function FilePage(props: FilePageProps) {
     setSidebarVisible(!sidebarVisible);
   }
 
+  function getButtonSidebarToggleStyle(active:boolean):string {
+    let style = 'topBarButton'
+    if (active) {
+      style += ' active'
+    }
+    return style
+  }
+
   if (isMobile()) {
     return <>
       <div className={getSideBarStyle()}>
@@ -174,7 +182,7 @@ export function FilePage(props: FilePageProps) {
         <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
         <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
         <img src={IconRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
-        <img src={Info} alt='sidebar switch' className="topBarButton" onClick={() => { switchSidebar() }} />
+        <img src={Info} alt='sidebar switch' className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
 
       </div>
       <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
