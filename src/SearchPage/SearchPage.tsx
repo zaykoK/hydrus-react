@@ -143,26 +143,28 @@ export function SearchPage(props: SearchPageProps) {
       if (hashA > hashB) { return 1 }
       return 0
     }
-    testSort3 = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
+    //testSort3 = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
     //console.timeEnd('Resorting#3')
 
     //console.log("Are sorting results same?")
     //console.log(JSON.stringify(testSort2) === JSON.stringify(testSort3))
 
-    responsesResorted = testSort3
+    //responsesResorted = testSort3
 
-    let responsesSorted = responsesResorted
+    let responsesSorted = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
 
     let resultMap: Map<string, Result> = new Map<string, Result>()
     let unsortedArray: Array<Result> = []
+
+    //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
+    let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags') || '';
+    if (!allKnownTagsKey || allKnownTagsKey === null) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
 
     for (let element of responsesSorted) {
       unsortedArray.push({ cover: element.hash, entries: [element] })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
-      //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
-      let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags');
-      if (!allKnownTagsKey) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
+
       let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
       if (serviceKeys) {
         //For each entry in metadataResponses 
@@ -181,7 +183,7 @@ export function SearchPage(props: SearchPageProps) {
 
         if (filterTags.length !== 0) { //Don't create group for files with no group namespace
           let tempResult = resultMap.get(filterTags[0].value)           //Check if tag group already exist in tempResult
-          if (tempResult != undefined) {           //If exist update with appending a current one
+          if (tempResult !== undefined) {           //If exist update with appending a current one
             resultMap.set(filterTags[0].value, { cover: tempResult.cover, entries: [...tempResult.entries, element] })
           }
           else {           //If not create a new entry
@@ -195,6 +197,19 @@ export function SearchPage(props: SearchPageProps) {
     }
     let returnHashes: Array<string> = []
     let searchArray: Array<Result> = []
+
+    function sortResults(a: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }, b: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }): number {
+      //If posssible to compare pages
+      //TODO make it so having page makes you first
+      if (a.page.length > 0 && b.page.length > 0) {
+        return parseInt(a.page[0].value) - parseInt(b.page[0].value)
+      }
+      else { //Compare by import date
+        return a.modifiedDate - b.modifiedDate
+      }
+
+    }
+
     resultMap.forEach((entry) => {
       //Potential Sortings
       //#1. By date (usually images are imported in canon order)
@@ -202,8 +217,24 @@ export function SearchPage(props: SearchPageProps) {
       //#3. Some hybrid way of putting all page tag containing images first in proper order then putting all non page number having at the end in order of date
       //Altough not sure if it's necessary here as right now all I care about is proper group cover
 
-      entry.entries.sort((a, b) => { return a.time_modified - b.time_modified })
-      entry.cover = entry.entries[0].hash
+
+      let tempArray = []
+
+      for (let t of entry.entries) {
+
+        let serviceKeys = t.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
+        let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
+        //This gives all tags for grouping namespace, ideally only 1 result should exist
+        let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
+        tempArray.push({ hash: t.hash, page: filterTags, modifiedDate: t.time_modified })
+      }
+
+      tempArray.sort((a, b) => sortResults(a, b))
+      let reverseHashes = tempArray.map((value, index) => { return value.hash })
+
+
+      //entry.entries.sort((a, b) => { return a.time_modified - b.time_modified })
+      entry.cover = reverseHashes[0]
 
       returnHashes.push(entry.cover)
       searchArray.push(entry)
@@ -279,7 +310,7 @@ export function SearchPage(props: SearchPageProps) {
       //Load the session storage metadata if exist
       let cacheHashes = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
       let cacheResponses = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
-      
+
 
       //If current hashes matches cached search result just use that
       if (JSON.stringify(cacheHashes) === JSON.stringify(hashes)) {
@@ -288,7 +319,8 @@ export function SearchPage(props: SearchPageProps) {
       }
       //Else load them from the server and then add do indexedDB
       else {
-        for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
+        let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
+        for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
           let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
           if (thingy === false) { thingy = true }
           if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
