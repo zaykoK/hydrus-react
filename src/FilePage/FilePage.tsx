@@ -213,7 +213,6 @@ export function FilePage(props: FilePageProps) {
       </div>
     </>;
   }
-  //<RelatedFilesSideBar visible={relatedVisible} fileHash={fileHash} tags={tags} />
 
   return <>
     <div className={generateClassName('barStylePadding')}></div>

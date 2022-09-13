@@ -24,7 +24,7 @@ function PageButtons(props: PageButtonsProps) {
   let pageButtons = []
 
   //Draw previous page button
-  if (props.currentPage != 1) { pageButtons.push(<ButtonPreviousPage className="pageButton" key={'pageprev'} changePage={props.changePage} page={props.currentPage - 1} />) }
+  if (props.currentPage !== 1) { pageButtons.push(<ButtonPreviousPage className="pageButton" key={'pageprev'} changePage={props.changePage} page={props.currentPage - 1} />) }
 
   //Amount of buttons to draw +- from current page
   let offset = props.offset;
@@ -41,7 +41,10 @@ function PageButtons(props: PageButtonsProps) {
     pageButtons.push(<span key="pages before dots">.</span>)
   }
   //Draw current+-6 pages
-  for (let i = Math.max(2, props.currentPage - offset); i <= Math.min(props.pages, props.currentPage + offset); i++) {
+
+  let condition = Math.min(props.pages, props.currentPage + offset)
+
+  for (let i = Math.max(2, props.currentPage - offset); i <= condition; i++) {
     if (i === props.currentPage) {
       pageButtons.push(<ButtonPage className="pageButton current" key={'page' + i} changePage={props.changePage} page={i} />)
     }
@@ -58,7 +61,7 @@ function PageButtons(props: PageButtonsProps) {
     pageButtons.push(<ButtonPage className="pageButton" key={'page' + props.pages} changePage={props.changePage} page={props.pages} />)
   }
   //Draw next Page Button
-  if (props.currentPage != props.pages) { pageButtons.push(<ButtonNextPage className="pageButton" key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
+  if (props.currentPage !== props.pages) { pageButtons.push(<ButtonNextPage className="pageButton" key={'pagenext'} changePage={props.changePage} page={props.currentPage + 1} />) }
 
   return <div className="buttonList" >{pageButtons}</div>
 }

@@ -56,7 +56,10 @@ export function ImageWall(props: ImageWallProps) {
 
   function getHashSlice(hashes: Array<Result>, page: number): string {
     let slices = ''
-    for (let id = 0 + ((page - 1) * viewSize); id < Math.min((page) * viewSize, props.hashes.length); id++) {
+
+    let condition = Math.min((page) * viewSize, props.hashes.length)
+
+    for (let id = 0 + ((page - 1) * viewSize); id < condition; id++) {
       slices += hashes[id]?.cover
     }
 

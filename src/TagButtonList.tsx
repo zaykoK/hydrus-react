@@ -21,7 +21,10 @@ function TagButtonList(props: TagButtonListProps) {
    */
   function tagArrayToString(tag: Array<string>): string {
     let result = ''
-    for (let i = 0; i < tag.length; i++) {
+
+    let tagLength = tag.length
+
+    for (let i = 0; i < tagLength; i++) {
       result += tag[i] + ' OR '
     }
     result = result.slice(0, -4) //Remove last ' OR ' from string
@@ -30,7 +33,7 @@ function TagButtonList(props: TagButtonListProps) {
 
   React.useEffect(() => {
     //There's nothing to do if no tags exist
-    if (props.tags == undefined || props.tags.length === 0 || (props.tags.length === 1 && props.tags[0].length === 0 )) { return }
+    if (props.tags === undefined || props.tags.length === 0 || (props.tags.length === 1 && props.tags[0].length === 0 )) { return }
     let sortedTags: Array<TagTools.Tuple> = []
 
     for (let tagArray of props.tags) {

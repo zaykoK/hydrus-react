@@ -73,10 +73,8 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             }
             i += 1
         }
-        console.log(relatedListTags)
-        console.log(returnedTags)
         //if (JSON.stringify(relatedListTags) === JSON.stringify(returnedTags)) { shouldUpdate = false }
-        if (shouldUpdate) { console.log('setting new relatedList');setRelatedList(returned); setRelatedListTags(returnedTags) }
+        if (shouldUpdate) { setRelatedList(returned); setRelatedListTags(returnedTags) }
     }, [props.relatedData])
 
 

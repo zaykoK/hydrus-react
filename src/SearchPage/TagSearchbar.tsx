@@ -29,9 +29,11 @@ export function TagSearchBar(props: SearchTagsProps) {
     console.log('submitTag')
 
     let split = tag.split(' OR ')
-    if (split.length > 0) {
+    let splitLength = split.length
+
+    if (splitLength > 0) {
       let inside = []
-      for (let i = 0; i < split.length; i++) {
+      for (let i = 0; i < splitLength; i++) {
         inside.push(split[i].toLowerCase())
       }
       props.addTag(inside)
