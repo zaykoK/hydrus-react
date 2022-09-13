@@ -598,7 +598,7 @@ export function SearchPage(props: SearchPageProps) {
         addTag={addTag}
         type={props.type}
         page={params.page}
-        hashes={(groupFiles) && searchResults.groupedResults || searchResults.results}
+        hashes={(groupFiles) ? searchResults.groupedResults : searchResults.results}
         changePage={changePage}
         loadingProgress={loadingProgress}
         loaded={loaded}
@@ -626,7 +626,7 @@ export function SearchPage(props: SearchPageProps) {
           addTag={addTag}
           type={props.type}
           page={params.page}
-          hashes={(groupFiles) && searchResults.groupedResults || searchResults.results}
+          hashes={(groupFiles) ? searchResults.groupedResults : searchResults.results}
           changePage={changePage}
           loadingProgress={loadingProgress}
           loaded={loaded}
