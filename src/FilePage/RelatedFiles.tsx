@@ -28,8 +28,8 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     useEffect(() => {
         async function Search() {
-            console.log('settings new group hashes to storage')
-            console.log(props.tags)
+            //console.log('settings new group hashes to storage')
+            //console.log(props.tags)
 
             if (props.tags === undefined) { return }
             let list = props.tags

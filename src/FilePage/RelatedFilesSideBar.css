@@ -21,8 +21,9 @@
 }
 
 .relatedStyle.mobile {
+    z-index: 1;
     font-size: small;
-    bottom: 0px;
+    bottom: 4em;
     right: auto;
     top: auto;
     left: auto;
@@ -43,7 +44,7 @@
 }
 
 .relatedStyle.mobile.hidden {
-    transform: translateY(105%);
+    transform: translateY(120%);
     transition: transform 0.3s ease-in-out;
 }
 

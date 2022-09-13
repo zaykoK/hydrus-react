@@ -17,11 +17,7 @@ interface RelatedFilesListProps {
 
 function RelatedFilesList(props: RelatedFilesListProps) {
     const [relatedList, setRelatedList] = useState<Array<JSX.Element>>([])
-    const [relatedListTags, setRelatedListTags] = useState<Array<Array<string>>>([])
 
-    const [currentTags, setCurrentTags] = useState<Array<Array<string>>>([])
-
-    //if (!props.fileHash) { return <>{relatedList}</> }
     function returnTagsFromNamespace(tags: Array<string>, namespace: string) {
         //This function returns an array of joined tag strings from tuples
         //{namespace:'character',value:'uzumaki naruto'} => 'character:uzumaki naruto'
@@ -74,7 +70,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             i += 1
         }
         //if (JSON.stringify(relatedListTags) === JSON.stringify(returnedTags)) { shouldUpdate = false }
-        if (shouldUpdate) { setRelatedList(returned); setRelatedListTags(returnedTags) }
+        if (shouldUpdate) { setRelatedList(returned) }
     }, [props.relatedData])
 
 
@@ -97,13 +93,8 @@ export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
         return className
     }
 
-    //console.log(props.tags)
-
-    //{RelatedFilesList({ fileHash: props.fileHash, tags: props.tags })} {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
-
-
     return <div className={getRelatedStyle(props.visible)}>
-        <RelatedFilesList relatedData={props.relatedData} /> {/* has to be done this to prevent unnecessary refreshes of list when changing files */}
+        <RelatedFilesList relatedData={props.relatedData} />
     </div>
 }
 

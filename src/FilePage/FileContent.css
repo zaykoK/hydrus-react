@@ -3,6 +3,9 @@
   height: auto;
   overflow: hidden;
 }
+.contentWrapper.mobile {
+  height:inherit;
+}
 
 .contentWrapper.mobile.landscape {
   position: relative;
@@ -20,15 +23,17 @@
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
   cursor: zoom-in;
+  margin:0px;
 }
 
 .styleFitHeight.mobile {
   padding: 0px;
-  height: 90vh;
+  height: inherit;
   width: auto;
   max-width: 100%;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
+  margin:auto;
 }
 
 .styleFitHeight.mobile.landscape {

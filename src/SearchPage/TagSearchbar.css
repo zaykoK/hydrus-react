@@ -35,12 +35,16 @@
     flex-flow: row;
     justify-content: flex-start;
     height:2em;
+    top:auto;
+    bottom:0px;
 }
 
 .topBar.filePageTopBar.mobile.landscape {
     flex-flow: column;
     width: 2em;
     height: 100vh;
+    top:0px;
+    bottom:auto;
     padding: 6px 3px 3px 3px;
 }
 

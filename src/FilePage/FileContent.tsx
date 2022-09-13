@@ -14,9 +14,14 @@ interface FileContentProps {
 
 export function FileContent(props: FileContentProps) {
 
-  function getContentWrapperStyle() {
-    if (isLandscapeMode() && !props.type.includes('video')) { return "contentWrapper mobile landscape" }
-    return "contentWrapper"
+  function getContentWrapperStyle(): string {
+    let style = 'contentWrapper'
+    if (isMobile()) {
+      style += ' mobile'
+      if (isLandscapeMode() && !props.type.includes('video')) { style += ' landscape' }
+    }
+
+    return style
   }
   return (
     <div id={"FileContent-" + props.hash} key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
@@ -24,4 +29,4 @@ export function FileContent(props: FileContentProps) {
     </div>
   );
 };
-export const MemoFileContent= React.memo(FileContent);
+export const MemoFileContent = React.memo(FileContent);

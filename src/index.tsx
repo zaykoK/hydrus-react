@@ -34,6 +34,8 @@ function App() {
   const [token, setToken] = useState<boolean>(false)
   const [settings, setSettings] = useState<boolean>(false)
 
+  const [navigationExpanded,setNavigationExpanded] = useState(false)
+
   async function sessionKeyRoutine() {
     //If no settings, automatically move to settings page
     if (localStorage.getItem('hydrus-api-key') === null ||
@@ -74,19 +76,19 @@ function App() {
   }, [])
 
   return <div className="app">
-    {(token) && <Router>
-      <Navigation />
-      {((settings) &&
-        <Routes>
-          <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
-          <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} />} />
-          <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} />} />
-          <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} />} />
-          <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} />} />
-        </Routes>) || <Routes>
-          <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} />} />
-        </Routes>}
-    </Router>}
+      {(token) && <Router>
+        <Navigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
+        {((settings) &&
+          <Routes>
+            <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
+            <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+          </Routes>) || <Routes>
+            <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+          </Routes>}
+      </Router>}
   </div>
 }
 

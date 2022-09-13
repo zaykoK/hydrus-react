@@ -7,12 +7,34 @@ import IconHamburger from './assets/menu-burger.svg'
 
 import "./NavBar.css"
 import MobileModeButton from "./MobileModeButton";
-import { isMobile } from "./styleUtils";
+import { isLandscapeMode, isMobile } from "./styleUtils";
 
-function Navigation() {
+type NavigationProps = {
+  expanded: boolean;
+  setNavigationExpanded: Function;
+}
+
+function Navigation(props: NavigationProps) {
   const [expanded, setExpanded] = React.useState<boolean>(false)
 
-  function returnBarStyle(expanded: boolean): string {
+  function returnBarStyle(): string {
+    let style = 'navBarBut'
+    if (isMobile()) {
+      style += ' mobile'
+      if (isLandscapeMode()) {
+        style += ' landscape'
+      }
+    }
+    return style
+  }
+
+  React.useEffect(() => {
+    if (expanded !== props.expanded) {
+      setExpanded(props.expanded);
+    }
+  }, [props.expanded])
+
+  function returnExpandedBarStyle(expanded: boolean): string {
     if (isMobile()) {
       if (expanded) {
         return "navBar mobile expanded"
@@ -35,13 +57,18 @@ function Navigation() {
     return "topBarButton"
   }
 
+  function getFullScreenDarkenerStyle(expanded: boolean): string {
+    let style = 'navFullscreen'
+    if (expanded) { style += ' expanded' }
+    return style
+  }
 
-  return (
-    <nav className={returnBarStyle(expanded)}>
-      <div className={getNavLinkStyle()} onClick={() => { setExpanded(!expanded)}}>
-        <img src={IconHamburger} alt='hamburger' className={getNavButtonStyle()} />
-        <span className="navButtonLabel">Menu</span>
-      </div>
+  //What I need
+  //1. a nice button I can put somewhere
+  //2. Always open slider on the left
+
+  return (<>
+    <nav className={returnExpandedBarStyle(expanded)}>
       <NavLink className={getNavLinkStyle()} to="/">
         <img src={IconHome} alt='home page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Home</div>
@@ -55,8 +82,9 @@ function Navigation() {
         <div className="navButtonLabel">Settings</div>
       </NavLink >
       <MobileModeButton />
-
+      <div className={getFullScreenDarkenerStyle(expanded)} onClick={() => { props.setNavigationExpanded(!expanded) }} ></div>
     </nav>
+  </>
   );
 }
 

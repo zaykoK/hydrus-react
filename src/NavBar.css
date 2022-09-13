@@ -3,7 +3,7 @@
     text-decoration: none;
     display: flex;
     flex-flow: row;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .navLink.mobile {
@@ -11,12 +11,12 @@
 }
 
 .navBar {
-    padding: 3px;
+    padding: 1em 1em 1em 0.5em;
     font-size: large;
     position: fixed;
     top: 0px;
     left: 0px;
-    background: var(--COLOR1);
+    background: var(--COLOR2);
     display: flex;
     gap: 15px;
     flex-flow: column;
@@ -24,29 +24,29 @@
     border-radius: 0px 0px 0px 0px;
     box-shadow: 0px 0px 0px 0px black;
     overflow: hidden;
-    height: 2em;
-    width: 2em;
-    padding: 3px;
+    height: 100%;
+    width: 5.5em;
     z-index: 500;
-    transition: all 0.2s ease-in-out;
+    transition: transform 0.2s,box-shadow 0.2s ease-in-out;
+    transform: translateX(-100%);
 }
 
 .navBar.expanded {
-    background:var(--COLOR2);
-    padding: 1em 1em 1em 0.5em;
+    background: var(--COLOR2);
     box-shadow: 0px 0px 8px 0px black;
-    height: 100%;
-    width: 5.5em;
+    transform: none;
 }
 
 .navBar.mobile {
-    background:var(--COLOR1);
-    gap: 2em;
     font-size: x-large;
+    top: 0px;
+    bottom: auto;
 }
 
 .navBar.mobile.expanded {
-    background:var(--COLOR2);
+    top: 0px;
+    bottom: auto;
+    background: var(--COLOR2);
     width: 6em;
     box-shadow: 0px 0px 7px 0px black;
 }
@@ -54,4 +54,19 @@
 .navButtonLabel {
     line-height: 2em;
     padding: 0px 0px 0px 8px;
+}
+
+.navFullscreen {
+    display: none;
+    background-color: transparent;
+}
+.navFullscreen.expanded {
+    display:block;
+    position: fixed;
+    top:0px;
+    left:0px;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    z-index: -1;
 }

@@ -7,6 +7,7 @@ import * as TagTools from '../TagTools'
 import { TagList } from '../TagList'
 import * as API from '../hydrus-backend';
 
+import IconHamburger from '../assets/menu-burger.svg'
 import IconRelated from '../assets/related.svg'
 import IconLeft from '../assets/arrow-left.svg'
 import Info from '../assets/info.svg'
@@ -26,11 +27,12 @@ import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage } from '
 
 interface FilePageProps {
   globalState: any;
+  setNavigationExpanded:Function;
 }
 
 export type relatedDataCartType = {
-  hash:string;
-  tags:Array<TagTools.Tuple>;
+  hash: string;
+  tags: Array<TagTools.Tuple>;
 }
 
 export function FilePage(props: FilePageProps) {
@@ -45,7 +47,7 @@ export function FilePage(props: FilePageProps) {
 
 
 
-  const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({hash:'',tags:[]})
+  const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({ hash: '', tags: [] })
 
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
@@ -72,7 +74,7 @@ export function FilePage(props: FilePageProps) {
     document.documentElement.requestFullscreen()
   }
 
- 
+
 
   const handleKeyPress = (e: KeyboardEvent) => {
 
@@ -104,14 +106,14 @@ export function FilePage(props: FilePageProps) {
     setMetaData(response.data.metadata[0])
     // @ts-ignore
     setTags(tagTuples)
-    setRelatedDatacart({hash:fileHash||'',tags:tagTuples})
+    setRelatedDatacart({ hash: fileHash || '', tags: tagTuples })
   }
 
   function getRelatedButtonStyle(enabled: boolean) {
     let style = 'topBarButton relatedButton'
     if (!enabled) { style += " inactive" }
-    if (isMobile()) { style += ' mobile'}
-    if (isLandscapeMode()) { style += ' landscape'}
+    if (isMobile()) { style += ' mobile' }
+    if (isLandscapeMode()) { style += ' landscape' }
     return style
   }
 
@@ -174,7 +176,7 @@ export function FilePage(props: FilePageProps) {
     setSidebarVisible(!sidebarVisible);
   }
 
-  function getButtonSidebarToggleStyle(active:boolean):string {
+  function getButtonSidebarToggleStyle(active: boolean): string {
     let style = 'topBarButton'
     if (active) {
       style += ' active'
@@ -182,22 +184,27 @@ export function FilePage(props: FilePageProps) {
     return style
   }
 
+  function getSidebarScreenOverlayStyle():string {
+    let style = 'sidebarOverlay'
+    if (sidebarVisible) {style += ' active'}
+    return style
+  }
+
   if (isMobile()) {
     return <>
       <div className={getSideBarStyle()}>
+        
         {(tags !== undefined) && <TagList tags={tags} visibleCount={false} />}
         {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
       </div>
+      <div className={getSidebarScreenOverlayStyle()} onClick={() => { setSidebarVisible(false) }} ></div>
 
-      <div className={generateClassName('barStylePadding')}></div>
       <div className={generateClassName('topBar filePageTopBar')}>
-        <div id='home-button-padding' className="topBarButton" />
-        <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-        <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash,navigate) }} />
-        <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
-        <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
-        <img src={IconDoubleRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
-        <img src={Info} alt='sidebar switch' className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
+      <img src={IconHamburger} alt='related switch' className="topBarButton" onClick={() => {props.setNavigationExpanded(true)}} />
+        <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onContextMenu={(e) => {e.preventDefault()}} onClick={() => { switchRelatedVisible() }} />
+        <img src={IconLeft} alt='previous' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); PreviousSearchImage(fileHash, navigate) }} onClick={() => { PreviousImage(fileHash, navigate) }} />
+        <img src={IconRight} alt='next' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); NextSearchImage(fileHash, navigate) }} onClick={() => { NextImage(fileHash, navigate) }} />
+        <img src={Info} alt='sidebar switch' onContextMenu={(e) => {e.preventDefault()}} className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
 
       </div>
       <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
@@ -208,7 +215,7 @@ export function FilePage(props: FilePageProps) {
               type={metadata.mime}
             />}
         </div>
-        
+
         <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} />
       </div>
     </>;
@@ -217,12 +224,12 @@ export function FilePage(props: FilePageProps) {
   return <>
     <div className={generateClassName('barStylePadding')}></div>
     <div className={generateClassName('topBar filePageTopBar')}>
-      <div id='home-button-padding' className="topBarButton" />
+      <img src={IconHamburger} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => {props.setNavigationExpanded(true)}} />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
-      <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash,navigate) }} />
-      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash,navigate) }} />
-      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash,navigate) }} />
-      <img src={IconDoubleRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash,navigate) }} />
+      <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash, navigate) }} />
+      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash, navigate) }} />
+      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash, navigate) }} />
+      <img src={IconDoubleRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash, navigate) }} />
 
     </div>
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>

@@ -17,6 +17,7 @@ import localforage from 'localforage';
 interface SearchPageProps {
   type: string;
   globalState: any;
+  setNavigationExpanded:Function;
 }
 
 type ParamsType = {
@@ -198,17 +199,22 @@ export function SearchPage(props: SearchPageProps) {
     let returnHashes: Array<string> = []
     let searchArray: Array<Result> = []
 
-    function sortResults(a: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }, b: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }): number {
+    function sortResults(a:{hash:string,page:Array<TagTools.Tuple>,modifiedDate:number}, b:{hash:string,page:Array<TagTools.Tuple>,modifiedDate:number}): number {
       //If posssible to compare pages
       //TODO make it so having page makes you first
+      if (a.page.length > 0 && b.page.length === 0) {
+          return -1
+      }
+      if (a.page.length === 0 && b.page.length > 0) {
+          return 1
+      }
       if (a.page.length > 0 && b.page.length > 0) {
-        return parseInt(a.page[0].value) - parseInt(b.page[0].value)
+          return parseInt(a.page[0].value) - parseInt(b.page[0].value)
       }
       else { //Compare by import date
-        return a.modifiedDate - b.modifiedDate
+          return a.modifiedDate - b.modifiedDate
       }
-
-    }
+  }
 
     resultMap.forEach((entry) => {
       //Potential Sortings
@@ -592,7 +598,7 @@ export function SearchPage(props: SearchPageProps) {
       </div>
 
       <div className={getTopBarPaddingStyle()} />
-      {(tags) && <TagSearchBar infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+      {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
       <ImageWall
         grouping={groupFiles}
         addTag={addTag}
@@ -609,7 +615,7 @@ export function SearchPage(props: SearchPageProps) {
   /* Desktop Layout */
   return <>
     <div className={getTopBarPaddingStyle()} />
-    {(tags) && <TagSearchBar infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+    {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
     <div className={getContentStyle()}>
       {(props.type !== 'comic') && <div className={getGridStyleList()}>
         {(fileTags != undefined) &&
