@@ -1,13 +1,13 @@
 /* Moved from FilePage because that way it doesn't unnecessarily recreate those functions every re-render */
 
-import { NavigateFunction, useNavigate } from "react-router-dom"
+import { NavigateFunction } from "react-router-dom"
 
 function returnFileLink(hash: string): string {
     return "/file/" + hash
 }
 
 /* Wrapper for sessionStorage.getItem(). Always returns string value, handles null on it's own.*/
-function getSessionStorage(key:string,defaultValue='{}'):string {
+function getSessionStorage(key:string,defaultValue='[]'):string {
     let value:string|null
     value = sessionStorage.getItem(key)
     if (value === null) {value = defaultValue}
@@ -33,6 +33,23 @@ export function PreviousImage(fileHash: string | undefined, navigate: NavigateFu
     }
     navigate(returnFileLink(elementList[index - 1]), { replace: true })
 }
+
+export function GoToFirstImage(navigate: NavigateFunction):void {
+    //If no data about image groups don't do anything
+    if (sessionStorage.getItem('group-hashes') === null) { return }
+    let imageGroupHashes: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
+    navigate(returnFileLink(imageGroupHashes[0]), { replace: true })   
+
+}
+
+export function GoToLastImage(navigate: NavigateFunction):void {
+    //If no data about image groups don't do anything
+    if (sessionStorage.getItem('group-hashes') === null) { return }
+    let imageGroupHashes: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
+    //console.log(imageGroupHashes.length)
+    navigate(returnFileLink(imageGroupHashes[imageGroupHashes.length -1]), { replace: true })   
+}
+
 
 
 export function NextImage(fileHash: string | undefined, navigate: NavigateFunction): void {

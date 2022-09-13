@@ -4,9 +4,9 @@ import * as React from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import { TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
-import { NavigateFunction, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
-import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage } from './ImageControls';
+import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage, GoToFirstImage, GoToLastImage } from './ImageControls';
 
 interface ContentProps {
     type: string;
@@ -31,7 +31,7 @@ function Content(props: ContentProps) {
 
     const [style, changeStyle] = React.useState(getStartingStyle())
     const [src, setSrc] = React.useState(API.api_get_file_thumbnail_address(props.hash))
-    const [loaded, setLoaded] = React.useState<boolean>(false)
+    //const [loaded, setLoaded] = React.useState<boolean>(false)
 
     function getStartingStyle() {
         if (isMobile()) {
@@ -59,30 +59,34 @@ function Content(props: ContentProps) {
     }
 
     const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.key === 'ArrowLeft') { GoToFirstImage(navigate); return }
+        if (e.ctrlKey && e.key === 'ArrowRight') { GoToLastImage(navigate); return }
         if (e.key === "ArrowRight") { NextImage(props.hash, navigate) }
         if (e.key === "ArrowLeft") { PreviousImage(props.hash, navigate) }
         if (e.key === "ArrowDown") { NextSearchImage(props.hash, navigate) }
         if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate) }
+        if (e.key === "Home") { GoToFirstImage(navigate) }
+        if (e.key === "End") { GoToLastImage(navigate) }
     }
 
-    const handleMouseScroll = (e: WheelEvent) => {
-        //console.log(e.deltaY)
-        if (sessionStorage.getItem('fullscreen-view') === 'true') {
-            const el = document.querySelector('.styleFitWidth')
-            //console.log(el)
+    // const handleMouseScroll = (e: WheelEvent) => {
+    //     //console.log(e.deltaY)
+    //     if (sessionStorage.getItem('fullscreen-view') === 'true') {
+    //         const el = document.querySelector('.styleFitWidth')
+    //         //console.log(el)
 
-            //What I want to get here is ability to zoom in/out with mouse scroll and pan with drag
+    //         //What I want to get here is ability to zoom in/out with mouse scroll and pan with drag
 
-            if (e.deltaY > 0) { console.log('scrolling down') }
-            if (e.deltaY < 0) { console.log('scrolling up') }
-        }
-    }
+    //         if (e.deltaY > 0) { console.log('scrolling down') }
+    //         if (e.deltaY < 0) { console.log('scrolling up') }
+    //     }
+    // }
 
     React.useEffect(() => {
         function loadFullSizeImage(): void {
             const img = new Image()
             img.src = API.api_get_file_address(props.hash) || ''
-            img.onload = () => { setSrc(img.src); setLoaded(true) }
+            img.onload = () => { setSrc(img.src) }
         }
         //Immediately start loading full size image, and when ready change to it
         loadFullSizeImage()
@@ -107,15 +111,18 @@ function Content(props: ContentProps) {
             src={src}
             className={style}
             alt={props.hash} />
-        if (isLandscapeMode() && isMobile()) {
-            return <TransformWrapper
-                centerZoomedOut={true}
-                minScale={1}
-                initialScale={1}>
-                <TransformComponent>
-                    {image}
-                </TransformComponent>
-            </TransformWrapper>
+        if (isMobile()) {
+            if (isLandscapeMode()) {
+                return <TransformWrapper
+                    centerZoomedOut={true}
+                    minScale={1}
+                    initialScale={1}>
+                    <TransformComponent>
+                        {image}
+                    </TransformComponent>
+                </TransformWrapper>
+            }
+            return image
         }
         return image
     }
