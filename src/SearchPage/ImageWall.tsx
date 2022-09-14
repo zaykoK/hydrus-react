@@ -19,7 +19,7 @@ interface ImageWallProps {
   loadingProgress: string;
   loaded: boolean;
   empty: boolean;
-  thumbnailSize?:number;
+  thumbnailSize?: number;
 }
 
 export function ImageWall(props: ImageWallProps) {
@@ -55,6 +55,7 @@ export function ImageWall(props: ImageWallProps) {
           replace={false}
           metadata={hash.entries}
           size={1}
+          hideWidgetCount={props.grouping}
         />);
     }
     return list;
@@ -115,17 +116,18 @@ export function ImageWall(props: ImageWallProps) {
   return (
     <div className='imageWall' >
       {(props.empty) ? <div className='emptyStyle'>No results</div> : <>
-      <WrapperList
-        key={sm}
-        thumbs={thumbs}
-        type={props.type}
-        loadingProgress={props.loadingProgress}
-        loaded={props.loaded} />
-      <PageButtons
-        pages={returnPageCount()}
-        offset={getOffsetValue(isMobile())}
-        currentPage={props.page}
-        changePage={props.changePage} /></> }
+        <WrapperList
+          key={sm}
+          thumbs={thumbs}
+          type={props.type}
+          loadingProgress={props.loadingProgress}
+          loaded={props.loaded}
+        />
+        <PageButtons
+          pages={returnPageCount()}
+          offset={getOffsetValue(isMobile())}
+          currentPage={props.page}
+          changePage={props.changePage} /></>}
     </div>
   );
 }
