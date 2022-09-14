@@ -70,7 +70,8 @@ function TagButtonList(props: TagButtonListProps) {
         className='tagButton'
         key={props.tags[t].toString()}
         style={TagTools.getTagButtonStyle(sortedTags[t].namespace)}
-        onClick={() => { determineFunction(props.tags[t]) }}>
+        onClick={() => { determineFunction(props.tags[t]) }}
+        >
         {tagArrayToString(props.tags[t])}</button>);
     }
     setTagList(tagSet);

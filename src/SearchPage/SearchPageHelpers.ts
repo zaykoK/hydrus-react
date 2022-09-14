@@ -52,22 +52,32 @@ export function navigateTo(parameters: URLSearchParams, navigate: NavigateFuncti
 }
 
 
-export function addTag(tag: string, navigate: NavigateFunction,type:string): void {
-    let tags = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+export function addTag(tag: Array<string> | string, navigate: NavigateFunction, type: string): void {
+    let tags: Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+
+    //If it so happens that tag is string put it into array
+    if (typeof tag === 'string') {
+        tag = [tag]
+    }
 
     if (tags) {
-        if (tag === '') { return; }
+        //If it's only a single empty string
+        if (tag[0] === '') { return }
         let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
-        if (newTags.includes([tag])) { return } //If tag exists in array don't add it
+
+        for (let entry of newTags) {
+            if (JSON.stringify(entry) === JSON.stringify(tag)) { console.log('found tag already exists'); return }
+        }
+
         //TODO process certain unique tags that user shouldn't be able to add
-        newTags.push([tag]);
+        newTags.push(tag);
 
         let par = generateSearchURL(newTags, 1)
         navigateTo(par, navigate, type)
     }
 }
 
-export function removeTag(tag: Array<string>, navigate: NavigateFunction,type:string) {
+export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: string) {
     let tags = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
 
     if (tags) {
@@ -81,7 +91,7 @@ export function removeTag(tag: Array<string>, navigate: NavigateFunction,type:st
             }
         }
 
-        if (i === -1){
+        if (i === -1) {
             console.warn("Didn't find tag " + tag + ' inside ' + tags)
             return
         }
