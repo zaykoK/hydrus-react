@@ -1,7 +1,7 @@
 # Hydrus-react
 
 Hydrus-react is a web app written in React/TypeScript using [hydrus API](https://github.com/hydrusnetwork/hydrus). The goal is to give a viewing experience similiar to booru/pixiv where using tags and similiar/related files takes you on a journey through your library.
-Inspired by somewhat clunky tag interactions in [hydrus-web by floogulinc](https://github.com/floogulinc/hydrus-web)
+Inspired by [hydrus-web by floogulinc](https://github.com/floogulinc/hydrus-web)
 
 
 ## Features
@@ -16,6 +16,10 @@ Inspired by somewhat clunky tag interactions in [hydrus-web by floogulinc](https
 ## Requirements
  - [Hydrus](https://github.com/hydrusnetwork/hydrus) instance with client API turned on [GUIDE](https://hydrusnetwork.github.io/hydrus/client_api.html)
  - [NodeJS](https://nodejs.dev)
+
+## Running the app (online version)
+There is an online version available throught the link [https://hydrus-react.vercel.app](https://hydrus-react.vercel.app)
+It should be always up to date with current git version.
 
 ## Running the app (development mode)
 1. Clone repository
@@ -32,7 +36,6 @@ Inspired by somewhat clunky tag interactions in [hydrus-web by floogulinc](https
 6. connect to http://localhost:3000
 
 While slightly harder to get running production mode might get better performance.
-
 
 ## Configuration
 In the settings page you have to point to your client API address (by default http://127.0.0.1:45869 ) add your access key (you can copy it from under *services/review services/client api*).
