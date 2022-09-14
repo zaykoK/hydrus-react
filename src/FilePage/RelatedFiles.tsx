@@ -6,6 +6,7 @@ import { tagArrayToNestedArray } from '../TagTools';
 import "./RelatedFiles.css"
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import * as TagTools from '../TagTools'
+import { useNavigate } from 'react-router-dom';
 
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
@@ -24,6 +25,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
     const [scrollOffset, setScrollOffset] = useState<number>(0);
     const [currentTags, setCurrentTags] = useState<Array<string>>([]);
 
+    const navigate = useNavigate()
 
 
     useEffect(() => {
@@ -135,13 +137,13 @@ export function RelatedFiles(props: RelatedFilesProps) {
                 if (current === true) { currentIndex = parseInt(hash) }
                 temp.push(
                     <ImageThumbnail
+                        navigate={navigate}
                         currentImage={current}
                         replace={true}
                         type='image'
                         key={relatedHashes[hash]}
                         hash={relatedHashes[hash]}
                         loadMeta={false}
-                        addTag={emptyFunction}
                         size={1}
                     />)
             }

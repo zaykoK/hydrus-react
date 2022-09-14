@@ -1,23 +1,27 @@
 import './TagLink.css'
 
+import { addTag } from '../SearchPage/SearchPageHelpers'
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+
 interface TagLinkProps {
     style: any;
-    addTag: Function;
     tag: string;
     namespace: string;
+    navigate:NavigateFunction;
 }
 
 function TagLink(props: TagLinkProps) {
+
     return <span
         className='tagLink'
         key={props.tag}
         style={props.style}
         onClick={() => {
             if (props.namespace === '') {
-                props.addTag(props.tag)
+                addTag(props.tag,props.navigate,'image')
             }
             else {
-                props.addTag(props.namespace + ':' + props.tag)
+                addTag(props.namespace + ':' + props.tag,props.navigate,'image')
             }
         }}
     >

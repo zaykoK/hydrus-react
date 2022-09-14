@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import './TagList.css'
 import { isMobile } from './styleUtils';
 
+import { addTag, removeTag } from './SearchPage/SearchPageHelpers'
+
 interface TagListProps {
     tags: Array<TagTools.Tuple>;
     clickFunction?: Function;
@@ -12,16 +14,16 @@ interface TagListProps {
     blacklist?: Array<string>; // tag namespaces to skip
 }
 
-export function TagList(props:TagListProps) {
+export function TagList(props: TagListProps) {
     const navigate = useNavigate();
     const [tags, setTags] = useState<Array<JSX.Element>>([]);
 
-    function displayTagString(tag:{namespace:string,value:string}):string {
+    function displayTagString(tag: { namespace: string, value: string }): string {
         if (tag.namespace === '') { return tag.value }
         return tag.namespace + ':' + tag.value
     }
 
-    function generateSearchURL(tags:Array<string>, page:number) {
+    function generateSearchURL(tags: Array<string>, page: number) {
         let parameters = new URLSearchParams({
             page: page.toString()
         })
@@ -31,20 +33,20 @@ export function TagList(props:TagListProps) {
         return parameters
     }
 
-    function searchTag(tag:string) {
+    function searchTag(tag: string) {
         let par = generateSearchURL([tag], 1)
 
         navigate('/search/' + par)
     }
 
-    function clickHandler(tag:string) {
+    function clickHandler(tag: string) {
         if (props.clickFunction != undefined) {
             return props.clickFunction(tag)
         }
         return searchTag(tag)
     }
 
-    function displayTagCount(count:number) {
+    function displayTagCount(count: number) {
         if (props.visibleCount) {
             return ' (' + count + ')'
         }
@@ -59,7 +61,7 @@ export function TagList(props:TagListProps) {
         return style
     }
 
-    function createTagList(args:{tags:Array<TagTools.Tuple>,blacklist:Array<string>}) {
+    function createTagList(args: { tags: Array<TagTools.Tuple>, blacklist: Array<string> }) {
         let tagList = []
 
         let currentNamespace = ''
@@ -73,7 +75,7 @@ export function TagList(props:TagListProps) {
                 tagList.push(
                     <p
                         className='tagEntry blob'
-                        onClick={() => { clickHandler(displayTagString(args.tags[element])) }}
+                        onClick={() => { addTag(displayTagString(args.tags[element]), navigate, 'image') }}
                         key={displayTagString(args.tags[element])}
                         style={TagTools.getTagButtonStyle(args.tags[element].namespace)} >
                         {displayTagString(args.tags[element]) + displayTagCount(args.tags[element].count)}
@@ -83,7 +85,7 @@ export function TagList(props:TagListProps) {
         return tagList;
     }
     useEffect(() => {
-        setTags(createTagList({ blacklist: props.blacklist||[], tags: props.tags }))
+        setTags(createTagList({ blacklist: props.blacklist || [], tags: props.tags }))
     }, [props])
 
     return (

@@ -7,6 +7,7 @@ import './ImageWall.css'
 import { isMobile } from '../styleUtils'
 import { Result } from './SearchPage';
 import { MemoWrapperList as WrapperList } from './WrapperList';
+import { useNavigate } from 'react-router-dom';
 
 interface ImageWallProps {
   grouping: boolean;
@@ -24,10 +25,15 @@ interface ImageWallProps {
 export function ImageWall(props: ImageWallProps) {
   const [loaded, setLoaded] = React.useState<boolean>(false)
 
+  const navigate = useNavigate()
+
   let width = (5 / 6) * (window.innerWidth);
   let elements = Math.floor(width / 180);
 
-  let viewSize = 1000;
+
+  //TODO
+  //tie this into some sort of user settings
+  let viewSize = 500;
   if (props.type === 'comic') {
     viewSize = 60
   }
@@ -41,9 +47,9 @@ export function ImageWall(props: ImageWallProps) {
     for (let hash of hashSlice) {
       list.push(
         <ImageThumbnail
+          navigate={navigate}
           loadMeta={true}
           type={props.type}
-          addTag={props.addTag}
           key={hash.cover}
           hash={hash.cover}
           replace={false}
@@ -108,7 +114,7 @@ export function ImageWall(props: ImageWallProps) {
 
   return (
     <div className='imageWall' >
-      {(props.empty) && <div className='emptyStyle'>No results</div> || <>
+      {(props.empty) ? <div className='emptyStyle'>No results</div> : <>
       <WrapperList
         key={sm}
         thumbs={thumbs}

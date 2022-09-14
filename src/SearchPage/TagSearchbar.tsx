@@ -11,11 +11,12 @@ import * as API from '../hydrus-backend'
 
 import './TagSearchbar.css'
 
+import { addTag } from './SearchPageHelpers'
+import { useNavigate } from 'react-router-dom';
+
 interface SearchTagsProps {
   tags: Array<Array<string>>;
-  addTag: Function;
   groupAction: Function;
-  removeTag: Function;
   infoAction: Function;
   sortTypeChange: Function;
   setNavigationExpanded: Function;
@@ -23,8 +24,10 @@ interface SearchTagsProps {
 
 export function TagSearchBar(props: SearchTagsProps) {
   const [tag, setTag] = useState('');
-
   const [tags, setTags] = useState(props.tags)
+
+  const navigate = useNavigate()
+
 
   function submitTag(event: React.FormEvent) {
     event.preventDefault(); //necessary to not reload page after submit
@@ -38,10 +41,11 @@ export function TagSearchBar(props: SearchTagsProps) {
       for (let i = 0; i < splitLength; i++) {
         inside.push(split[i].toLowerCase())
       }
-      props.addTag(inside)
+      //@ts-ignore
+      addTag(inside, navigate, 'image')
     }
     else {
-      props.addTag(tag);
+      addTag(tag, navigate, 'image')
     }
     setTag('');
   }
@@ -57,7 +61,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
   }, [props.tags, tags])
 
-  function TagInput(props: { tags: Array<Array<string>>, removeTag: Function }) {
+  function TagInput(props: { tags: Array<Array<string>> }) {
 
     function getSearchBarStyle() {
       if (isMobile()) { return "searchBar mobile" }
@@ -65,7 +69,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
 
     return <div className={getSearchBarStyle()}>
-      <TagDisplay key={props.tags.toString()} removeTag={props.removeTag} tags={props.tags} />
+      <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} />
       <form className="searchForm" onSubmit={submitTag}>
         <input
           className="searchInput"
@@ -87,11 +91,11 @@ export function TagSearchBar(props: SearchTagsProps) {
 
   return <div className={getTopBarStyle()}>
     <div className="buttonsBar">
-      <GroupButton icon={IconHamburger} clickAction={() => {props.setNavigationExpanded(true)}} />
+      <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
       <GroupButton icon={IconGroup} clickAction={props.groupAction} />
       {/*<DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />*/}
       {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
-    {TagInput({ removeTag: props.removeTag, tags: tags })}
+    {TagInput({ tags: tags })}
   </div>;
 }

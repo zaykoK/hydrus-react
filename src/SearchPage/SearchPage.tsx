@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ImageWall } from "./ImageWall";
 import { TagSearchBar } from "./TagSearchbar";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, NavigateFunction } from 'react-router-dom';
 import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools';
 import { TagList } from '../TagList';
@@ -13,11 +13,12 @@ import { setPageTitle } from '../misc';
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import localforage from 'localforage';
+import { addTag, generateSearchURL, navigateTo, removeTag } from './SearchPageHelpers';
 
 interface SearchPageProps {
   type: string;
   globalState: any;
-  setNavigationExpanded:Function;
+  setNavigationExpanded: Function;
 }
 
 type ParamsType = {
@@ -82,6 +83,7 @@ export function SearchPage(props: SearchPageProps) {
     setPageTitle(paramsTags, parseInt(paramsPage), props.type)
     setParams({ tags: paramsTags, page: parseInt(paramsPage) })
     setTags(paramsTags)
+    sessionStorage.setItem('current-search-tags',JSON.stringify(paramsTags))
   }
 
   function changeGrouping() {
@@ -199,22 +201,22 @@ export function SearchPage(props: SearchPageProps) {
     let returnHashes: Array<string> = []
     let searchArray: Array<Result> = []
 
-    function sortResults(a:{hash:string,page:Array<TagTools.Tuple>,modifiedDate:number}, b:{hash:string,page:Array<TagTools.Tuple>,modifiedDate:number}): number {
+    function sortResults(a: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }, b: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }): number {
       //If posssible to compare pages
       //TODO make it so having page makes you first
       if (a.page.length > 0 && b.page.length === 0) {
-          return -1
+        return -1
       }
       if (a.page.length === 0 && b.page.length > 0) {
-          return 1
+        return 1
       }
       if (a.page.length > 0 && b.page.length > 0) {
-          return parseInt(a.page[0].value) - parseInt(b.page[0].value)
+        return parseInt(a.page[0].value) - parseInt(b.page[0].value)
       }
       else { //Compare by import date
-          return a.modifiedDate - b.modifiedDate
+        return a.modifiedDate - b.modifiedDate
       }
-  }
+    }
 
     resultMap.forEach((entry) => {
       //Potential Sortings
@@ -407,9 +409,11 @@ export function SearchPage(props: SearchPageProps) {
     if (parameters.getAll('tags').length != 0) {
       tags = tagArrayToNestedArray(parameters.getAll('tags'))
 
+
+      //Bring back invalid URL characters
       for (let tagArray in tags) {
         for (let tag in tags[tagArray]) {
-          tags[tagArray][tag] = tags[tagArray][tag].replace('!ANDS', '&')
+          tags[tagArray][tag] = tags[tagArray][tag].replace('!ANDS', '&').replace('!PLUSSYMBOL', '+')
         }
       }
 
@@ -459,88 +463,10 @@ export function SearchPage(props: SearchPageProps) {
   function changePage(newPage: number) {
     let par = generateSearchURL(tags, newPage)
 
-    navigateTo(par)
+    navigateTo(par, navigate, props.type)
 
     sessionStorage.removeItem('searchScroll')
     window.scrollTo(0, 0)
-  }
-
-  function navigateTo(parameters: URLSearchParams) {
-    switch (props.type) {
-      case 'image':
-        navigate('/search/' + parameters)
-        break
-      case 'comic':
-        navigate('/comics/' + parameters)
-        break
-      default:
-        navigate('/search/' + parameters)
-        break
-    }
-  }
-
-  function newAddTag(tag: string, tags: Array<Array<string>>) {
-    if (tags) {
-      if (tag === '') { return; }
-      let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
-      if (newTags.includes([tag])) { return } //If tag exists in array don't add it
-      //TODO process certain unique tags that user shouldn't be able to add
-      newTags.push([tag]);
-
-      let par = generateSearchURL(newTags, 1)
-      navigateTo(par)
-    }
-  }
-
-  function addTag(tag: string) {
-    if (tags) {
-      if (tag === '') { return; }
-      let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
-      if (newTags.includes([tag])) { return } //If tag exists in array don't add it
-      //TODO process certain unique tags that user shouldn't be able to add
-      newTags.push([tag]);
-
-      let par = generateSearchURL(newTags, 1)
-      navigateTo(par)
-    }
-  }
-
-  const addTagCallback = useCallback((tag: string) => {
-    console.log('doing sometinhg')
-    addTag(tag)
-  }, [])
-
-  function removeTag(tag: Array<string>) {
-    if (tags) {
-      let i = tags.indexOf(tag);
-      let afterRemove = tags?.slice();
-      afterRemove.splice(i, 1);
-
-      let par = generateSearchURL(afterRemove, 1)
-      navigateTo(par)
-    }
-  }
-  /** Generates a URLSearchParams from tag array and page number */
-  function generateSearchURL(tags: Array<Array<string>> | undefined, page: number): URLSearchParams {
-    let parameters = new URLSearchParams({
-      page: page.toString()
-    })
-    if (tags) {
-      //For each of the tags turn them from array into a string form
-      //Essentialy [['tag1','tag2'],['tag3']] => tags=tag1 OR tag2&tags=tag3
-      for (let element of tags) {
-        let tagString = ''
-        let innerArray = element
-        for (let innerElement of innerArray) {
-          tagString += innerElement + ' OR '
-        }
-        tagString = tagString.slice(0, -4)
-        tagString = tagString.replace('&', '!ANDS')
-
-        parameters.append('tags', tagString)
-      }
-    }
-    return parameters
   }
 
   function getContentStyle(): string {
@@ -593,12 +519,11 @@ export function SearchPage(props: SearchPageProps) {
             visibleCount={true}
             tags={fileTags}
             blacklist={tagBlacklist.current}
-            clickFunction={addTag}
           />}
       </div>
 
       <div className={getTopBarPaddingStyle()} />
-      {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+      {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
       <ImageWall
         grouping={groupFiles}
         addTag={addTag}
@@ -615,7 +540,7 @@ export function SearchPage(props: SearchPageProps) {
   /* Desktop Layout */
   return <>
     <div className={getTopBarPaddingStyle()} />
-    {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} addTag={addTag} tags={tags} removeTag={removeTag} />}
+    {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
       {(props.type !== 'comic') && <div className={getGridStyleList()}>
         {(fileTags != undefined) &&

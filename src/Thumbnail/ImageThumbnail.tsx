@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as API from '../hydrus-backend';
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import * as TagTools from '../TagTools'
 import WidgetCount from './WidgetCount';
 import WidgetCountTag from './WidgetCountTag';
@@ -18,11 +18,11 @@ interface ImageThumbnailProps {
   hash: string;
   currentImage?: boolean;
   loadMeta: boolean;
-  addTag: Function;
   replace: boolean;
   type: string;
   metadata?: Array<API.MetadataResponse>;
   size?: number;
+  navigate:NavigateFunction;
 }
 
 const EMPTYSTRING = ''
@@ -161,7 +161,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
               cursor: 'pointer',
             }
           }
-          innerArray.push(TagLink({ style: tagStyle, addTag: props.addTag, tag: t[element].value, namespace: t[element].namespace }))
+          innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate:props.navigate }))
           limitCount += 1
         }
         tagArrays.push(innerArray)
