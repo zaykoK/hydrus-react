@@ -3,7 +3,7 @@
   "name": "Hydrus-react",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "hydrus.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
@@ -18,8 +18,16 @@
       "sizes": "512x512"
     }
   ],
+  "shortcuts": [
+    {
+      "name":"Open Comics",
+      "short name":"Comics",
+      "description":"Instantly opens comics page",
+      "url":"/comics/page=1"
+    }
+  ],
   "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+"display": "standalone",
+"theme_color": "#000000",
+"background_color": "#1e1e1e"
 }
