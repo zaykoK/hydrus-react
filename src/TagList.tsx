@@ -76,6 +76,7 @@ export function TagList(props: TagListProps) {
                     <p
                         className='tagEntry blob'
                         onClick={() => { addTag(displayTagString(args.tags[element]), navigate, 'image') }}
+                        onContextMenu={(e) => {e.preventDefault(); addTag("-" + displayTagString(args.tags[element]),navigate,'image')}}
                         key={displayTagString(args.tags[element])}
                         style={TagTools.getTagButtonStyle(args.tags[element].namespace)} >
                         {displayTagString(args.tags[element]) + displayTagCount(args.tags[element].count)}
