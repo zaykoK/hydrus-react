@@ -99,8 +99,9 @@ function Content(props: ContentProps) {
 
         return () => {
             //console.timeEnd(props.hash + ' loading time');
+            //Apparantely sending empty string will hammer website hosting, but also I read that since firefox 3.5 it's fixed
             img.src = ''
-            img.onload = () => {}
+            img.onload = null
             document.removeEventListener('keydown', handleKeyPress)
             //document.removeEventListener('wheel', handleMouseScroll)
         }
