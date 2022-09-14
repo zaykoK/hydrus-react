@@ -224,7 +224,7 @@ export function FilePage(props: FilePageProps) {
   return <>
     <div className={generateClassName('barStylePadding')}></div>
     <div className={generateClassName('topBar filePageTopBar')}>
-      <img src={IconHamburger} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => {props.setNavigationExpanded(true)}} />
+      <img src={IconHamburger} alt='related switch' className={getRelatedButtonStyle(true)} onClick={() => {props.setNavigationExpanded(true)}} />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
       <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash, navigate) }} />
       <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash, navigate) }} />
