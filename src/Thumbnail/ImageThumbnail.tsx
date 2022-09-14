@@ -281,8 +281,6 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     </div>
   }
 
-  console.log(props.hideWidgetCount !== undefined)
-
   return (
     <div className={getWrapperStyle(props.type)}
       key={"thumb-" + props.hash}>
