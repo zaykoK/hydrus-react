@@ -1,4 +1,3 @@
-import { getGroupingToggle } from '../StorageUtils';
 import IconGroup from '../assets/group.svg'
 
 import './GroupButton.css'
@@ -6,18 +5,20 @@ import './GroupButton.css'
 interface GroupButtonsProps {
   clickAction: Function;
   icon: string;
+  activeValue?:boolean;
+}
+
+function returnGroupButtonStyle(inactive?: boolean) {
+  let style = 'topBarButton'
+  if (inactive !== undefined && inactive === false) { style += ' inactive' }
+  return style
 }
 
 export function GroupButton(props: GroupButtonsProps) {
 
-  function returnGroupButtonStyle(enabled: boolean) {
-    if (enabled) { return 'topBarButton' }
-    return 'topBarButton groupActive'
-  }
-
   return <img
     alt='group button'
-    className={returnGroupButtonStyle(getGroupingToggle())}
+    className={returnGroupButtonStyle(props.activeValue)}
     src={props.icon || IconGroup}
     onClick={() => { props.clickAction() }} />
 }

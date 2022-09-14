@@ -6,6 +6,8 @@ import IconInfo from '../assets/info.svg'
 import IconGroup from '../assets/group.svg'
 import IconHamburger from '../assets/menu-burger.svg'
 
+import { getGroupingToggle } from '../StorageUtils';
+
 import DropdownSorting from './SortingDropdown';
 import * as API from '../hydrus-backend'
 
@@ -95,7 +97,7 @@ export function TagSearchBar(props: SearchTagsProps) {
   return <div className={getTopBarStyle()}>
     <div className="buttonsBar">
       <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
-      <GroupButton icon={IconGroup} clickAction={props.groupAction} />
+      <GroupButton icon={IconGroup} activeValue={getGroupingToggle()}  clickAction={props.groupAction} />
       {/*<DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />*/}
       {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
