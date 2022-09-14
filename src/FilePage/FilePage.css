@@ -14,16 +14,17 @@
     position: fixed;
     font-size: large;
     width: 100%;
-    bottom: 3em;
+    bottom: 2.8em;
     z-index: 5;
     background: var(--COLOR1);
-    border-radius: 5px;
+    border-radius: 5px 5px 0px 0px;
     transition: transform 0.3s ease-in-out;
     transform: translateY(120%);
     max-height: 94vh;
     height: auto;
     overflow-y: scroll;
     will-change: transform;
+    padding-bottom: 1em;
 }
 
 .contentSideBar.mobile.sideBarLandscape {
