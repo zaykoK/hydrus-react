@@ -14,6 +14,8 @@ import './TagSearchbar.css'
 import { addTag } from './SearchPageHelpers'
 import { useNavigate } from 'react-router-dom';
 
+//TODO Slide-in-out search bar in mobile mode with a search button or make it slide out when scrolling down start
+
 interface SearchTagsProps {
   tags: Array<Array<string>>;
   groupAction: Function;
@@ -31,20 +33,21 @@ export function TagSearchBar(props: SearchTagsProps) {
 
   function submitTag(event: React.FormEvent) {
     event.preventDefault(); //necessary to not reload page after submit
-    console.log('submitTag')
 
     let split = tag.split(' OR ')
     let splitLength = split.length
+
+    //This is technically buggy, as the intent was to sent queries that don't do OR as string but it actually works really nice
 
     if (splitLength > 0) {
       let inside = []
       for (let i = 0; i < splitLength; i++) {
         inside.push(split[i].toLowerCase())
       }
-      //@ts-ignore
       addTag(inside, navigate, 'image')
     }
     else {
+      console.log('do i go here ever?')
       addTag(tag, navigate, 'image')
     }
     setTag('');
