@@ -22,11 +22,11 @@ function emptyFunction() {
 export function RelatedFiles(props: RelatedFilesProps) {
     const [relatedHashes, setRelatedHashes] = useState<Array<string>>([])
     const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
-    const [scrollOffset, setScrollOffset] = useState<number>(0);
-    const [currentTags, setCurrentTags] = useState<Array<string>>([]);
+    const [scrollOffset, setScrollOffset] = useState<number>(0)
+    const [currentTags, setCurrentTags] = useState<Array<string>>([])
+    const [expanded, setExpanded] = useState<boolean>(false)
 
     const navigate = useNavigate()
-
 
     useEffect(() => {
         async function Search() {
@@ -67,7 +67,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
             }
 
-            function sortResults(a:{hash:string,page:Array<TagTools.Tuple>,modifiedDate:number}, b:{hash:string,page:Array<TagTools.Tuple>,modifiedDate:number}): number {
+            function sortResults(a: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }, b: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }): number {
                 //If posssible to compare pages
                 //TODO make it so having page makes you first
                 if (a.page.length > 0 && b.page.length === 0) {
@@ -84,8 +84,8 @@ export function RelatedFiles(props: RelatedFilesProps) {
                 }
             }
 
-            tempArray.sort((a, b) => sortResults(a,b))
-            let reverseHashes = tempArray.map((value,index) => {return value.hash})
+            tempArray.sort((a, b) => sortResults(a, b))
+            let reverseHashes = tempArray.map((value, index) => { return value.hash })
 
             //For visual purpose reverse the order
             //let reverseHashes = response.data.hashes.slice().reverse()
@@ -99,10 +99,8 @@ export function RelatedFiles(props: RelatedFilesProps) {
         if (JSON.stringify(currentTags) !== JSON.stringify(props.tags)) {
             Search()
         }
-        
+
     }, [props.tags])
-
-
 
     useEffect(() => {
         function isCurrentImage(hash: string) {
@@ -159,8 +157,10 @@ export function RelatedFiles(props: RelatedFilesProps) {
     }, [relatedHashes, props.currentHash])
 
     useEffect(() => {
+        if (expanded === false) { return }
         //This scrolls the div with every image change
-        const el = document.querySelector('.relatedStyleThumbsWrapper')
+        //const el = document.querySelector('.relatedStyleThumbsWrapper')
+        const el = document.querySelector('#' + props.space)
         //Scroll vertically
         if (isMobile() && !isLandscapeMode()) {
             el?.scrollTo({ left: scrollOffset, top: 0, behavior: 'smooth' })
@@ -189,14 +189,17 @@ export function RelatedFiles(props: RelatedFilesProps) {
                 style += ' landscape'
             }
         }
+        if (expanded) {
+            style += ' expanded'
+        }
         return style
     }
-
+    //<div className='relatedImages' ></div>
     return <>{
         (thumbs.length > 0) &&
         (<>
-            <p className="relatedTextStyle">Related Files for {props.space}</p>
-            <div className={getRelatedThumbsWrapperStyle()}>
+            <p onClick={() => { setExpanded(!expanded) }} className="relatedTextStyle">Related Files for {props.space}</p>
+            <div id={props.space} className={getRelatedThumbsWrapperStyle()}>
                 <div className={getRelatedThumbsStyle()}>{thumbs}</div>
             </div>
         </>)}

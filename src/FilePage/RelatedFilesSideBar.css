@@ -6,13 +6,18 @@
     top: 0px;
     height: 99vh;
     max-width: 27vh;
-    overflow: hidden;
+    overflow: auto;
     box-shadow: 0 0 5px 0 black;
     font-size: 1em;
     z-index: 30;
     transition: transform 0.3s ease-in-out;
     transform: none;
     will-change: transform;
+    scrollbar-width: none;
+}
+
+.relatedStyle::-webkit-scrollbar {
+    display:none;
 }
 
 .relatedStyle.hidden {

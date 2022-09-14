@@ -23,7 +23,14 @@
     overflow-x: hidden;
     overflow-y: scroll;
     height: 97%;
+    transition: max-height 0.3s ease-out;
+    max-height: 0px;
 }
+
+.relatedStyleThumbsWrapper.expanded {
+    max-height: 2000px;
+}
+
 .relatedStyleThumbsWrapper.mobile {
     overflow-x: scroll;
     overflow-y: hidden;
@@ -31,6 +38,10 @@
 .relatedStyleThumbsWrapper.mobile.landscape {
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+.relatedImages {
+    max-height:inherit;
 }
 
 
