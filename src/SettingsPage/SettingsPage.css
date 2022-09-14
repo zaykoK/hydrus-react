@@ -1,5 +1,5 @@
 .settingsPage {
-    margin-top: 5%;
+    margin-top: 30%;
     margin-left:auto;
     margin-right:auto;
     text-align: right;
@@ -11,11 +11,26 @@
     justify-content: center;
 }
 
+.settingsPage.mobile {
+    text-align: center;
+}
+
 .settingsBar {
     background: #ffffff;
     box-shadow: 0 0 0 0 grey;
     height: 30px;
     width: 33vw;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: large;
+}
+
+.settingsBar.mobile {
+    background: #ffffff;
+    box-shadow: 0 0 0 0 grey;
+    height: 30px;
+    width: 90vw;
     border: none;
     border-radius: 5px;
     text-align: center;

@@ -14,8 +14,8 @@ import { isLandscapeMode, isMobile } from '../styleUtils';
 
 
 interface SettingsPageProps {
-  globalState:any;
-  setNavigationExpanded:Function;
+  globalState: any;
+  setNavigationExpanded: Function;
 }
 
 function generateClassName(name: string): string {
@@ -29,17 +29,22 @@ function generateClassName(name: string): string {
   return className
 }
 
+function getSettingsPageStyle() {
+  let style = "settingsPage"
+  if (isMobile()) { style += ' mobile'}
+  return style
+}
 
-export function SettingsPage(props:SettingsPageProps) {
+
+export function SettingsPage(props: SettingsPageProps) {
   //console.log(props.globalState?.getGlobalValue())
   //props.globalState?.setGlobalValue('settings')
 
   return <>
-    <div className="settingsPage">
-    <div className={generateClassName('topBar')}>
-      <img src={IconHamburger} alt='related switch' className='topBarButton' onClick={() => {props.setNavigationExpanded(true)}} />
+    <div className={generateClassName('topBar topBarSettings')}>
+      <img src={IconHamburger} alt='related switch' className='topBarButton' onClick={() => { props.setNavigationExpanded(true) }} />
     </div>
-
+    <div className={getSettingsPageStyle()}>
       <SettingInputSingle initialValue={getServerAddress} type="text" label="Input Hydrus Server address:" setFunction={setServerAddress} />
       <SettingInputSingle initialValue={getAPIKey} type="password" label="Input API-key:" setFunction={setAPIKey} />
       <SettingInputSingle initialValue={getComicNamespace} type="text" label="Input comic-title namespace:" setFunction={setComicNamespace} />

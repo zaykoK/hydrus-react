@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { isMobile } from '../styleUtils';
 import './SettingsPage.css'
 
 interface SettingSingleInterface {
@@ -6,6 +7,12 @@ interface SettingSingleInterface {
     label: string; //What to display as input label
     setFunction: Function; //Function to call when submiting
     type:string;
+}
+
+function getSettingsInputStyle() {
+    let style = 'settingsBar'
+    if (isMobile()) {style += ' mobile'}
+    return style
 }
 
 function SettingInputSingle(args: SettingSingleInterface) {
@@ -21,7 +28,7 @@ function SettingInputSingle(args: SettingSingleInterface) {
             <label>
                 {args.label}
                 <input
-                    className='settingsBar'
+                    className={getSettingsInputStyle()}
                     type={args.type}
                     value={settingValue}
                     onChange={(e) => setSettingValue(e.target.value)} />

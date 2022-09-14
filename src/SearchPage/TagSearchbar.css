@@ -20,6 +20,19 @@
     width: 100vw;
 }
 
+.topBar.mobile {
+    padding: 3px 6px 3px 6px;
+    font-size: x-large;
+    flex-direction: column;
+    height:auto;
+    width:calc(100% - 12px);
+    gap: 10px;
+}
+.topBar.topBarSettings.mobile {
+    height:2em;
+}
+
+
 .topBar.mobile.landscape {
     flex-direction: row;
     height: var(--topBarHeight);
@@ -47,14 +60,6 @@
     top:0px;
     bottom:auto;
     padding: 6px 3px 3px 3px;
-}
-
-.topBar.mobile {
-    padding: 3px 6px 3px 6px;
-    font-size: x-large;
-    flex-direction: column;
-    height:4.3em;
-    gap: 10px;
 }
 
 .buttonsBar {

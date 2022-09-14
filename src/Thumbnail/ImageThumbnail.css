@@ -169,8 +169,8 @@
 
 .comicCard.mobile {
     background: var(--COLOR2);
-    width: 96vw;
-    max-width: 96vw;
+    width: calc(100% - 12px);
+    max-width: 100%;
     min-height: 25vh;
     padding: 5px;
     padding-bottom: 15px;
