@@ -1,7 +1,14 @@
 import React from "react";
 import { isMobile } from "../styleUtils";
 
-function WrapperList(props: { thumbs: Array<JSX.Element>, loadingProgress: string, loaded: boolean, type: string }) {
+interface WrapperListProps {
+    thumbs: Array<JSX.Element>;
+    loadingProgress: string;
+    loaded: boolean;
+    type: string;
+}
+
+function WrapperList(props: WrapperListProps) {
     function getWrapperListStyle() {
         let style = 'WrapperList'
         if (props.type === 'comic') {
