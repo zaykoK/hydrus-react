@@ -83,18 +83,24 @@ function Content(props: ContentProps) {
     // }
 
     React.useEffect(() => {
+        const img = new Image()
         function loadFullSizeImage(): void {
-            const img = new Image()
+            //console.time(props.hash + ' loading time')
+            
             img.src = API.api_get_file_address(props.hash) || ''
-            img.onload = () => { setSrc(img.src) }
+            img.onload = () => { setSrc(img.src);}
         }
         //Immediately start loading full size image, and when ready change to it
+        
         loadFullSizeImage()
-
+        
         document.addEventListener('keydown', handleKeyPress)
         //document.addEventListener('wheel', handleMouseScroll)
 
         return () => {
+            //console.timeEnd(props.hash + ' loading time');
+            img.src = ''
+            img.onload = () => {}
             document.removeEventListener('keydown', handleKeyPress)
             //document.removeEventListener('wheel', handleMouseScroll)
         }
