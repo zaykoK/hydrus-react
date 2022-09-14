@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageThumbnail } from '../Thumbnail/ImageThumbnail';
+import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
 import PageButtons from './PageButtons';
 
 import './ImageWall.css'
@@ -54,7 +54,7 @@ export function ImageWall(props: ImageWallProps) {
           hash={hash.cover}
           replace={false}
           metadata={hash.entries}
-          size={2}
+          size={1}
         />);
     }
     return list;

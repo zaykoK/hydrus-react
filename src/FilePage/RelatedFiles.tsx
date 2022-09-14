@@ -1,18 +1,19 @@
 import * as API from '../hydrus-backend';
-import { ImageThumbnail } from '../Thumbnail/ImageThumbnail';
-import { useEffect, useState } from 'react';
+import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
+import { useEffect, useRef, useState } from 'react';
 import { tagArrayToNestedArray } from '../TagTools';
 
 import "./RelatedFiles.css"
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import * as TagTools from '../TagTools'
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
     currentHash: string | undefined;
     id: string;
     space: string;
+    initiallyExpanded: boolean;
 }
 
 function emptyFunction() {
@@ -24,9 +25,18 @@ export function RelatedFiles(props: RelatedFilesProps) {
     const [thumbs, setThumbs] = useState<Array<JSX.Element>>([])
     const [scrollOffset, setScrollOffset] = useState<number>(0)
     const [currentTags, setCurrentTags] = useState<Array<string>>([])
-    const [expanded, setExpanded] = useState<boolean>(false)
+    const [expanded, setExpanded] = useState<boolean>(props.initiallyExpanded)
 
-    const navigate = useNavigate()
+    /*
+        Since it's impossible to declare navigate outside of component, navigate object gets "re-created" every time component re-renders
+        this means that every it happens all the children get a new prop that change that also facilitates a re-render on them
+        based on the fact that this works I'm potentialy saving some 10-300ms on re-render whenever changing to new image
+        using useRef means object gets created once and only changes whenever i actually change navigate.current or (maybe) redeclare a new useRef
+        Seems to potentialy be the same thing as
+        const [navigate,setNavigate] = useState<NavigateFunction>(useNavigate())
+    */
+
+    const navigate = useRef(useNavigate())
 
     useEffect(() => {
         async function Search() {
@@ -135,7 +145,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
                 if (current === true) { currentIndex = parseInt(hash) }
                 temp.push(
                     <ImageThumbnail
-                        navigate={navigate}
+                        navigate={navigate.current}
                         currentImage={current}
                         replace={true}
                         type='image'
@@ -173,6 +183,19 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     }, [thumbs, scrollOffset])
 
+    function getRelatedTextStyle():string {
+        let style='relatedTextStyle'
+        if(isMobile()) {
+            style += ' mobile'
+            if(isLandscapeMode()) {
+                style += 'landscape'
+            }
+        }
+
+
+        return style
+    }
+
     function getRelatedThumbsStyle(): string {
         if (isMobile()) {
             if (isLandscapeMode()) { return "relatedThumbnails mobile landscape" }
@@ -198,7 +221,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
     return <>{
         (thumbs.length > 0) &&
         (<>
-            <p onClick={() => { setExpanded(!expanded) }} className="relatedTextStyle">Related Files for {props.space}</p>
+            <p onClick={() => { setExpanded(!expanded) }} className={getRelatedTextStyle()}>{props.tags}</p>
             <div id={props.space} className={getRelatedThumbsWrapperStyle()}>
                 <div className={getRelatedThumbsStyle()}>{thumbs}</div>
             </div>

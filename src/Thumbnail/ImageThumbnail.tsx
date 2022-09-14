@@ -22,7 +22,8 @@ interface ImageThumbnailProps {
   type: string;
   metadata?: Array<API.MetadataResponse>;
   size?: number;
-  navigate:NavigateFunction;
+  navigate: NavigateFunction;
+  hideWidgetCount?: boolean;
 }
 
 const EMPTYSTRING = ''
@@ -32,11 +33,18 @@ function returnFilePageURL(hash: string) {
   return "/file/" + hash
 }
 
-function ThumbContent(props: { thumbnail: string | undefined, type: string, hash: string, replace: boolean, currentImage?:boolean }) {
-  const navigate = useNavigate();
+interface ThumbContentProps {
+  thumbnail: string | undefined;
+  type: string, hash: string;
+  replace: boolean;
+  currentImage?: boolean;
+  navigate:NavigateFunction;
+}
+
+function ThumbContent(props: ThumbContentProps) {
   function determineThumbNavigation(replace: boolean) {
     sessionStorage.setItem('searchScroll', window.scrollY.toString())
-    navigate(returnFilePageURL(props.hash), { replace: replace })
+    props.navigate(returnFilePageURL(props.hash), { replace: replace })
   }
 
   function getThumbStyle(type: string): string {
@@ -64,7 +72,32 @@ function ThumbContent(props: { thumbnail: string | undefined, type: string, hash
 }
 
 
-export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
+function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
+  if (metadata != null) {
+    let index = sessionStorage.getItem('hydrus-all-known-tags')
+    if (!index) { return '' }
+
+    let tags = metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
+    if (tags === undefined) {
+      tags = []
+    }
+    let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
+    let t = tagsSorted.filter((element) => element["namespace"] === space)
+    if (t[0] === undefined) {
+      return ''
+    }
+    if (spaceless) {
+      return t[0].value
+    }
+    return t[0].namespace + ':' + t[0].value
+  }
+  return ''
+}
+
+const thumbnailTopTags: Array<string> = ['creator', 'person', 'series']
+const thumbnailBottomTags: Array<string> = []
+
+function ImageThumbnail(props: ImageThumbnailProps) {
   const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
   const [metadata, setMetadata] = React.useState<API.MetadataResponse>();
 
@@ -106,29 +139,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     return "";
   }
 
-  function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
-    if (metadata != null) {
-      let index = sessionStorage.getItem('hydrus-all-known-tags')
-      if (!index) { return '' }
-
-      let tags = metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
-      if (tags === undefined) {
-        tags = []
-      }
-      let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
-      let t = tagsSorted.filter((element) => element["namespace"] === space)
-      if (t[0] === undefined) {
-        return ''
-      }
-      if (spaceless) {
-        return t[0].value
-      }
-      return t[0].namespace + ':' + t[0].value
-    }
-    return ''
-  }
-
-
   function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string> }) {
     if (args.metadata != null) {
       let index = sessionStorage.getItem('hydrus-all-known-tags')
@@ -161,7 +171,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
               cursor: 'pointer',
             }
           }
-          innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate:props.navigate }))
+          innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate: props.navigate }))
           limitCount += 1
         }
         tagArrays.push(innerArray)
@@ -206,9 +216,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     }
   }, []);
 
-  const thumbnailTopTags: Array<string> = ['creator', 'person', 'series']
-  const thumbnailBottomTags: Array<string> = []
-
   function getComicCardStyle() {
     let style = 'comicCard'
     if (isMobile()) { style += ' mobile' }
@@ -248,6 +255,7 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       <div className={getComicCardContentStyle()}>
         <div className={getComicCardThumbnailRowStyle()}>
           <ThumbContent
+            navigate={props.navigate}
             type={props.type}
             replace={props.replace}
             thumbnail={thumbnail}
@@ -273,6 +281,8 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
     </div>
   }
 
+  console.log(props.hideWidgetCount !== undefined)
+
   return (
     <div className={getWrapperStyle(props.type)}
       key={"thumb-" + props.hash}>
@@ -280,11 +290,12 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
         {createTagPreview({ metadata: metadata, spaces: thumbnailTopTags })}
       </div>}
       <div className='bottomTags'>
-        <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} />
+        {(props.hideWidgetCount === undefined || props.hideWidgetCount === true) ? <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} /> : <></>}
         <WidgetFileType mime={metadata?.mime || EMPTYSTRING} />
         {createTagPreview({ metadata: metadata, spaces: thumbnailBottomTags })}
       </div>
       <ThumbContent
+        navigate={props.navigate}
         type={props.type}
         replace={props.replace}
         thumbnail={thumbnail}
@@ -294,4 +305,6 @@ export const ImageThumbnail = React.memo((props: ImageThumbnailProps) => {
       {/* <div className='wrapperLabel'>{createTagPreview({ metadata: metadata, spaces: ['group-title'] })}</div> */}
     </div>
   );
-});
+};
+
+export const MemoThumbnail = React.memo(ImageThumbnail);

@@ -6,6 +6,8 @@ interface WidgetCountProps {
     tag: string;
 }
 
+//TODO Merge this with WidgetCountTag, as those pretty much do the same
+
 function WidgetCount(props: WidgetCountProps) {
     const [tagCount, setTagCount] = useState<number>(0)
 

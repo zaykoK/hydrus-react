@@ -32,8 +32,9 @@
 }
 
 .topBar.filePageTopBar.mobile {
+    padding:3px 0px 3px 0px;
     flex-flow: row;
-    justify-content: flex-start;
+    justify-content: center;
     height:2em;
     top:auto;
     bottom:0px;

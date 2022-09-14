@@ -47,6 +47,8 @@ function RelatedFilesList(props: RelatedFilesListProps) {
         //if (props.metadata == undefined) { return returned }
         let spaces = getRelatedNamespaces()
         let i = 0
+        let shouldBeExpanded = true
+
         for (let element of spaces) {
             //If no tags in namespace, don't add to the list
             //@ts-ignore
@@ -63,7 +65,9 @@ function RelatedFilesList(props: RelatedFilesListProps) {
                         key={element + tags}
                         tags={tags}
                         space={element}
+                        initiallyExpanded={shouldBeExpanded}
                     />
+                    shouldBeExpanded=false
                 returned.push(newElement)
                 returnedTags.push(tags)
             }

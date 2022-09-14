@@ -4,7 +4,7 @@ import { FilePage } from './FilePage/FilePage';
 import { SettingsPage } from './SettingsPage/SettingsPage';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigate } from 'react-router-dom'
-import Navigation from './NavBar';
+import {MemoNavigation} from './NavBar';
 import * as API from './hydrus-backend'
 
 import './index.css'
@@ -77,7 +77,7 @@ function App() {
 
   return <div className="app">
       {(token) && <Router>
-        <Navigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
+        <MemoNavigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
         {((settings) &&
           <Routes>
             <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />

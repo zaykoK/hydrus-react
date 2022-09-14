@@ -17,17 +17,6 @@ type NavigationProps = {
 function Navigation(props: NavigationProps) {
   const [expanded, setExpanded] = React.useState<boolean>(false)
 
-  function returnBarStyle(): string {
-    let style = 'navBarBut'
-    if (isMobile()) {
-      style += ' mobile'
-      if (isLandscapeMode()) {
-        style += ' landscape'
-      }
-    }
-    return style
-  }
-
   React.useEffect(() => {
     if (expanded !== props.expanded) {
       setExpanded(props.expanded);
@@ -69,15 +58,15 @@ function Navigation(props: NavigationProps) {
 
   return (<>
     <nav className={returnExpandedBarStyle(expanded)}>
-      <NavLink className={getNavLinkStyle()} to="/">
+      <NavLink key={'navLink-home'} className={getNavLinkStyle()} to="/">
         <img src={IconHome} alt='home page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Home</div>
       </NavLink>
-      <NavLink className={getNavLinkStyle()} to="/comics/page=1">
+      <NavLink key={'navLink-comics'} className={getNavLinkStyle()} to="/comics/page=1">
         <img src={IconComics} alt='comic page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Comics</div>
       </NavLink>
-      <NavLink className={getNavLinkStyle()} to="/settings">
+      <NavLink key={'navLink-settings'} className={getNavLinkStyle()} to="/settings">
         <img src={IconSettings} alt='settings page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Settings</div>
       </NavLink >
@@ -88,4 +77,4 @@ function Navigation(props: NavigationProps) {
   );
 }
 
-export default Navigation;
+export const MemoNavigation = React.memo(Navigation);
