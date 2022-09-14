@@ -49,6 +49,7 @@
     flex-flow: row;
     justify-content: center;
     height:2em;
+    width:100%;
     top:auto;
     bottom:0px;
 }
