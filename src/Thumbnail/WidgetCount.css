@@ -1,3 +1,9 @@
+@keyframes widgetCountIntro {
+    0% {transform: scale(0);}
+    50% {transform: scale(1.2);}
+    100% {transform: scale(1);}
+}
+
 .widgetCount {
     position: absolute;
     bottom: 5px;
@@ -11,4 +17,6 @@
     pointer-events: none;
     font-weight: bold;
     transition:all 0.25s;
+    animation-name: widgetCountIntro;
+    animation-duration: 0.5s;
 }

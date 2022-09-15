@@ -32,6 +32,12 @@
 
 */
 
+@keyframes thumbnailIntro {
+    0% {transform: scale(0);}
+    50% {transform: scale(1.2);}
+    100% {transform: scale(1);}
+}
+
 .thumbnailWrapper {
     position: relative;
     margin: 5px;
@@ -44,6 +50,8 @@
     max-height: 100%;
     max-width: 100%;
     transition: all 1s;
+    animation-name: thumbnailIntro;
+    animation-duration: 0.5s;
 }
 
 .thumbnailWrapper.xsmall {
