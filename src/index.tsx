@@ -4,7 +4,7 @@ import { FilePage } from './FilePage/FilePage';
 import { SettingsPage } from './SettingsPage/SettingsPage';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigate } from 'react-router-dom'
-import {MemoNavigation} from './NavBar';
+import { MemoNavigation } from './NavBar';
 import * as API from './hydrus-backend'
 
 import './index.css'
@@ -34,7 +34,7 @@ function App() {
   const [token, setToken] = useState<boolean>(false)
   const [settings, setSettings] = useState<boolean>(false)
 
-  const [navigationExpanded,setNavigationExpanded] = useState(false)
+  const [navigationExpanded, setNavigationExpanded] = useState(false)
 
   async function sessionKeyRoutine() {
     //If no settings, automatically move to settings page
@@ -54,7 +54,17 @@ function App() {
     }
     //If verification fails get a new one
     if (sessionStorage.getItem('hydrus-session-key') === null) {
-      let response = await API.api_get_session_key()
+      let response
+      try {
+        response = await API.api_get_session_key()
+      }
+      catch (err) {
+        //console.log(err)
+        setToken(true)
+        setSettings(false)
+        return
+      }
+
       sessionStorage.setItem("hydrus-session-key", response.data.session_key);
     }
     //If no known services get them
@@ -76,19 +86,19 @@ function App() {
   }, [])
 
   return <div className="app">
-      {(token) && <Router>
-        <MemoNavigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
-        {((settings) &&
-          <Routes>
-            <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
-            <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
-            <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
-            <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
-            <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
-          </Routes>) || <Routes>
-            <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
-          </Routes>}
-      </Router>}
+    {(token) && <Router>
+      <MemoNavigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
+      {((settings) &&
+        <Routes>
+          <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
+          <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+          <Route key="route-file" path='/file/:fileHash' element={<FilePage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+          <Route key="route-settings" path='/settings' element={<SettingsPage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+          <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+        </Routes>) || <Routes>
+          <Route key="route-settings" path='/*' element={<SettingsPage globalState={globalState} setNavigationExpanded={setNavigationExpanded} />} />
+        </Routes>}
+    </Router>}
   </div>
 }
 
