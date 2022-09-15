@@ -51,7 +51,7 @@
     max-width: 100%;
     transition: all 1s;
     animation-name: thumbnailIntro;
-    animation-duration: 0.5s;
+    animation-duration: 1s;
 }
 
 .thumbnailWrapper.xsmall {
