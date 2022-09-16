@@ -7,13 +7,15 @@ import * as TagTools from '../TagTools';
 import { TagList } from '../TagList';
 
 import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace, getSortType, setSortType } from '../StorageUtils';
-import { tagArrayToNestedArray } from '../TagTools';
 import { setPageTitle } from '../misc';
 
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import localforage from 'localforage';
 import { addTag, generateSearchURL, navigateTo, removeTag } from './SearchPageHelpers';
+
+import { FilePage } from '../FilePage/FilePage';
+import { readParams } from './URLParametersHelpers';
 
 interface SearchPageProps {
   type: string;
@@ -24,17 +26,24 @@ interface SearchPageProps {
 type ParamsType = {
   tags: Array<Array<string>>;
   page: number;
+  hash: string;
+  type: string;
 }
 
 type SearchResults = {
   results: Array<Result>;
   groupedResults: Array<Result>;
   metadataResponses: Array<API.MetadataResponse>;
+  hashes?: Array<string>;
 }
 
 export type Result = {
   cover: string; //Representant of a result
   entries: Array<API.MetadataResponse>; //List of Metadata responses since they have hash anyway already and this way i get access to all
+}
+
+export function changePage() {
+
 }
 
 export function SearchPage(props: SearchPageProps) {
@@ -46,7 +55,7 @@ export function SearchPage(props: SearchPageProps) {
   //List of unique tags for given files
   const [fileTags, setFileTags] = useState<Array<TagTools.Tuple>>([])
   //Current search parameters, tags(unused?) and current page of search results
-  const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0 })
+  const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0, hash: '', type: props.type })
   //Field that accesses "actual" current URL parameters
   const { parm } = useParams<string>()
   //Whether page has finished loading or not (doesn't work that well now)
@@ -64,6 +73,7 @@ export function SearchPage(props: SearchPageProps) {
   const previousSearchSortType = useRef<API.FileSortType>()
   //Sorting order for grabbing files from hydrus API
   const sortType = useRef<API.FileSortType>(getSortType())
+  const searchType = useRef<string>(props.type)
 
   const navigate = useNavigate()
 
@@ -78,12 +88,25 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   function refreshParams(): void {
-    let [paramsTags, paramsPage] = readParams(parm)
+    let p = readParams(parm)
+    /*WARNING - this is not exactly correct way to do this
+    There is a weird occurence when sometimes empty tag parameter gets added to the page url --> "&tags="
+    When this happens on empty search compare doesn't work properly as it is comparing [] and [[]] objects
+    When that compare fails opening/closing image viewer overlay will re-render whole search page, losing scroll progress
+    Unfortunately (or fortunately) this happened once to me and I can't replicate that behaviour anymore,
+     seems that changing default search value somehow "fixed it", so I'm not bothering with trying to fix it more
+    */
 
-    setPageTitle(paramsTags, parseInt(paramsPage), props.type)
-    setParams({ tags: paramsTags, page: parseInt(paramsPage) })
-    setTags(paramsTags)
-    sessionStorage.setItem('current-search-tags',JSON.stringify(paramsTags))
+    setPageTitle(p.tags, parseInt(p.page), p.type)
+    setParams({ tags: p.tags, page: parseInt(p.page), hash: p.hash, type: p.type })
+
+    let tagsForTestingPurpose = tags || [[]]
+    if (JSON.stringify(tagsForTestingPurpose) !== JSON.stringify(p.tags)) {
+      setTags(p.tags)
+    }
+
+    sessionStorage.setItem('currently-displayed-hash', p.hash)
+    sessionStorage.setItem('current-search-tags', JSON.stringify(p.tags))
   }
 
   function changeGrouping() {
@@ -247,8 +270,10 @@ export function SearchPage(props: SearchPageProps) {
       returnHashes.push(entry.cover)
       searchArray.push(entry)
     })
+    let searchResultObject: SearchResults = { results: unsortedArray, metadataResponses: responsesSorted, groupedResults: searchArray, hashes: returnHashes }
 
-    setSearchResults({ results: unsortedArray, metadataResponses: responsesSorted, groupedResults: searchArray })
+    localforage.setItem('search-results-cache', JSON.stringify(searchResultObject))
+    setSearchResults(searchResultObject)
     return returnHashes //This is what will be displayed in the end
   }
 
@@ -265,9 +290,10 @@ export function SearchPage(props: SearchPageProps) {
     //console.log('are searches equal?')
     //console.log(JSON.stringify(tags) === JSON.stringify(previousSearch.current))
 
-    if ((previousSearchSortType.current === sortType.current) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current))) {
+    if ((previousSearchSortType.current === sortType.current) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current)) && ((searchType.current === params.type))) {
       //console.log("not doing anything same search")
       return
+
     }
     if (loaded) { sessionStorage.removeItem('searchScroll') }
     setLoaded(false)
@@ -277,7 +303,7 @@ export function SearchPage(props: SearchPageProps) {
     previousSearchSortType.current = sortType.current
     let searchTags = tags.slice()
     if (searchTags.length === 1 && searchTags[0].length === 0) { searchTags = [] }
-    if (props.type === 'comic') {
+    if (params.type === 'comic') {
       searchTags.push([getComicNamespace() + ':*'])
       searchTags.push(['page:0', 'page:1'])
     }
@@ -316,14 +342,22 @@ export function SearchPage(props: SearchPageProps) {
     //If there are any results
     if (hashes.length > 0) {
       //Load the session storage metadata if exist
-      let cacheHashes = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
-      let cacheResponses = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
-
+      console.time('localforage')
+      let cacheHashes: Array<string> = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
+      //let cacheResponses: Array<API.MetadataResponse> = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
+      let cacheResults: SearchResults = JSON.parse(await localforage.getItem('search-results-cache') as string)
+      console.timeEnd('localforage')
 
       //If current hashes matches cached search result just use that
-      if (JSON.stringify(cacheHashes) === JSON.stringify(hashes)) {
+      if ((cacheResults !== null) && (JSON.stringify(cacheHashes) === JSON.stringify(hashes))) {
         console.log('loading cached results')
-        responses = cacheResponses
+        responses = cacheResults.metadataResponses
+        fileTags = createListOfUniqueTags(responses)
+        sessionStorage.setItem('hashes-search', JSON.stringify(cacheResults.hashes))
+        setLoaded(true)
+        setFileTags(fileTags)
+        setSearchResults(cacheResults)
+        return
       }
       //Else load them from the server and then add do indexedDB
       else {
@@ -355,7 +389,7 @@ export function SearchPage(props: SearchPageProps) {
 
       fileTags = createListOfUniqueTags(responses)
       let h = hashes
-      if (props.type === 'comic') {
+      if (params.type === 'comic') {
         h = groupImages(responses, hashes, getComicNamespace())
       }
       else {
@@ -388,55 +422,6 @@ export function SearchPage(props: SearchPageProps) {
 
   }
 
-  function setDefaultSearch(): Array<Array<string>> {
-    switch (props.type) {
-      case 'image':
-        return [[]]
-      case 'comic':
-        return [[]]
-      // Removed because I added it in search function, should be better user experience without those 2 queries visible
-      //return [[getComicNamespace() + ':*'], ['page:0', 'page:1']]
-      default:
-        return [[]]
-    }
-  }
-
-  function readParams(par: string | undefined): [tags: Array<Array<string>>, page: string] {
-    if (par === undefined) { return [[], '1'] }
-    let parameters = new URLSearchParams(par);
-    let tags = setDefaultSearch()
-
-    if (parameters.getAll('tags').length != 0) {
-      tags = tagArrayToNestedArray(parameters.getAll('tags'))
-
-
-      //Bring back invalid URL characters
-      for (let tagArray in tags) {
-        for (let tag in tags[tagArray]) {
-          tags[tagArray][tag] = tags[tagArray][tag].replace('!ANDS', '&').replace('!PLUSSYMBOL', '+')
-        }
-      }
-
-      //Returns all non empty results, since params sometimes have 'tags=' element
-      tags = tags.filter(function (x) { return x[0] !== '' })
-      let sortedTags: Array<Array<string>> = []
-      for (let tagArray of tags) {
-        //If parameter is an OR search
-        let s = tagArray[0].split(' OR ') //Always going to be single element array anyway
-        if (s.length === 0) { //If Tag is not an OR search
-          sortedTags.push([s[0]]) //Wrap in Array for consistency sake so the element ends up as ['tag']
-        }
-        else {
-          sortedTags.push(s) //Just add the given array, this essentialy turns "tag1 OR tag2" into ['tag1,'tag2']
-        }
-      }
-      tags = sortedTags
-    }
-    let page = '1'
-    if (parameters.get('page') != undefined) { page = parameters.get('page') || '1' } //This last OR is to make the checking not whine, it shouldn't ever need to use it
-
-    return [tags, page]
-  }
 
   //Everytime user lands on search page, remove group-hashes item from sessionStorage
   useEffect(() => {
@@ -449,32 +434,24 @@ export function SearchPage(props: SearchPageProps) {
 
   useEffect(() => {
     search()
-  }, [tags, sortType])
+  }, [tags, sortType, params.type])
 
   useEffect(() => {
     //Adding even slightiest timeout seem to actually make this work, weird
-    setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
+    //setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
   }, [loaded])
 
   function restoreScroll() {
     return parseInt(sessionStorage.getItem('searchScroll') || '0')
   }
 
-  function changePage(newPage: number) {
-    let par = generateSearchURL(tags, newPage)
-
-    navigateTo(par, navigate, props.type)
-
-    sessionStorage.removeItem('searchScroll')
-    window.scrollTo(0, 0)
-  }
 
   function getContentStyle(): string {
     let style = 'contentStyle'
     if (isMobile()) {
       style += " mobile"
     }
-    if (props.type === 'comic') {
+    if (params.type === 'comic') {
       style += ' contentStyleComic'
     }
     return style
@@ -519,15 +496,16 @@ export function SearchPage(props: SearchPageProps) {
             visibleCount={true}
             tags={fileTags}
             blacklist={tagBlacklist.current}
+            type={params.type}
           />}
       </div>
 
       <div className={getTopBarPaddingStyle()} />
-      {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
+      {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
       <ImageWall
         grouping={groupFiles}
         addTag={addTag}
-        type={props.type}
+        type={params.type}
         page={params.page}
         hashes={(groupFiles) ? searchResults.groupedResults : searchResults.results}
         changePage={changePage}
@@ -535,27 +513,29 @@ export function SearchPage(props: SearchPageProps) {
         loaded={loaded}
         empty={emptySearch}
       />
+      {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage globalState={props.globalState} setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
     </>;
   }
   /* Desktop Layout */
   return <>
     <div className={getTopBarPaddingStyle()} />
-    {(tags) && <TagSearchBar setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
+    {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
-      {(props.type !== 'comic') && <div className={getGridStyleList()}>
+      {(params.type !== 'comic') && <div className={getGridStyleList()}>
         {(fileTags != undefined) &&
           <TagList
             visibleCount={true}
             tags={fileTags}
             blacklist={tagBlacklist.current}
             clickFunction={addTag}
+            type={params.type}
           />}
       </div>}
       <div className={getGridStyleThumbs()}>
         <ImageWall
           grouping={groupFiles}
           addTag={addTag}
-          type={props.type}
+          type={params.type}
           page={params.page}
           hashes={(groupFiles) ? searchResults.groupedResults : searchResults.results}
           changePage={changePage}
@@ -565,5 +545,6 @@ export function SearchPage(props: SearchPageProps) {
         />
       </div>
     </div>
+    {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage globalState={props.globalState} setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
   </>;
 }

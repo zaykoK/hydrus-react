@@ -1,11 +1,14 @@
 import { NavigateFunction } from "react-router-dom"
 
 /** Generates a URLSearchParams from tag array and page number */
-export function generateSearchURL(tags: Array<Array<string>> | undefined, page: number): URLSearchParams {
+export function generateSearchURL(tags: Array<Array<string>> | undefined, page: number, hash: string, type: string): URLSearchParams {
     let parameters = new URLSearchParams({
-        page: page.toString()
+        page: page.toString(),
+        hash: hash,
+        type: type
     })
-    if (tags) {
+    //If tags exist and are not equal to one empty array element
+    if (tags && !(tags.length === 1 && JSON.stringify(tags[0]) === JSON.stringify([]))) {
         //For each of the tags turn them from array into a string form
         //Essentialy [['tag1','tag2'],['tag3']] => tags=tag1 OR tag2&tags=tag3
         for (let element of tags) {
@@ -36,6 +39,15 @@ export function generateSearchURL(tags: Array<Array<string>> | undefined, page: 
     return parameters
 }
 
+// function changePage(newPage: number,navigate:NavigateFunction,type:string) {
+//     let par = generateSearchURL(tags, newPage, params.hash)
+
+//     navigateTo(par, navigate, type)
+
+//     sessionStorage.removeItem('searchScroll')
+//     window.scrollTo(0, 0)
+//   }
+
 
 export function navigateTo(parameters: URLSearchParams, navigate: NavigateFunction, type: string = 'image') {
     switch (type) {
@@ -55,6 +67,8 @@ export function navigateTo(parameters: URLSearchParams, navigate: NavigateFuncti
 export function addTag(tag: Array<string> | string, navigate: NavigateFunction, type: string): void {
     let tags: Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
 
+    let currentHash = sessionStorage.getItem('currently-displayed-hash') || ''
+
     //If it so happens that tag is string put it into array
     if (typeof tag === 'string') {
         tag = [tag]
@@ -72,13 +86,15 @@ export function addTag(tag: Array<string> | string, navigate: NavigateFunction, 
         //TODO process certain unique tags that user shouldn't be able to add
         newTags.push(tag);
 
-        let par = generateSearchURL(newTags, 1)
+        let par = generateSearchURL(newTags, 1, currentHash, type)
         navigateTo(par, navigate, type)
     }
 }
 
 export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: string) {
     let tags = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+
+    let currentHash = sessionStorage.getItem('currently-displayed-hash') || ''
 
     if (tags) {
         let i = 0;
@@ -98,7 +114,7 @@ export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: 
         let afterRemove = tags?.slice();
         afterRemove.splice(i, 1);
 
-        let par = generateSearchURL(afterRemove, 1)
+        let par = generateSearchURL(afterRemove, 1, currentHash, type)
         navigateTo(par, navigate, type)
     }
 }

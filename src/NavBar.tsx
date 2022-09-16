@@ -62,7 +62,7 @@ function Navigation(props: NavigationProps) {
         <img src={IconHome} alt='home page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Home</div>
       </NavLink>
-      <NavLink key={'navLink-comics'} className={getNavLinkStyle()} to="/comics/page=1">
+      <NavLink key={'navLink-comics'} className={getNavLinkStyle()} to="/search/page=1&type=comic">
         <img src={IconComics} alt='comic page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Comics</div>
       </NavLink>

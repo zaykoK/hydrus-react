@@ -4,24 +4,26 @@ import * as React from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import { TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage, GoToFirstImage, GoToLastImage } from './ImageControls';
 
 interface ContentProps {
     type: string;
     hash: string | undefined;
+    landscape:boolean;
 }
 
 function Content(props: ContentProps) {
     const navigate = useNavigate()
+    const { parm } = useParams()
 
     const swipeHandlers = useSwipeable({
         onSwipedLeft: (eventData) => {
-            NextImage(props.hash, navigate)
+            NextImage(props.hash, navigate, parm)
         },
         onSwipedRight: (eventData) => {
-            PreviousImage(props.hash, navigate)
+            PreviousImage(props.hash, navigate, parm)
         },
         onTap: (eventData) => {
             changeZoom()
@@ -59,14 +61,14 @@ function Content(props: ContentProps) {
     }
 
     const handleKeyPress = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === 'ArrowLeft') { GoToFirstImage(navigate); return }
-        if (e.ctrlKey && e.key === 'ArrowRight') { GoToLastImage(navigate); return }
-        if (e.key === "ArrowRight") { NextImage(props.hash, navigate) }
-        if (e.key === "ArrowLeft") { PreviousImage(props.hash, navigate) }
-        if (e.key === "ArrowDown") { NextSearchImage(props.hash, navigate) }
-        if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate) }
-        if (e.key === "Home") { GoToFirstImage(navigate) }
-        if (e.key === "End") { GoToLastImage(navigate) }
+        if (e.ctrlKey && e.key === 'ArrowLeft') { GoToFirstImage(navigate, parm); return }
+        if (e.ctrlKey && e.key === 'ArrowRight') { GoToLastImage(navigate, parm); return }
+        if (e.key === "ArrowRight") { NextImage(props.hash, navigate, parm) }
+        if (e.key === "ArrowLeft") { PreviousImage(props.hash, navigate, parm) }
+        if (e.key === "ArrowDown") { NextSearchImage(props.hash, navigate, parm) }
+        if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate,false, parm) }
+        if (e.key === "Home") { GoToFirstImage(navigate, parm) }
+        if (e.key === "End") { GoToLastImage(navigate, parm) }
     }
 
     // const handleMouseScroll = (e: WheelEvent) => {
@@ -86,14 +88,14 @@ function Content(props: ContentProps) {
         const img = new Image()
         function loadFullSizeImage(): void {
             //console.time(props.hash + ' loading time')
-            
+
             img.src = API.api_get_file_address(props.hash) || ''
-            img.onload = () => { setSrc(img.src);}
+            img.onload = () => { setSrc(img.src); }
         }
         //Immediately start loading full size image, and when ready change to it
-        
+
         loadFullSizeImage()
-        
+
         document.addEventListener('keydown', handleKeyPress)
         //document.addEventListener('wheel', handleMouseScroll)
 

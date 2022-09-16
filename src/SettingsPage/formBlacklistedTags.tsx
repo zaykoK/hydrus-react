@@ -68,7 +68,7 @@ function BlacklistedTagsInput() {
     }, [])
 
     return <div className="searchBarSt">
-      <TagDisplay key={spaces.toString()} removeTag={removeBlacklistedSpaceFromSettings} tags={spacesToTags(spaces)} />
+      <TagDisplay key={spaces.toString()} removeTag={removeBlacklistedSpaceFromSettings} tags={spacesToTags(spaces)} type='' />
       <form onSubmit={handleSubmit} className="formStyle">
         <label className="labelStyle">
           <input className="inputStyle"

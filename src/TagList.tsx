@@ -12,6 +12,7 @@ interface TagListProps {
     clickFunction?: Function;
     visibleCount: boolean;
     blacklist?: Array<string>; // tag namespaces to skip
+    type: string;
 }
 
 export function TagList(props: TagListProps) {
@@ -75,8 +76,8 @@ export function TagList(props: TagListProps) {
                 tagList.push(
                     <p
                         className='tagEntry blob'
-                        onClick={() => { addTag(displayTagString(args.tags[element]), navigate, 'image') }}
-                        onContextMenu={(e) => {e.preventDefault(); addTag("-" + displayTagString(args.tags[element]),navigate,'image')}}
+                        onClick={() => { addTag(displayTagString(args.tags[element]), navigate, props.type) }}
+                        onContextMenu={(e) => { e.preventDefault(); addTag("-" + displayTagString(args.tags[element]), navigate, props.type) }}
                         key={displayTagString(args.tags[element])}
                         style={TagTools.getTagButtonStyle(args.tags[element].namespace)} >
                         {displayTagString(args.tags[element]) + displayTagCount(args.tags[element].count)}

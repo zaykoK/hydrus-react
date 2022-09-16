@@ -8,6 +8,7 @@ interface TagLinkProps {
     tag: string;
     namespace: string;
     navigate:NavigateFunction;
+    type:string;
 }
 
 function TagLink(props: TagLinkProps) {
@@ -18,10 +19,10 @@ function TagLink(props: TagLinkProps) {
         style={props.style}
         onClick={() => {
             if (props.namespace === '') {
-                addTag(props.tag,props.navigate,'image')
+                addTag(props.tag,props.navigate,props.type)
             }
             else {
-                addTag(props.namespace + ':' + props.tag,props.navigate,'image')
+                addTag(props.namespace + ':' + props.tag,props.navigate,props.type)
             }
         }}
     >

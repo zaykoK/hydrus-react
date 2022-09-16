@@ -24,24 +24,22 @@ interface ImageWallProps {
 
 export function ImageWall(props: ImageWallProps) {
   const [loaded, setLoaded] = React.useState<boolean>(false)
+  const [thumbs, setThumbs] = React.useState<JSX.Element[]>([])
 
   const navigate = useNavigate()
+
 
   let width = (5 / 6) * (window.innerWidth);
   let elements = Math.floor(width / 180);
 
-
   //TODO
   //tie this into some sort of user settings
-  let viewSize = 500;
+  let viewSize = 5000;
   if (props.type === 'comic') {
-    viewSize = 60
+    viewSize = 1000;
   }
 
-  const [thumbs, setThumbs] = React.useState<JSX.Element[]>([]) //Used to have 
-
   function CreateNewThumbnailList(page: number) {
-
     let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
     let list: Array<JSX.Element> = [];
     for (let hash of hashSlice) {
@@ -89,9 +87,9 @@ export function ImageWall(props: ImageWallProps) {
       if (e.key === "ArrowLeft") { PreviousPage() }
     }
 
-    document.addEventListener('keyup', handleKeyPress)
+    //document.addEventListener('keyup', handleKeyPress)
     return () => {
-      document.removeEventListener('keyup', handleKeyPress)
+      //document.removeEventListener('keyup', handleKeyPress)
     }
   })
 
@@ -99,6 +97,12 @@ export function ImageWall(props: ImageWallProps) {
   React.useEffect(() => {
     setThumbs(CreateNewThumbnailList(props.page))
   }, [props.hashes, props.page])
+
+  React.useEffect(() => {
+    if(props.loaded === false && thumbs.length > 0) {
+      setThumbs([])
+    }
+  },[props.loaded])
 
   function returnPageCount() {
     let count = Math.max(Math.floor(props.hashes.length / (viewSize)) + 1, 1)

@@ -12,6 +12,7 @@ interface TagButtonListProps {
   tags: Array<Array<string>>;
   navigate?: NavigateFunction;
   removeTag?: Function;
+  type:string;
 }
 
 function TagButtonList(props: TagButtonListProps) {
@@ -42,7 +43,7 @@ function TagButtonList(props: TagButtonListProps) {
       return
     }
     if (props.navigate !== undefined) {
-      removeTag(parameter, props.navigate, 'image')
+      removeTag(parameter, props.navigate, props.type)
       return
     }
   }

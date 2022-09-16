@@ -8,7 +8,7 @@ import './RelatedFilesSideBar.css'
 
 interface RelatedFilesListProps {
     relatedData: relatedDataCartType;
-
+    landscape:boolean;
 }
 
 ///TODO
@@ -38,10 +38,6 @@ function RelatedFilesList(props: RelatedFilesListProps) {
         let dataTags = props.relatedData.tags
         let dataHash = props.relatedData.hash
 
-        //if (JSON.stringify(props.tags))
-        let shouldUpdate = true
-        let groupTags: Array<Array<string>> = []
-
         let returned: Array<JSX.Element> = []
         let returnedTags: Array<Array<string>> = []
         //if (props.metadata == undefined) { return returned }
@@ -53,11 +49,8 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             //If no tags in namespace, don't add to the list
             //@ts-ignore
             let tags = returnTagsFromNamespace(dataTags, element) || []
-            //console.log(tags)
-            groupTags.push(tags)
             if (tags?.length > 0) { // && (JSON.stringify(currentTags[i]) !== JSON.stringify(tags))) {
                 //console.log('had to update')
-                shouldUpdate = true
                 let newElement =
                     <RelatedFiles
                         id={'relatedElements' + element}
@@ -66,6 +59,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
                         tags={tags}
                         space={element}
                         initiallyExpanded={shouldBeExpanded}
+                        landscape={props.landscape}
                     />
                     shouldBeExpanded=false
                 returned.push(newElement)
@@ -73,8 +67,8 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             }
             i += 1
         }
-        //if (JSON.stringify(relatedListTags) === JSON.stringify(returnedTags)) { shouldUpdate = false }
-        if (shouldUpdate) { setRelatedList(returned) }
+        if (returned.length === 0) { sessionStorage.removeItem('group-hashes')}
+        setRelatedList(returned)
     }, [props.relatedData])
 
 
@@ -84,21 +78,22 @@ function RelatedFilesList(props: RelatedFilesListProps) {
 interface RelatedFilesSideBarProps {
     visible: boolean;
     relatedData: relatedDataCartType;
+    landscape:boolean;
 }
 
 export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
-    function getRelatedStyle(visible: boolean): string {
+    function getRelatedStyle(visible: boolean,landscape:boolean): string {
         let className = 'relatedStyle'
         if (isMobile()) {
             className += ' mobile'
-            if (isLandscapeMode()) { className += ' landscape' }
+            if (landscape) { className += ' landscape' }
         }
         if (!visible) { className += ' hidden' }
         return className
     }
 
-    return <div className={getRelatedStyle(props.visible)}>
-        <RelatedFilesList relatedData={props.relatedData} />
+    return <div className={getRelatedStyle(props.visible,props.landscape)}>
+        <RelatedFilesList relatedData={props.relatedData} landscape={props.landscape} />
     </div>
 }
 

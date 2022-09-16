@@ -24,6 +24,7 @@ interface SearchTagsProps {
   infoAction: Function;
   sortTypeChange: Function;
   setNavigationExpanded: Function;
+  type:string;
 }
 
 export function TagSearchBar(props: SearchTagsProps) {
@@ -46,11 +47,11 @@ export function TagSearchBar(props: SearchTagsProps) {
       for (let i = 0; i < splitLength; i++) {
         inside.push(split[i].toLowerCase())
       }
-      addTag(inside, navigate, 'image')
+      addTag(inside, navigate, props.type)
     }
     else {
       console.log('do i go here ever?')
-      addTag(tag, navigate, 'image')
+      addTag(tag, navigate, props.type)
     }
     setTag('');
   }
@@ -66,7 +67,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
   }, [props.tags, tags])
 
-  function TagInput(props: { tags: Array<Array<string>> }) {
+  function TagInput(props: { tags: Array<Array<string>>, type:string }) {
 
     function getSearchBarStyle() {
       if (isMobile()) { return "searchBar mobile" }
@@ -74,7 +75,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
 
     return <div className={getSearchBarStyle()}>
-      <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} />
+      <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type}/>
       <form className="searchForm" onSubmit={submitTag}>
         <input
           className="searchInput"
@@ -101,6 +102,6 @@ export function TagSearchBar(props: SearchTagsProps) {
       {/*<DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />*/}
       {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
-    {TagInput({ tags: tags })}
+    {TagInput({ tags: tags, type:props.type })}
   </div>;
 }

@@ -10,6 +10,7 @@ import Content from './Content';
 interface FileContentProps {
   hash: string | undefined;
   type: string;
+  landscape:boolean;
 }
 
 export function FileContent(props: FileContentProps) {
@@ -25,7 +26,7 @@ export function FileContent(props: FileContentProps) {
   }
   return (
     <div id={"FileContent-" + props.hash} key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
-      <Content type={props.type} hash={props.hash} />
+      <Content type={props.type} hash={props.hash} landscape={props.landscape} />
     </div>
   );
 };

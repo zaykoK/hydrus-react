@@ -14,6 +14,7 @@ interface RelatedFilesProps {
     id: string;
     space: string;
     initiallyExpanded: boolean;
+    landscape: boolean;
 }
 
 function emptyFunction() {
@@ -183,32 +184,30 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     }, [thumbs, scrollOffset])
 
-    function getRelatedTextStyle():string {
+    function getRelatedTextStyle(landscape:boolean):string {
         let style='relatedTextStyle'
         if(isMobile()) {
             style += ' mobile'
-            if(isLandscapeMode()) {
-                style += 'landscape'
+            if(landscape) {
+                style += ' landscape'
             }
         }
-
-
         return style
     }
 
-    function getRelatedThumbsStyle(): string {
+    function getRelatedThumbsStyle(landscape:boolean): string {
         if (isMobile()) {
-            if (isLandscapeMode()) { return "relatedThumbnails mobile landscape" }
+            if (landscape) { return "relatedThumbnails mobile landscape" }
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"
     }
 
-    function getRelatedThumbsWrapperStyle(): string {
+    function getRelatedThumbsWrapperStyle(landscape:boolean): string {
         let style = 'relatedStyleThumbsWrapper'
         if (isMobile()) {
             style += ' mobile'
-            if (isLandscapeMode()) {
+            if (landscape) {
                 style += ' landscape'
             }
         }
@@ -221,9 +220,9 @@ export function RelatedFiles(props: RelatedFilesProps) {
     return <>{
         (thumbs.length > 0) &&
         (<>
-            <p onClick={() => { setExpanded(!expanded) }} className={getRelatedTextStyle()}>{props.tags}</p>
-            <div id={props.space} className={getRelatedThumbsWrapperStyle()}>
-                <div className={getRelatedThumbsStyle()}>{thumbs}</div>
+            <p onClick={() => { setExpanded(!expanded) }} className={getRelatedTextStyle(props.landscape)}>{props.tags}</p>
+            <div id={props.space} className={getRelatedThumbsWrapperStyle(props.landscape)}>
+                <div className={getRelatedThumbsStyle(props.landscape)}>{thumbs}</div>
             </div>
         </>)}
     </>

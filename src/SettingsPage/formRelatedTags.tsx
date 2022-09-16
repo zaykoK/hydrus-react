@@ -67,7 +67,7 @@ function RelatedGroupsInput() {
     }, [])
 
     return <div className="searchBarSt">
-      <TagDisplay key={spaces.toString()} removeTag={removeRelatedTagFromSetting} tags={spacesToTags(spaces)} />
+      <TagDisplay key={spaces.toString()} removeTag={removeRelatedTagFromSetting} tags={spacesToTags(spaces)} type='' />
       <form onSubmit={handleSubmit} className="formStyle">
         <label className="labelStyle">
           <input className="inputStyle"

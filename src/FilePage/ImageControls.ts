@@ -1,16 +1,30 @@
 /* Moved from FilePage because that way it doesn't unnecessarily recreate those functions every re-render */
 
 import { NavigateFunction } from "react-router-dom"
+import { generateSearchURL } from "../SearchPage/SearchPageHelpers"
+import { readParams } from "../SearchPage/URLParametersHelpers"
 
-function returnFileLink(hash: string): string {
-    return "/file/" + hash
+function returnFileLink(hash: string, parm: string | undefined): string {
+    if (parm === undefined) { console.warn("URLParameters didn't properly load, settings empty to try and fix it"); parm = '' }
+    let params = readParams(parm)
+    let url = generateSearchURL(params.tags, parseInt(params.page), hash, params.type)
+
+
+    return "/search/" + url
+}
+
+function returnFilePageURL(hash: string, urlParameters: string | undefined) {
+    let params = readParams(urlParameters)
+    let url = generateSearchURL(params.tags, parseInt(params.page), hash, params.type)
+
+    return "/search/" + url
 }
 
 /* Wrapper for sessionStorage.getItem(). Always returns string value, handles null on it's own.*/
-function getSessionStorage(key:string,defaultValue='[]'):string {
-    let value:string|null
+function getSessionStorage(key: string, defaultValue = '[]'): string {
+    let value: string | null
     value = sessionStorage.getItem(key)
-    if (value === null) {value = defaultValue}
+    if (value === null) { value = defaultValue }
     return value
 }
 
@@ -18,52 +32,52 @@ function getSessionStorage(key:string,defaultValue='[]'):string {
 //"This is ... too much" - George L.
 //TODO find some way to simplify this whole next/prev image
 
-export function PreviousImage(fileHash: string | undefined, navigate: NavigateFunction): void {
+export function PreviousImage(fileHash: string | undefined, navigate: NavigateFunction, parm: string | undefined): void {
     if (fileHash === undefined) { return }
-    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage(fileHash, navigate) }
+    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage(fileHash, navigate, false, parm) }
     let searchList: Array<string> = JSON.parse(getSessionStorage('hashes-search'))
     let elementList: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
     let index = elementList.indexOf(fileHash || '')
     //Move to next
-    if (index - 1 < 0) { return PreviousSearchImage(fileHash, navigate) }
+    if (index - 1 < 0) { return PreviousSearchImage(fileHash, navigate, false, parm) }
     if (searchList.indexOf(elementList[index - 1]) === -1) {
         if (searchList.indexOf(fileHash || '') !== -1) {
             sessionStorage.setItem('hashes-search-last-valid', JSON.stringify(fileHash))
         }
     }
-    navigate(returnFileLink(elementList[index - 1]), { replace: true })
+    navigate(returnFileLink(elementList[index - 1], parm), { replace: true })
 }
 
-export function GoToFirstImage(navigate: NavigateFunction):void {
+export function GoToFirstImage(navigate: NavigateFunction, parm: string | undefined): void {
     //If no data about image groups don't do anything
     if (sessionStorage.getItem('group-hashes') === null) { return }
     let imageGroupHashes: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
-    navigate(returnFileLink(imageGroupHashes[0]), { replace: true })   
+    navigate(returnFileLink(imageGroupHashes[0], parm), { replace: true })
 
 }
 
-export function GoToLastImage(navigate: NavigateFunction):void {
+export function GoToLastImage(navigate: NavigateFunction, parm: string | undefined): void {
     //If no data about image groups don't do anything
     if (sessionStorage.getItem('group-hashes') === null) { return }
     let imageGroupHashes: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
     //console.log(imageGroupHashes.length)
-    navigate(returnFileLink(imageGroupHashes[imageGroupHashes.length -1]), { replace: true })   
+    navigate(returnFileLink(imageGroupHashes[imageGroupHashes.length - 1], parm), { replace: true })
 }
 
 
 
-export function NextImage(fileHash: string | undefined, navigate: NavigateFunction): void {
+export function NextImage(fileHash: string | undefined, navigate: NavigateFunction, parm: string | undefined): void {
     //If somehow fileHash is empty, don't do anything
     if (fileHash === undefined) { return }
     //If there is no image group, go to next search result
-    if (sessionStorage.getItem('group-hashes') === null) { return NextSearchImage(fileHash, navigate) }
+    if (sessionStorage.getItem('group-hashes') === null) { return NextSearchImage(fileHash, navigate, parm) }
     //Load both lists from sessionStorage
     let searchResultsHashes: Array<string> = JSON.parse(getSessionStorage('hashes-search'))
     let imageGroupHashes: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
     //Find index of current image in the list
     let index = imageGroupHashes.indexOf(fileHash || '')
     //Move to next search result if moving forward would exceed group size
-    if (index + 1 >= imageGroupHashes.length) { return NextSearchImage(fileHash, navigate) }
+    if (index + 1 >= imageGroupHashes.length) { return NextSearchImage(fileHash, navigate, parm) }
     //TODO What is this doing?
 
     //Remember hash of imageGroup entry that also exists in searchResults
@@ -74,15 +88,15 @@ export function NextImage(fileHash: string | undefined, navigate: NavigateFuncti
         }
     }
     //Go to next image
-    navigate(returnFileLink(imageGroupHashes[index + 1]), { replace: true })
+    navigate(returnFileLink(imageGroupHashes[index + 1], parm), { replace: true })
 }
 
-export function PreviousSearchImage(fileHash: string | undefined, navigate: NavigateFunction, useLast:boolean = false): void {
+export function PreviousSearchImage(fileHash: string | undefined, navigate: NavigateFunction, useLast: boolean = false, parm: string | undefined): void {
     //If somehow fileHash is empty, don't do anything
     if (fileHash === undefined) { return }
     //If there is no searchHashes in session storage, don't do anything
     if (sessionStorage.getItem('hashes-search') === null) { return }
-     //Load searchHashes list from sessionStorage
+    //Load searchHashes list from sessionStorage
     let searchResultHashes: Array<string> = JSON.parse(getSessionStorage('hashes-search'))
     //Find index of current image in the list
     let index = searchResultHashes.indexOf(fileHash)
@@ -108,10 +122,10 @@ export function PreviousSearchImage(fileHash: string | undefined, navigate: Navi
         //TODO add code that will allow to move to last image in previous image imageGroup
     }
 
-    navigate(returnFileLink(searchResultHashes[index - 1]), { replace: true })
+    navigate(returnFileLink(searchResultHashes[index - 1], parm), { replace: true })
 }
 
-export function NextSearchImage(fileHash: string | undefined, navigate: NavigateFunction): void {
+export function NextSearchImage(fileHash: string | undefined, navigate: NavigateFunction, parm: string | undefined): void {
     if (fileHash === undefined) { return }
     if (sessionStorage.getItem('hashes-search') === null) { return }
     let elementList: Array<string> = JSON.parse(getSessionStorage('hashes-search'))
@@ -132,5 +146,5 @@ export function NextSearchImage(fileHash: string | undefined, navigate: Navigate
         if (groupHashes.indexOf(elementList[index + 1]) === -1) { sessionStorage.removeItem('group-hashes') }
     }
 
-    navigate(returnFileLink(elementList[index + 1]), { replace: true })
+    navigate(returnFileLink(elementList[index + 1], parm), { replace: true })
 }

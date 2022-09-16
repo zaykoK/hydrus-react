@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as API from '../hydrus-backend';
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import * as TagTools from '../TagTools'
 import WidgetCount from './WidgetCount';
 import WidgetCountTag from './WidgetCountTag';
@@ -11,6 +11,9 @@ import { isMobile } from '../styleUtils';
 import { getComicNamespace, getGroupNamespace } from '../StorageUtils';
 
 import TagLink from './TagLink';
+
+import { readParams } from '../SearchPage/URLParametersHelpers';
+import { generateSearchURL } from '../SearchPage/SearchPageHelpers';
 
 // @ts-check
 
@@ -29,22 +32,29 @@ interface ImageThumbnailProps {
 const EMPTYSTRING = ''
 
 
-function returnFilePageURL(hash: string) {
-  return "/file/" + hash
-}
 
 interface ThumbContentProps {
   thumbnail: string | undefined;
   type: string, hash: string;
   replace: boolean;
   currentImage?: boolean;
-  navigate:NavigateFunction;
+  navigate: NavigateFunction;
+}
+
+function returnFilePageURL(hash: string, urlParameters: string | undefined, type: string) {
+  let params = readParams(urlParameters)
+  let url = generateSearchURL(params.tags, parseInt(params.page), hash, type)
+
+  return "/search/" + url
 }
 
 function ThumbContent(props: ThumbContentProps) {
+  let { parm } = useParams<string>()
+
+
   function determineThumbNavigation(replace: boolean) {
     sessionStorage.setItem('searchScroll', window.scrollY.toString())
-    props.navigate(returnFilePageURL(props.hash), { replace: replace })
+    props.navigate(returnFilePageURL(props.hash, parm, props.type), { replace: replace })
   }
 
   function getThumbStyle(type: string): string {
@@ -171,7 +181,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
               cursor: 'pointer',
             }
           }
-          innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate: props.navigate }))
+          innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate: props.navigate, type: props.type }))
           limitCount += 1
         }
         tagArrays.push(innerArray)
@@ -191,8 +201,34 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     return ''
   }
 
-  async function GrabMetadata(hash: string) {
-    let meta
+  async function GrabMetadata(hash: string, group: boolean, tag: string) {
+    let meta: API.MetadataResponse = {
+      duration: null,
+      ext: '',
+      file_id: 0,
+      has_audio: false,
+      hash: '',
+      height: 0,
+      width: 0,
+      size: 0,
+      time_modified: 0,
+      is_inbox: false,
+      is_local: false,
+      is_trashed: false,
+      known_urls: [],
+      mime: '',
+      num_frames: 0,
+      num_words: 0,
+      file_services: {
+        current: {
+          key: '',
+          time_imported: 0
+        },
+        deleted: {}
+      },
+      service_keys_to_statuses_to_display_tags: {},
+      service_keys_to_statuses_to_tags: {}
+    }
     if (props.metadata !== undefined && props.metadata.length > 0) {
       //Find index of hash
       for (let element of props.metadata) {
@@ -207,12 +243,49 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       if (!responseMeta) { return }
       meta = responseMeta.data.metadata[0]
     }
+    //Load rest of metadata for the hash
+/*     if (group === true) {
+      //Get a group-title or doujin-title namespace for the hash
+      let index = sessionStorage.getItem('hydrus-all-known-tags')
+      if (index === null) { console.warn('no index for all tags, something went wrong, try refreshing'); index = '' }
+      let tags = meta.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
+      if (tags === undefined) {
+        tags = []
+      }
+      let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
+      let t: Array<TagTools.Tuple> = tagsSorted.filter((element) => element["namespace"] === getComicNamespace())
+      //Load hashes for all the tags in that namespace
+      let namespaceHashes = await API.api_get_files_search_files({ tags: [[t[0].namespace + ':' + t[0].value]], return_hashes: true })
+      console.log(namespaceHashes)
+
+      let namespaceMetadata = await API.api_get_file_metadata({ hashes: namespaceHashes.data.hashes, hide_service_names_tags: true })
+      console.log(namespaceMetadata?.data.metadata)
+
+      ///UNFINISHED///
+      ///Process the tags loaded
+      ///Commented for now
+      ///Should eventually get all tags from related files, process them count and eventually send further so they can be displayed in some manner
+      ///What i want is some sort of "most common in given group" tag displayed, so if most files have "character:naruto" - that gets the first spot, then the second most visible etc.
+      ///This is ofc filtered by given namespace
+
+
+
+    }
+ */
+
     setMetadata(meta)
   }
 
   React.useEffect(() => {
     if (metadata == undefined && props.loadMeta) {
-      GrabMetadata(props.hash);
+      //Grab metadata for single file
+      if (props.type === 'comic') {
+        GrabMetadata(props.hash, true, 'doujin-title');
+      }
+      else {
+        GrabMetadata(props.hash, false, '');
+      }
+
     }
   }, []);
 

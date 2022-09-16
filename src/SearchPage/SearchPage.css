@@ -1,3 +1,13 @@
+.fullscreenWrapper {
+    position: fixed;
+    left:0px;
+    top:0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--COLOR3);
+    z-index: 10;
+}
+
 .topBarPadding {
     font-size: large;
     height: 2em;
