@@ -441,6 +441,17 @@ export function SearchPage(props: SearchPageProps) {
     //setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
   }, [loaded])
 
+  //This is used to block scrolling behind file page, it gets the html section and just blocks all scrolling from it
+  useEffect(() => {
+    const html = document.getElementsByTagName('html')[0]
+    if (params.hash !== '') {
+      html.classList.add('prevent-scroll')  
+    }
+    else {
+      html.classList.remove('prevent-scroll')
+    }
+  },[params.hash])
+
   function restoreScroll() {
     return parseInt(sessionStorage.getItem('searchScroll') || '0')
   }
