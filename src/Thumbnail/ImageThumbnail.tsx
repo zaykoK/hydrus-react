@@ -399,9 +399,8 @@ function ImageThumbnail(props: ImageThumbnailProps) {
         </div>
         <div className={getComicCardMetadataRowStyle()}>
 
-          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['creator'] })}
-          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['circle'] })}
-          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['series'] })}
+          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['creator','circle','series'] })}
+
           <div style={{ fontSize: 'small' }}>
             {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['chapter', 'volume'] })}
           </div>
