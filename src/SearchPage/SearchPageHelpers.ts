@@ -1,4 +1,6 @@
 import { NavigateFunction } from "react-router-dom"
+import * as API from '../hydrus-backend';
+import * as TagTools from '../TagTools';
 
 /** Generates a URLSearchParams from tag array and page number */
 export function generateSearchURL(tags: Array<Array<string>> | undefined, page: number, hash: string, type: string): URLSearchParams {
@@ -118,3 +120,22 @@ export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: 
         navigateTo(par, navigate, type)
     }
 }
+
+
+export function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Array<TagTools.Tuple> {
+    //console.time('metajoin')
+    let merged = []
+    let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags')
+    if (!allKnownTagsKey) { allKnownTagsKey = '' }
+    for (let element of responses) {
+      let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
+      if (serviceKeys) { merged.push(serviceKeys[API.ServiceStatusNumber.Current] || []) }
+    }
+    let map: Map<string, number> = TagTools.tagArrayToMap(merged.flat())
+    merged = TagTools.transformIntoTuple(map)
+    merged.sort((a, b) => TagTools.compareNamespaces(a, b))
+    //console.timeEnd('metajoin')
+    return merged
+  }
+  
+

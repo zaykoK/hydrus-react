@@ -13,7 +13,7 @@ import { getComicNamespace, getGroupNamespace } from '../StorageUtils';
 import TagLink from './TagLink';
 
 import { readParams } from '../SearchPage/URLParametersHelpers';
-import { generateSearchURL } from '../SearchPage/SearchPageHelpers';
+import { createListOfUniqueTags, generateSearchURL } from '../SearchPage/SearchPageHelpers';
 
 // @ts-check
 
@@ -29,10 +29,6 @@ interface ImageThumbnailProps {
   hideWidgetCount?: boolean;
 }
 
-const EMPTYSTRING = ''
-
-
-
 interface ThumbContentProps {
   thumbnail: string | undefined;
   type: string, hash: string;
@@ -40,6 +36,8 @@ interface ThumbContentProps {
   currentImage?: boolean;
   navigate: NavigateFunction;
 }
+
+const EMPTYSTRING = ''
 
 function returnFilePageURL(hash: string, urlParameters: string | undefined, type: string) {
   let params = readParams(urlParameters)
@@ -81,7 +79,6 @@ function ThumbContent(props: ThumbContentProps) {
     alt={props.hash} />
 }
 
-
 function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
   if (metadata != null) {
     let index = sessionStorage.getItem('hydrus-all-known-tags')
@@ -110,6 +107,7 @@ const thumbnailBottomTags: Array<string> = []
 function ImageThumbnail(props: ImageThumbnailProps) {
   const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
   const [metadata, setMetadata] = React.useState<API.MetadataResponse>();
+  const [metadataGroup, setMetadataGroup] = React.useState<Array<TagTools.Tuple>>([])
 
   function getWrapperStyle(type: string): string {
     let style = "thumbnailWrapper"
@@ -133,20 +131,74 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     switch (type) {
       case 'comic':
         style += ' comic'
+        break
       default: //image
-        if (isMobile()) {
-          style += ' mobile'
-        }
-
+    }
+    if (isMobile()) {
+      style += ' mobile'
     }
     return style
   }
 
   function createTagPreview(args: { metadata: API.MetadataResponse | undefined, spaces: Array<string> }) {
-    if (args.metadata != null) {
+    if (args.metadata !== undefined) {
       return createTagList({ metadata: args.metadata, spaces: args.spaces });
     }
     return "";
+  }
+
+  function createTagPreviewFromGroup(args: { metadataGroup: Array<TagTools.Tuple>, spaces: Array<string>, limit?: number }) {
+    if (args.metadataGroup !== undefined) {
+      let limit = 20
+      if (args.limit) { limit = args.limit }
+
+      let tagArrays = []
+      for (let space in args.spaces) {
+        //Filter the tags that match the space
+        let tags = metadataGroup.filter((element) => element["namespace"] === args.spaces[space])
+        //Display the tags
+        let innerArray = []
+        let limitCount = 0
+
+        //Sort the tags by the order of count
+        tags.sort((a, b) => { return b.count - a.count })
+        //console.log(tags)
+
+
+        for (let tag in tags) {
+          let tagStyle = TagTools.getTagTextStyle(tags[tag].namespace)
+
+          //If tag limit reach stop adding new ones
+          //THIS IS EXPERIMENTAL
+          if (limitCount === limit) { break }
+
+          if (parseInt(tag) !== tags.length) {
+            tagStyle = {
+              ...tagStyle,
+              marginRight: '0.5em',
+              cursor: 'pointer',
+            }
+          }
+          innerArray.push(TagLink({ style: tagStyle, tag: tags[tag].value, namespace: tags[tag].namespace, navigate: props.navigate, type: props.type }))
+          limitCount += 1
+        }
+        tagArrays.push(innerArray)
+      }
+      let finalString = []
+      for (let space in tagArrays) {
+        if (props.type === 'comic') {
+          finalString.push(<p onContextMenu={(e) => e.preventDefault()} key={props.hash + args.spaces[space]} style={{ margin: '0px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap' }}>{tagArrays[space]}</p>)
+        }
+        else {
+          finalString.push(<p onContextMenu={(e) => e.preventDefault()} key={props.hash + args.spaces[space]} style={{ margin: '0px' }}>{tagArrays[space]}</p>)
+        }
+
+      }
+      return finalString;
+
+
+    }
+    return ''
   }
 
   function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string> }) {
@@ -244,7 +296,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       meta = responseMeta.data.metadata[0]
     }
     //Load rest of metadata for the hash
-/*     if (group === true) {
+    if (group === true) {
       //Get a group-title or doujin-title namespace for the hash
       let index = sessionStorage.getItem('hydrus-all-known-tags')
       if (index === null) { console.warn('no index for all tags, something went wrong, try refreshing'); index = '' }
@@ -256,14 +308,20 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       let t: Array<TagTools.Tuple> = tagsSorted.filter((element) => element["namespace"] === getComicNamespace())
       //Load hashes for all the tags in that namespace
       let namespaceHashes = await API.api_get_files_search_files({ tags: [[t[0].namespace + ':' + t[0].value]], return_hashes: true })
-      console.log(namespaceHashes)
+      //console.log(namespaceHashes)
 
       let namespaceMetadata = await API.api_get_file_metadata({ hashes: namespaceHashes.data.hashes, hide_service_names_tags: true })
-      console.log(namespaceMetadata?.data.metadata)
+      //console.log(namespaceMetadata?.data.metadata)
 
       ///UNFINISHED///
       ///Process the tags loaded
       ///Commented for now
+      let uniqueTags = createListOfUniqueTags(namespaceMetadata?.data.metadata)
+      //console.log(uniqueTags)
+      setMetadataGroup(uniqueTags)
+
+      // 
+
       ///Should eventually get all tags from related files, process them count and eventually send further so they can be displayed in some manner
       ///What i want is some sort of "most common in given group" tag displayed, so if most files have "character:naruto" - that gets the first spot, then the second most visible etc.
       ///This is ofc filtered by given namespace
@@ -271,7 +329,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
 
 
     }
- */
+
 
     setMetadata(meta)
   }
@@ -323,7 +381,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
   if (props.type === 'comic') {
     return <div className={getComicCardStyle()}>
       <div className={getComicCardTitleStyle()}>
-        {getComicTitle(metadata, 'doujin-title', true)}
+        {getComicTitle(metadata, getComicNamespace(), true)}
       </div>
       <div className={getComicCardContentStyle()}>
         <div className={getComicCardThumbnailRowStyle()}>
@@ -341,13 +399,16 @@ function ImageThumbnail(props: ImageThumbnailProps) {
         </div>
         <div className={getComicCardMetadataRowStyle()}>
 
-          {createTagPreview({ metadata: metadata, spaces: ['creator'] })}
-          {createTagPreview({ metadata: metadata, spaces: ['circle'] })}
-          {createTagPreview({ metadata: metadata, spaces: ['series'] })}
+          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['creator'] })}
+          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['circle'] })}
+          {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['series'] })}
+          <div style={{ fontSize: 'small' }}>
+            {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['chapter', 'volume'] })}
+          </div>
           <WidgetCountTag tag={getComicTitle(metadata, getComicNamespace(), false)} />
           {/* TODO Those tags should be limited to something like max 15-20 tags, and selection of which should be done by counting all tags on files in the collection (assuming that separate file tags differ from each other) and showing essentialy the 15-20 that happen most across all files in collection. Other solution is to use separate tag repository for group tags. Or keep as is and force users to tag 0/1st page with the correct comic tags OR maybe just maybe hydrus-dev will deliever nice support for image groups and this will be a single API call... ahh dreams. */}
           <div style={{ fontSize: 'small' }}>
-            {createTagPreview({ metadata: metadata, spaces: [''] })}
+            {createTagPreviewFromGroup({ metadataGroup: metadataGroup, spaces: ['', 'gender', 'character'] })}
           </div>
         </div>
       </div>

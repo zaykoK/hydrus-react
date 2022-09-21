@@ -12,7 +12,7 @@ import { setPageTitle } from '../misc';
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import localforage from 'localforage';
-import { addTag, generateSearchURL, navigateTo, removeTag } from './SearchPageHelpers';
+import { addTag, createListOfUniqueTags, generateSearchURL, navigateTo, removeTag } from './SearchPageHelpers';
 
 import { FilePage } from '../FilePage/FilePage';
 import { readParams } from './URLParametersHelpers';
@@ -45,6 +45,7 @@ export type Result = {
 export function changePage() {
 
 }
+
 
 export function SearchPage(props: SearchPageProps) {
   //Search object
@@ -404,24 +405,6 @@ export function SearchPage(props: SearchPageProps) {
     setFileTags(fileTags)
     //console.timeEnd('meta')
   }
-
-  function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Array<TagTools.Tuple> {
-    //console.time('metajoin')
-    let merged = []
-    let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags')
-    if (!allKnownTagsKey) { allKnownTagsKey = '' }
-    for (let element of responses) {
-      let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
-      if (serviceKeys) { merged.push(serviceKeys[API.ServiceStatusNumber.Current] || []) }
-    }
-    let map: Map<string, number> = TagTools.tagArrayToMap(merged.flat())
-    merged = TagTools.transformIntoTuple(map)
-    merged.sort((a, b) => TagTools.compareNamespaces(a, b))
-    //console.timeEnd('metajoin')
-    return merged
-
-  }
-
 
   //Everytime user lands on search page, remove group-hashes item from sessionStorage
   useEffect(() => {
