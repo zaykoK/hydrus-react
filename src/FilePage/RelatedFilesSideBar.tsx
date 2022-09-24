@@ -49,22 +49,25 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             //If no tags in namespace, don't add to the list
             //@ts-ignore
             let tags = returnTagsFromNamespace(dataTags, element) || []
-            if (tags?.length > 0) { // && (JSON.stringify(currentTags[i]) !== JSON.stringify(tags))) {
-                //console.log('had to update')
+            for (let groupTag of tags) {
                 let newElement =
-                    <RelatedFiles
-                        id={'relatedElements' + element}
-                        currentHash={dataHash}
-                        key={element + tags}
-                        tags={tags}
-                        space={element}
-                        initiallyExpanded={shouldBeExpanded}
-                        landscape={props.landscape}
-                    />
-                    shouldBeExpanded=false
-                returned.push(newElement)
-                returnedTags.push(tags)
+                <RelatedFiles
+                    id={'relatedElements' + element}
+                    currentHash={dataHash}
+                    key={element + groupTag}
+                    tags={[groupTag]}
+                    space={element}
+                    initiallyExpanded={shouldBeExpanded}
+                    landscape={props.landscape}
+                />
+                shouldBeExpanded=false
+            returned.push(newElement)
+            returnedTags.push(tags)
             }
+            //if (tags?.length > 0) { // && (JSON.stringify(currentTags[i]) !== JSON.stringify(tags))) {
+                //console.log('had to update')
+               
+            //}
             i += 1
         }
         if (returned.length === 0) { sessionStorage.removeItem('group-hashes')}
