@@ -1,4 +1,5 @@
 import { MetadataResponse } from "../hydrus-backend";
+import { isLandscapeMode, isMobile } from "../styleUtils";
 import './FileMetaData.css'
 
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
@@ -32,6 +33,17 @@ interface FileMetaDataProps {
     metadata: MetadataResponse;
 }
 
+function getMetadataCardStyle():string {
+    let style = 'metadataCard'
+    if (isMobile()) {
+        style += ' mobile'
+        if (isLandscapeMode()) {
+            style += ' landscape'
+        }
+    }
+    return style
+}
+
 //Displays non-tag metadata about file
 export function FileMetaData(props: FileMetaDataProps) {
     //console.log(props)
@@ -50,7 +62,7 @@ export function FileMetaData(props: FileMetaDataProps) {
         links.push(<p key={hash + 'link' + urls[el]} ><a className="metadataLink" href={urls[el]} >{ss}</a></p>)
     }
 
-    return <div className="metadataCard">
+    return <div className={getMetadataCardStyle()}>
         <p key={hash + 'date'}  >Date: {timeConverter(date)}</p>
         <p key={hash + 'res'}  >Resolution: {imageSize[0]}x{imageSize[1]}</p>
         <p key={hash + 'size'}  >Size: {formatBytes(size)}</p>
