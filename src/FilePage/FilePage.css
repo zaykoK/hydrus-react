@@ -1,6 +1,7 @@
 .relatedButton.mobile {
     transform: rotate(90deg);
 }
+
 .relatedButton.mobile.landscape {
     transform: none;
 }
@@ -28,11 +29,11 @@
 }
 
 .contentSideBar.mobile.sideBarLandscape {
-    bottom:0px;
-    left:0px;
-    right:0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
     max-height: 100vh;
-    margin:auto;
+    margin: auto;
     width: calc(100vw - 6em);
 }
 
@@ -48,15 +49,15 @@
     display: none;
     z-index: 2;
     position: fixed;
-    left:0px;
-    top:0px;
+    left: 0px;
+    top: 0px;
     width: 100%;
     height: 100%;
-    margin:0px;
+    margin: 0px;
     padding: 0px;
 }
 
-.sidebarOverlay.active{
+.sidebarOverlay.active {
     display: block;
 }
 
@@ -101,4 +102,12 @@
 .fileContent {
     grid-row: 1;
     grid-column: 2;
+}
+
+.backIconWrapper {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-left: 10px;
+    margin-top: 10px;
 }
