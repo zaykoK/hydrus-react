@@ -18,7 +18,7 @@ Inspired by [hydrus-web by floogulinc](https://github.com/floogulinc/hydrus-web)
  - [NodeJS](https://nodejs.dev)
 
 ## Running the app (online version)
-There is an online version available throught the link [https://hydrus-react.vercel.app](https://hydrus-react.vercel.app)
+There is an online version available through the link [https://hydrus-react.vercel.app](https://hydrus-react.vercel.app)
 It should be always up to date with current git version.
 
 ## Running the app (development mode)
