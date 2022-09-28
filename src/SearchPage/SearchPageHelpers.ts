@@ -41,16 +41,6 @@ export function generateSearchURL(tags: Array<Array<string>> | undefined, page: 
     return parameters
 }
 
-// function changePage(newPage: number,navigate:NavigateFunction,type:string) {
-//     let par = generateSearchURL(tags, newPage, params.hash)
-
-//     navigateTo(par, navigate, type)
-
-//     sessionStorage.removeItem('searchScroll')
-//     window.scrollTo(0, 0)
-//   }
-
-
 export function navigateTo(parameters: URLSearchParams, navigate: NavigateFunction, type: string = 'image') {
     switch (type) {
         case 'image':

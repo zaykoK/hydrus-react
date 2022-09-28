@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImageWall } from "./ImageWall";
 import { TagSearchBar } from "./TagSearchbar";
-import { useParams, useNavigate, NavigateFunction } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools';
 import { TagList } from '../TagList';
@@ -12,7 +12,7 @@ import { setPageTitle } from '../misc';
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import localforage from 'localforage';
-import { addTag, createListOfUniqueTags, generateSearchURL, navigateTo, removeTag } from './SearchPageHelpers';
+import { addTag, createListOfUniqueTags } from './SearchPageHelpers';
 
 import { FilePage } from '../FilePage/FilePage';
 import { readParams } from './URLParametersHelpers';
@@ -76,7 +76,7 @@ export function SearchPage(props: SearchPageProps) {
   const sortType = useRef<API.FileSortType>(getSortType())
   const searchType = useRef<string>(props.type)
 
-  const navigate = useNavigate()
+  //const navigate = useNavigate()
 
   //console.log(props.globalState?.getGlobalValue())
   //props.globalState?.setGlobalValue('search')
@@ -86,28 +86,6 @@ export function SearchPage(props: SearchPageProps) {
     sortType.current = newSortType
     setSortType(newSortType)
     search()
-  }
-
-  function refreshParams(): void {
-    let p = readParams(parm)
-    /*WARNING - this is not exactly correct way to do this
-    There is a weird occurence when sometimes empty tag parameter gets added to the page url --> "&tags="
-    When this happens on empty search compare doesn't work properly as it is comparing [] and [[]] objects
-    When that compare fails opening/closing image viewer overlay will re-render whole search page, losing scroll progress
-    Unfortunately (or fortunately) this happened once to me and I can't replicate that behaviour anymore,
-     seems that changing default search value somehow "fixed it", so I'm not bothering with trying to fix it more
-    */
-
-    setPageTitle(p.tags, parseInt(p.page), p.type)
-    setParams({ tags: p.tags, page: parseInt(p.page), hash: p.hash, type: p.type })
-
-    let tagsForTestingPurpose = tags || [[]]
-    if (JSON.stringify(tagsForTestingPurpose) !== JSON.stringify(p.tags)) {
-      setTags(p.tags)
-    }
-
-    sessionStorage.setItem('currently-displayed-hash', p.hash)
-    sessionStorage.setItem('current-search-tags', JSON.stringify(p.tags))
   }
 
   function changeGrouping() {
@@ -121,14 +99,14 @@ export function SearchPage(props: SearchPageProps) {
     //Add option to use oldest file in group as representant
 
     //BASICALLY RESORT METADATA TO FIT RECEIVED HASHES ORDER
-    let responsesResorted = []
+    //let responsesResorted = []
 
     let hashesCopy = hashes.slice()
     let responsesCopy = responses.slice()
 
     //let i = 0
     //let testSort2 = []
-    let testSort3 = []
+    //let testSort3 = []
 
     //console.time('Resorting#2')
     //i = 0
@@ -296,7 +274,6 @@ export function SearchPage(props: SearchPageProps) {
       return
 
     }
-    if (loaded) { sessionStorage.removeItem('searchScroll') }
     setLoaded(false)
 
 
@@ -412,6 +389,28 @@ export function SearchPage(props: SearchPageProps) {
   }, [])
 
   useEffect(() => {
+    function refreshParams(): void {
+      let p = readParams(parm)
+      /*WARNING - this is not exactly correct way to do this
+      There is a weird occurence when sometimes empty tag parameter gets added to the page url --> "&tags="
+      When this happens on empty search compare doesn't work properly as it is comparing [] and [[]] objects
+      When that compare fails opening/closing image viewer overlay will re-render whole search page, losing scroll progress
+      Unfortunately (or fortunately) this happened once to me and I can't replicate that behaviour anymore,
+       seems that changing default search value somehow "fixed it", so I'm not bothering with trying to fix it more
+      */
+
+      setPageTitle(p.tags, parseInt(p.page), p.type)
+      setParams({ tags: p.tags, page: parseInt(p.page), hash: p.hash, type: p.type })
+
+      let tagsForTestingPurpose = tags || [[]]
+      if (JSON.stringify(tagsForTestingPurpose) !== JSON.stringify(p.tags)) {
+        setTags(p.tags)
+      }
+
+      sessionStorage.setItem('currently-displayed-hash', p.hash)
+      sessionStorage.setItem('current-search-tags', JSON.stringify(p.tags))
+    }
+
     refreshParams()
   }, [parm])
 
@@ -428,17 +427,12 @@ export function SearchPage(props: SearchPageProps) {
   useEffect(() => {
     const html = document.getElementsByTagName('html')[0]
     if (params.hash !== '') {
-      html.classList.add('prevent-scroll')  
+      html.classList.add('prevent-scroll')
     }
     else {
       html.classList.remove('prevent-scroll')
     }
-  },[params.hash])
-
-  function restoreScroll() {
-    return parseInt(sessionStorage.getItem('searchScroll') || '0')
-  }
-
+  }, [params.hash])
 
   function getContentStyle(): string {
     let style = 'contentStyle'
@@ -485,7 +479,7 @@ export function SearchPage(props: SearchPageProps) {
   if (isMobile()) {
     return <>
       <div className={getGridStyleList()}>
-        {(fileTags != undefined) &&
+        {(fileTags !== undefined) &&
           <TagList
             visibleCount={true}
             tags={fileTags}
@@ -516,7 +510,7 @@ export function SearchPage(props: SearchPageProps) {
     {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
       {(params.type !== 'comic') && <div className={getGridStyleList()}>
-        {(fileTags != undefined) &&
+        {(fileTags !== undefined) &&
           <TagList
             visibleCount={true}
             tags={fileTags}
