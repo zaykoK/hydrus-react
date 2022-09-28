@@ -21,7 +21,13 @@ export function TagList(props: TagListProps) {
 
     function displayTagString(tag: { namespace: string, value: string }): string {
         if (tag.namespace === '') { return tag.value }
-        return tag.namespace + ':' + tag.value
+
+        //User toggle whether to show just the tag value => "naruto" or namespace and value => "character:naruto"
+        //Eventually move this into props so it doesn't have to access this value on every tag render
+        if (sessionStorage.getItem('show-tag-namespace') === 'true') {
+            return tag.namespace + ":" + tag.value
+        }
+        return tag.value
     }
 
     function generateSearchURL(tags: Array<string>, page: number) {
