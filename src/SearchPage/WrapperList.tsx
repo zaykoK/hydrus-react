@@ -11,8 +11,11 @@ interface WrapperListProps {
     type: string;
 }
 
+const COMICSTEP = 28 //For now I'm doing multiples of 4 as that's how many fit in row on 1080p screen
+const IMAGESTEP = 50
+
 function WrapperList(props: WrapperListProps) {
-    const [displayedThumbs,setDisplayedThumbs] = React.useState<Array<JSX.Element>>([])
+    const [displayedThumbs, setDisplayedThumbs] = React.useState<Array<JSX.Element>>([])
     const [hasMore, setHasMore] = React.useState(true)
     function getWrapperListStyle() {
         let style = 'WrapperList'
@@ -28,24 +31,24 @@ function WrapperList(props: WrapperListProps) {
 
     useEffect(() => {
         if (props.type === 'comic') {
-            setDisplayedThumbs(props.thumbs.slice(0,Math.min(25,props.thumbs.length)))
+            setDisplayedThumbs(props.thumbs.slice(0, Math.min(COMICSTEP, props.thumbs.length)))
         }
-        else{
-            setDisplayedThumbs(props.thumbs.slice(0,Math.min(150,props.thumbs.length)))
+        else {
+            setDisplayedThumbs(props.thumbs.slice(0, Math.min(3*IMAGESTEP, props.thumbs.length)))
         }
-        
-    },[props.thumbs])
+
+    }, [props.thumbs])
 
     function moreData() {
         if (props.type === 'comic') {
-            setDisplayedThumbs(props.thumbs.slice(0,Math.min(displayedThumbs.length + 25,props.thumbs.length)))
-            if (displayedThumbs.length + 25 >= props.thumbs.length) {
+            setDisplayedThumbs(props.thumbs.slice(0, Math.min(displayedThumbs.length + COMICSTEP, props.thumbs.length)))
+            if (displayedThumbs.length + COMICSTEP >= props.thumbs.length) {
                 setHasMore(false)
             }
         }
         else {
-            setDisplayedThumbs(props.thumbs.slice(0,Math.min(displayedThumbs.length + 50,props.thumbs.length)))
-            if (displayedThumbs.length + 50 >= props.thumbs.length) {
+            setDisplayedThumbs(props.thumbs.slice(0, Math.min(displayedThumbs.length + IMAGESTEP, props.thumbs.length)))
+            if (displayedThumbs.length + IMAGESTEP >= props.thumbs.length) {
                 setHasMore(false)
             }
         }
@@ -54,16 +57,16 @@ function WrapperList(props: WrapperListProps) {
 
     return ((props.loaded && props.thumbs.length > 0) &&
         <InfiniteScroll
-        pageStart={0}
-        loadMore={moreData}
-        hasMore={hasMore}
-        loader={<div key='infiniteloader'>Loading</div>}
-        threshold={150}
-        className={getWrapperListStyle()}
+            pageStart={0}
+            loadMore={moreData}
+            hasMore={hasMore}
+            loader={<div key='infiniteloader'>Loading</div>}
+            threshold={150}
+            className={getWrapperListStyle()}
         >
-        {displayedThumbs}
+            {displayedThumbs}
         </InfiniteScroll>
-       || <div className={getWrapperListStyle() + ' +loading'}>LOADING {props.loadingProgress}</div>
+        || <div className={getWrapperListStyle() + ' +loading'}>LOADING {props.loadingProgress}</div>
     );
 }
 
