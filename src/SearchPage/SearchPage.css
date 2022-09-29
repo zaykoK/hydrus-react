@@ -34,7 +34,7 @@
 .contentStyle {
     display: grid;
     height: fit-content;
-    grid-template-columns: minmax(auto, 1fr) minmax(auto, 5fr);
+    grid-template-columns: 20vw 79vw;
     margin: 5px 0px 0px 0px;
 }
 
@@ -65,7 +65,7 @@
     grid-column: 1;
     grid-row: 1;
     position: fixed;
-    width: 17%;
+    width: 20vw;
     height: 92vh;
 }
 

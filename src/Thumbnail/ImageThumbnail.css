@@ -65,8 +65,8 @@
 }
 
 .thumbnailWrapper.small {
-    width: 7.5vw;
-    height: 7.5vw;
+    width: calc(80vw/11.1);
+    height: calc(80vw/11.1);
 }
 .thumbnailWrapper.small.mobile {
     width: 27vw;
