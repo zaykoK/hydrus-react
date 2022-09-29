@@ -448,7 +448,8 @@ export function SearchPage(props: SearchPageProps) {
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = useRef(getBlacklistedNamespaces())
 
-  function toggleSideBar() {
+  function toggleSideBar(setting?:boolean) {
+    if (setting !== undefined) {setSideBarVisible(setting); return}
     setSideBarVisible(!sideBarVisible)
   }
 

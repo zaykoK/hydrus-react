@@ -81,11 +81,13 @@ export async function api_get_session_key() {
 
 interface ApiSearchTagsProps {
   search: string;
-  tag_service_key: string;
-  tag_service_name: string;
+  tag_service_key?: string;
+  tag_service_name?: string;
+  abortController:AbortController;
 }
 export async function api_add_tags_search_tags(props: ApiSearchTagsProps) {
   return axios.get(server_address + '/add_tags/search_tags', {
+    signal:props.abortController.signal,
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
       "search": props.search,

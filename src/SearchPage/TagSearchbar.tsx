@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import TagDisplay from '../TagDisplay';
 import GroupButton from './GroupButton';
@@ -16,6 +16,9 @@ import './TagSearchbar.css'
 import { addTag } from './SearchPageHelpers'
 import { useNavigate } from 'react-router-dom';
 
+import * as TagTools from '../TagTools'
+import { TagList } from '../TagList';
+
 //TODO Slide-in-out search bar in mobile mode with a search button or make it slide out when scrolling down start
 
 interface SearchTagsProps {
@@ -27,12 +30,47 @@ interface SearchTagsProps {
   type:string;
 }
 
+type TagLookupResult = {
+  value:string;
+  count:number;
+}
+
+const blacklist = JSON.parse(localStorage.getItem('blacklisted-namespaces') || '[]' )
+
+function TagLookupResultToTuple(tags:Array<TagLookupResult>):Array<TagTools.Tuple> {
+  let filteredTags:Array<TagTools.Tuple> = []
+  for (let tag of tags) {
+    let splitted = tag.value.split(':',2)
+    if (splitted.length > 1) {
+      if (!blacklist.includes(splitted[0])) {
+        filteredTags.push({
+          namespace: splitted[0],
+          value: splitted[1],
+          count: tag.count
+        })
+      }
+    }
+    else {
+      filteredTags.push({
+        namespace: '',
+        value: splitted[0],
+        count: tag.count
+      })
+    }
+  }
+  return filteredTags
+}
+
 export function TagSearchBar(props: SearchTagsProps) {
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState(props.tags)
 
+  const [helpTags,setHelpTags] = useState<Array<TagTools.Tuple>>([])
+  const [helpTagsVisible,setHelpTagsVisible] = useState<boolean>(false)
+
   const navigate = useNavigate()
 
+  const abortController = useRef<AbortController|undefined>()
 
   function submitTag(event: React.FormEvent) {
     event.preventDefault(); //necessary to not reload page after submit
@@ -59,6 +97,27 @@ export function TagSearchBar(props: SearchTagsProps) {
   //At some point should show autocomplete results
   async function searchTag(search: string) {
     setTag(search)
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+    abortController.current = new AbortController()
+
+    //Don't search anything if less than 3 letters are written, this really improves performance as you don't wait for potentially dozens of thousands of results, that just 1 or 2 letters will give, this does create a bit of an issue for two or less letter words like "pi" or "character:l" (from death note)
+    //Also clear search if less than 3 letters are typed in
+    if (search.length < 1 && JSON.stringify(helpTags) !== JSON.stringify([])) {setHelpTags([])}
+    if (search.length > 0) {
+      let response = await API.api_add_tags_search_tags({
+        search: search,
+        abortController:abortController.current
+      }).catch((reason) => {return})
+      /// Process the results
+      if (response) {
+        let tags:Array<TagLookupResult> = response.data.tags
+        let filteredTags:Array<TagTools.Tuple> = TagLookupResultToTuple(tags)
+        setHelpTags(filteredTags)
+      }
+    }
+
   }
 
   useEffect(() => {
@@ -67,7 +126,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
   }, [props.tags, tags])
 
-  function TagInput(props: { tags: Array<Array<string>>, type:string }) {
+  function TagInput(props: { tags: Array<Array<string>>, type:string, infoAction:Function }) {
 
     function getSearchBarStyle() {
       if (isMobile()) { return "searchBar mobile" }
@@ -78,6 +137,8 @@ export function TagSearchBar(props: SearchTagsProps) {
       <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type}/>
       <form className="searchForm" onSubmit={submitTag}>
         <input
+          onFocus={() => {setHelpTagsVisible(true); props.infoAction(false)}}
+          onBlur={() => setTimeout(() => {setHelpTagsVisible(false);setTag('');setHelpTags([])},100)}
           className="searchInput"
           type="text"
           value={tag}
@@ -95,6 +156,15 @@ export function TagSearchBar(props: SearchTagsProps) {
     return "topBar"
   }
 
+  function getHelpTagsListStyle(visible:boolean) {
+    let style = 'HelpTagsListOverlay'
+    if (visible) {style += ' visible'}
+    if (isMobile()) {style += ' mobile'}
+    return style
+  }
+
+  //<div className='fullscreenWrapperTagList' />
+
   return <div className={getTopBarStyle()}>
     <div className="buttonsBar">
       <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
@@ -102,6 +172,12 @@ export function TagSearchBar(props: SearchTagsProps) {
       {/*<DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />*/}
       {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
-    {TagInput({ tags: tags, type:props.type })}
+    {TagInput({ tags: tags, type:props.type, infoAction:props.infoAction })}
+    <div className={getHelpTagsListStyle(helpTagsVisible)}>
+      <TagList tags={helpTags} visibleCount={true} type={'image'} searchBar={true} />
+      <p className='helpTagsDisclaimer'>
+        <span>All results are "raw" tags, this is a limitation of hydrus.</span>
+      </p>
+    </div>
   </div>;
 }
