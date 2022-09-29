@@ -165,6 +165,9 @@ export function TagSearchBar(props: SearchTagsProps) {
 
   //<div className='fullscreenWrapperTagList' />
 
+  ///TODO
+  ///Maybe some form of favourite tags visible when nothing else stands, or history of them
+
   return <div className={getTopBarStyle()}>
     <div className="buttonsBar">
       <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
@@ -175,9 +178,9 @@ export function TagSearchBar(props: SearchTagsProps) {
     {TagInput({ tags: tags, type:props.type, infoAction:props.infoAction })}
     <div className={getHelpTagsListStyle(helpTagsVisible)}>
       <TagList tags={helpTags} visibleCount={true} type={'image'} searchBar={true} />
-      <p className='helpTagsDisclaimer'>
+      {(helpTags.length > 0) ? <p className='helpTagsDisclaimer'>
         <span>All results are "raw" tags, this is a limitation of hydrus.</span>
-      </p>
+      </p>:<></>}
     </div>
   </div>;
 }
