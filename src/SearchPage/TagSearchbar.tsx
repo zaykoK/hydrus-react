@@ -104,8 +104,8 @@ export function TagSearchBar(props: SearchTagsProps) {
 
     //Don't search anything if less than 3 letters are written, this really improves performance as you don't wait for potentially dozens of thousands of results, that just 1 or 2 letters will give, this does create a bit of an issue for two or less letter words like "pi" or "character:l" (from death note)
     //Also clear search if less than 3 letters are typed in
-    if (search.length < 1 && JSON.stringify(helpTags) !== JSON.stringify([])) {setHelpTags([])}
-    if (search.length > 0) {
+    if (search.length < 2 && JSON.stringify(helpTags) !== JSON.stringify([])) {setHelpTags([])}
+    if (search.length > 1) {
       let response = await API.api_add_tags_search_tags({
         search: search,
         abortController:abortController.current
