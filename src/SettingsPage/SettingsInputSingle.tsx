@@ -7,6 +7,7 @@ interface SettingSingleInterface {
     label: string; //What to display as input label
     setFunction: Function; //Function to call when submiting
     type:string;
+    disabled?:boolean;
 }
 
 function getSettingsInputStyle() {
@@ -28,6 +29,7 @@ function SettingInputSingle(args: SettingSingleInterface) {
             <label>
                 {args.label}
                 <input
+                    disabled={args.disabled || false}
                     className={getSettingsInputStyle()}
                     type={args.type}
                     value={settingValue}

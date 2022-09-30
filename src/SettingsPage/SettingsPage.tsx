@@ -8,9 +8,10 @@ import IconHamburger from '../assets/menu-burger.svg'
 
 import './SettingsPage.css'
 
-import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings } from '../StorageUtils'
+import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings, getTranscodeFileDomain, setTranscodeFileDomain, getTranscodeFileNamespace, setTranscodeFileNamespace, getTranscodeEnabled, setTranscodeEnabled } from '../StorageUtils'
 import SettingInputSingle from './SettingsInputSingle';
 import { isLandscapeMode, isMobile } from '../styleUtils';
+import { useState } from 'react';
 
 
 interface SettingsPageProps {
@@ -31,7 +32,7 @@ function generateClassName(name: string): string {
 
 function getSettingsPageStyle() {
   let style = "settingsPage"
-  if (isMobile()) { style += ' mobile'}
+  if (isMobile()) { style += ' mobile' }
   return style
 }
 
@@ -53,8 +54,36 @@ export function SettingsPage(props: SettingsPageProps) {
       <ApiTestButton />
       <RelatedGroupsInput />
       <BlacklistedTagsInput />
+      <TranscodeSettings />
+
+
       <a href={exportSettings()} download='hydrus-react-settings.json' >Export Settings</a>
       <input type='file' />
     </div>
   </>;
 }
+
+
+export function TranscodeSettings() {
+  const [enabled,setEnabled] = useState(getTranscodeEnabled())
+  function switchEnabledTranscoding() {
+    setTranscodeEnabled(!enabled)
+    setEnabled(!enabled)
+  }
+  function getTranscodeButtonStyle(enabled:boolean):string {
+    let style = 'transcodeEnabledButton'
+    if (enabled) {style += ' enabled'}
+    return style
+  }
+
+  return <>
+    <button className={getTranscodeButtonStyle(enabled)} onClick={switchEnabledTranscoding} >Enable transcoded image support</button>
+    <SettingInputSingle initialValue={getTranscodeFileDomain} type="text" label="Transcode file domain" setFunction={setTranscodeFileDomain} disabled={!enabled} />
+    <SettingInputSingle initialValue={getTranscodeFileNamespace} type="text" label="Transcode file namespace" setFunction={setTranscodeFileNamespace} disabled={!enabled} />
+  </>
+
+
+}
+
+
+

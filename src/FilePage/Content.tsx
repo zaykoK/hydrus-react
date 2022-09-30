@@ -7,11 +7,13 @@ import { TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-
 import { useNavigate, useParams } from "react-router-dom"
 
 import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage, GoToFirstImage, GoToLastImage } from './ImageControls';
+import { getTranscodeEnabled } from '../StorageUtils';
 
 interface ContentProps {
     type: string;
     hash: string | undefined;
-    landscape:boolean;
+    landscape: boolean;
+    setTranscodedHash:Function;
 }
 
 function Content(props: ContentProps) {
@@ -66,7 +68,7 @@ function Content(props: ContentProps) {
         if (e.key === "ArrowRight") { NextImage(props.hash, navigate, parm) }
         if (e.key === "ArrowLeft") { PreviousImage(props.hash, navigate, parm) }
         if (e.key === "ArrowDown") { NextSearchImage(props.hash, navigate, parm) }
-        if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate,false, parm) }
+        if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate, false, parm) }
         if (e.key === "Home") { GoToFirstImage(navigate, parm) }
         if (e.key === "End") { GoToLastImage(navigate, parm) }
     }
@@ -84,13 +86,54 @@ function Content(props: ContentProps) {
     //     }
     // }
 
+    type transcodedFileServiceOptions = {
+        fileServiceName?: string;
+        fileServiceKey?: string;
+        namespace: string;
+
+    }
+
     React.useEffect(() => {
         const img = new Image()
-        function loadFullSizeImage(): void {
+        async function loadFullSizeImage() {
             //console.time(props.hash + ' loading time')
 
-            img.src = API.api_get_file_address(props.hash) || ''
-            img.onload = () => { setSrc(img.src); }
+            //EXPERIMENTAL
+            //try to load smaller transcoded version of the file if available
+            let enabled = getTranscodeEnabled()
+            if (enabled) {
+                //1. Get transcoded file service name
+                let localStorageRead = localStorage.getItem('transcoded-file-options')
+                let transcodedFileServiceOptions: transcodedFileServiceOptions
+                //If options defined parse them
+                if (localStorageRead) {
+                    transcodedFileServiceOptions = JSON.parse(localStorageRead)
+                }
+                //Default case
+                else {
+                    transcodedFileServiceOptions = { fileServiceName: 'web-transcodes', namespace: 'original' }
+                }
+                //Create a search query
+                let searchTag = [[transcodedFileServiceOptions.namespace + ':' + props.hash]]
+                //Search given file service for the query
+                let response = await API.api_get_files_search_files({ tags: searchTag, file_service_name: transcodedFileServiceOptions.fileServiceName, file_service_key: transcodedFileServiceOptions.fileServiceKey, return_hashes: true })
+                //Extract hash
+                let transcodeHash = response.data.hashes[0]
+                //If more than 1 result found throw an error, it's not critical but it suggest that the setup might be compromised
+                if (response.data.hashes.length > 1) { console.warn('There is more than one file trascode assigned to hash, this is wrong and might create problems.') }
+                //If transcode exists for the file use it
+                if (transcodeHash) { img.src = API.api_get_file_address(transcodeHash) || ''; props.setTranscodedHash(transcodeHash) }
+                else { //Just load the file normally
+                    img.src = API.api_get_file_address(props.hash) || ''
+                    props.setTranscodedHash()
+                }
+            }
+            else { //Just load the file normally
+                img.src = API.api_get_file_address(props.hash) || ''
+                props.setTranscodedHash()
+            }
+            img.onload = () => { setSrc(img.src); }//console.timeEnd(props.hash + ' loading time'); }
+
         }
         //Immediately start loading full size image, and when ready change to it
 

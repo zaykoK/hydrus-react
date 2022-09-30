@@ -53,6 +53,8 @@ export function FilePage(props: FilePageProps) {
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
   const [sidebarVisible, setSidebarVisible] = React.useState(false);
 
+  const [transcodedHash, setTranscodedHash] = React.useState<string|undefined>()
+
   const emptyBlacklist = React.useRef([])
 
   const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode()) //This exists so page redraws on orientation change
@@ -205,7 +207,7 @@ export function FilePage(props: FilePageProps) {
       <div className={getSideBarStyle()}>
 
         {(tags !== undefined) && <TagList type='image' tags={tags} visibleCount={false} />}
-        {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
+        {(metadata !== undefined) && <FileMetaData metadata={metadata} transcode={transcodedHash} />}
       </div>
       <div className={getSidebarScreenOverlayStyle()} onClick={() => { setSidebarVisible(false) }} ></div>
 
@@ -224,6 +226,7 @@ export function FilePage(props: FilePageProps) {
               hash={fileHash}
               type={metadata.mime}
               landscape={landscape}
+              setTranscodedHash={setTranscodedHash}
             />}
         </div>
 
@@ -249,7 +252,7 @@ export function FilePage(props: FilePageProps) {
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
       <div className={getSideBarStyle()}>
         {(tags !== undefined) && <TagList type='image' tags={tags} visibleCount={false} />}
-        {(metadata !== undefined) && <FileMetaData metadata={metadata} />}
+        {(metadata !== undefined) && <FileMetaData metadata={metadata} transcode={transcodedHash} />}
       </div>
       <div key={'FilePageContentWrapper' + fileHash + isMobile().toString()} className={generateClassName('fileContent')} >
         {(metadata !== undefined) &&
@@ -257,6 +260,7 @@ export function FilePage(props: FilePageProps) {
             hash={fileHash}
             type={metadata.mime}
             landscape={landscape}
+            setTranscodedHash={setTranscodedHash}
           />}
       </div>
 

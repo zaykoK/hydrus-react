@@ -165,12 +165,12 @@ export async function api_get_files_search_files(props: APISearchFilesProps) {
     sentTags = props.tags.slice()
     sentTags.push('system:limit=5000')
   }
-  
+
   return axios.get(server_address + '/get_files/search_files', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
       "tags": JSON.stringify(sentTags),
-      "file_service_name": JSON.stringify(props.file_service_name),
+      "file_service_name": props.file_service_name || 'my files',
       "file_service_key": JSON.stringify(props.file_service_key),
       "tag_service_name": JSON.stringify(props.tag_service_name),
       "tag_service_key": JSON.stringify(props.tag_service_key),
@@ -255,14 +255,6 @@ export async function api_get_file_thumbnail(props: APIGetFileThumbnailProps) {
   })
 }
 
-interface APIGetFileMetadataProps {
-  file_id?: number;
-  file_ids?: Array<number>;
-  hash?: string;
-  hashes?: Array<string>;
-  hide_service_names_tags?: boolean;
-}
-
 export type MetadataResponse = {
   duration: number | null;
   ext: string;
@@ -295,7 +287,18 @@ export type MetadataResponse = {
   }
 }
 
-
+interface APIGetFileMetadataProps {
+  file_id?: number;
+  file_ids?: Array<number>;
+  hash?: string;
+  hashes?: Array<string>;
+  hide_service_names_tags?: boolean;
+  create_new_file_ids?: boolean;
+  only_return_identifiers?:boolean;
+  only_return_basic_information?:boolean;
+  detailed_url_information?:boolean;
+  include_notes?:boolean;
+}
 
 export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
   if (!props.file_id && !props.file_ids && !props.hash && !props.hashes) { return }
@@ -310,7 +313,12 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
       "file_ids": JSON.stringify(props.file_ids),
       "hash": props.hash,
       "hashes": JSON.stringify(props.hashes),
-      'hide_service_names_tags': props.hide_service_names_tags
+      'hide_service_names_tags': props.hide_service_names_tags,
+      'create_new_file_ids': props.create_new_file_ids,
+      'only_return_identifiers': props.only_return_identifiers,
+      'only_return_basic_information': props.only_return_basic_information,
+      'detailed_url_information': props.detailed_url_information,
+      'include_notes': props.include_notes
     }
   })
 }

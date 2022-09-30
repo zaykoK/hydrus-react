@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { MetadataResponse } from "../hydrus-backend";
 import { isLandscapeMode, isMobile } from "../styleUtils";
 import './FileMetaData.css'
+import * as API from '../hydrus-backend'
 
 //lifted from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 function formatBytes(bytes: number, decimals: number = 2) {
@@ -31,9 +33,10 @@ function timeConverter(UNIX_timestamp: number): string {
 
 interface FileMetaDataProps {
     metadata: MetadataResponse;
+    transcode: string | undefined;
 }
 
-function getMetadataCardStyle():string {
+function getMetadataCardStyle(): string {
     let style = 'metadataCard'
     if (isMobile()) {
         style += ' mobile'
@@ -46,14 +49,43 @@ function getMetadataCardStyle():string {
 
 //Displays non-tag metadata about file
 export function FileMetaData(props: FileMetaDataProps) {
+    const [imageSize,setImageSize] = useState<Array<number>>([props.metadata.width, props.metadata.height])
+    const [mime, setMime] = useState<string>(props.metadata.mime)
+    const [urls,setURLs] = useState(props.metadata.known_urls)
     //console.log(props)
-    const imageSize = [props.metadata.width, props.metadata.height]
-    const urls = props.metadata.known_urls
-    const mime = props.metadata.mime
-    const inbox = props.metadata.is_inbox
-    const size = props.metadata.size
-    const hash = props.metadata.hash
-    const date = props.metadata.time_modified
+    const [inbox,setInbox] = useState(props.metadata.is_inbox)
+    const [size,setSize] = useState(props.metadata.size)
+    const [hash,setHash] = useState(props.metadata.hash)
+    const [date,setDate] = useState(props.metadata.time_modified)
+
+    
+    useEffect(() => {
+        async function loadTranscodedInfo() {
+            if (props.transcode) {
+                let response = await API.api_get_file_metadata({ hash: props.transcode, only_return_basic_information: true })
+                setImageSize([response?.data.metadata[0].width,response?.data.metadata[0].height])
+                setMime(response?.data.metadata[0].mime)
+                setSize(response?.data.metadata[0].size)
+                setURLs(props.metadata.known_urls)
+                setInbox(props.metadata.is_inbox)
+                setDate(props.metadata.time_modified)
+                setHash(props.metadata.hash)
+            }
+            else {
+                setImageSize([props.metadata.width, props.metadata.height])
+                setMime(props.metadata.mime)
+                setSize(props.metadata.size)
+                setURLs(props.metadata.known_urls)
+                setInbox(props.metadata.is_inbox)
+                setDate(props.metadata.time_modified)
+                setHash(props.metadata.hash)
+            }
+        }
+        loadTranscodedInfo()
+    ///THIS NEEDS BETTER WAY OF DETERMINING WHEN AS IT IS DOING THIS FUNCTION TWICE
+    ///when metadata changes and then when transcode changes
+    }, [props])
+
 
     let links = []
     for (let el in urls) {
@@ -63,6 +95,7 @@ export function FileMetaData(props: FileMetaDataProps) {
     }
 
     return <div className={getMetadataCardStyle()}>
+        {(props.transcode !== undefined) ? <p key={hash + props.transcode}>Transcoded</p> : <p key={hash + props.transcode}>Original</p>}
         <p key={hash + 'date'}  >Date: {timeConverter(date)}</p>
         <p key={hash + 'res'}  >Resolution: {imageSize[0]}x{imageSize[1]}</p>
         <p key={hash + 'size'}  >Size: {formatBytes(size)}</p>

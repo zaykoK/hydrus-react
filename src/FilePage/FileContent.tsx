@@ -11,6 +11,7 @@ interface FileContentProps {
   hash: string | undefined;
   type: string;
   landscape:boolean;
+  setTranscodedHash:Function;
 }
 
 export function FileContent(props: FileContentProps) {
@@ -26,7 +27,7 @@ export function FileContent(props: FileContentProps) {
   }
   return (
     <div id={"FileContent-" + props.hash} key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
-      <Content type={props.type} hash={props.hash} landscape={props.landscape} />
+      <Content type={props.type} hash={props.hash} landscape={props.landscape} setTranscodedHash={props.setTranscodedHash} />
     </div>
   );
 };

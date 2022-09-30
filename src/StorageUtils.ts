@@ -50,11 +50,11 @@ export function setGroupNamespace(namespace: string) {
   localStorage.setItem('group-namespace', namespace)
 }
 
-export function setSortType(sortType:number) {
+export function setSortType(sortType: number) {
   localStorage.setItem('sortType', sortType.toString())
 }
 
-export function getSortType():number {
+export function getSortType(): number {
   let returned = localStorage.getItem('sortType') || '2';
   return parseInt(returned)
 }
@@ -105,6 +105,51 @@ export function getAPIKey(): string {
 
 export function setAPIKey(key: string) {
   localStorage.setItem('hydrus-api-key', key)
+}
+
+export function getTranscodeFileDomain(): string {
+  let optionsString = localStorage.getItem('transcoded-file-options')
+  if (optionsString) {
+    let options = JSON.parse(optionsString)
+    return options.fileServiceName
+  }
+  return 'web-transcodes'
+}
+
+export function getTranscodeFileNamespace(): string {
+  let optionsString = localStorage.getItem('transcoded-file-options')
+  if (optionsString) {
+    let options = JSON.parse(optionsString)
+    return options.namespace
+  }
+  return 'original'
+}
+
+export function setTranscodeFileDomain(domain: string) {
+  let optionsString = localStorage.getItem('transcoded-file-options')
+  if (optionsString) {
+    let options = JSON.parse(optionsString)
+    localStorage.setItem('transcoded-file-options', JSON.stringify({ fileServiceName: domain, namespace: options.namespace }))
+  }
+  localStorage.setItem('transcoded-file-options', JSON.stringify({ fileServiceName: domain, namespace: 'original' }))
+}
+
+export function setTranscodeFileNamespace(space: string) {
+  let optionsString = localStorage.getItem('transcoded-file-options')
+  if (optionsString) {
+    let options = JSON.parse(optionsString)
+    localStorage.setItem('transcoded-file-options', JSON.stringify({ fileServiceName: options.fileServiceName, namespace: space }))
+  }
+  localStorage.setItem('transcoded-file-options', JSON.stringify({ fileServiceName: 'web-transcodes', namespace: space }))
+}
+
+export function setTranscodeEnabled(value:boolean) {
+  localStorage.setItem('transcoded-enabled',JSON.stringify(value))
+}
+
+export function getTranscodeEnabled():boolean {
+  let currentOption:boolean = JSON.parse(localStorage.getItem('transcoded-enabled') || 'true')
+  return currentOption
 }
 
 export function exportSettings() {

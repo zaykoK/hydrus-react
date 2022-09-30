@@ -276,7 +276,6 @@ export function SearchPage(props: SearchPageProps) {
     }
     setLoaded(false)
 
-
     previousSearch.current = tags.slice()
     previousSearchSortType.current = sortType.current
     let searchTags = tags.slice()
