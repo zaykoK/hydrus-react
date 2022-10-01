@@ -24,6 +24,10 @@
   pointer-events: auto;
 }
 
+video::-webkit-media-controls-fullscreen-button {
+  display: none;
+}
+
 .styleFitHeightCopy {
   display: block;
   padding: 0px;

@@ -12,7 +12,6 @@ import { getTranscodeEnabled } from '../StorageUtils';
 interface ContentProps {
     type: string;
     hash: string | undefined;
-    landscape: boolean;
     setTranscodedHash: Function;
     setTopBarVisible: Function;
 }
@@ -156,14 +155,17 @@ function Content(props: ContentProps) {
     //When in portait mode
     let content: JSX.Element = <img
         key={'imgComponent' + props.hash}
-        onClick={() => changeZoom()}
-        onContextMenu={(e) => { e.preventDefault(); props.setTopBarVisible(false) }}
+        onClick={() => props.setTopBarVisible(false)}
+        onContextMenu={(e) => { e.preventDefault() }}
         src={src}
         className={style}
         alt={props.hash} />
     let doubleClick = {}
     if (props.type.includes("video")) {
         content = <video
+            controlsList='nodownload noplaybackrate nofullscreen noremoteplayback'
+            disablePictureInPicture
+            disableRemotePlayback
             key={'imgComponent' + props.hash}
             onContextMenu={(e) => { e.preventDefault(); props.setTopBarVisible(false) }}
             className={style}
@@ -171,7 +173,6 @@ function Content(props: ContentProps) {
             src={API.api_get_file_address(props.hash)} />
         doubleClick = {...doubleClick, disabled:true}
     }
-    //Default case - just use a thumbnail
     return <TransformWrapper
         centerZoomedOut={true}
         centerOnInit={true}

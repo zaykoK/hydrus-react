@@ -10,7 +10,6 @@ import Content from './Content';
 interface FileContentProps {
   hash: string | undefined;
   type: string;
-  landscape:boolean;
   setTranscodedHash:Function;
   setTopBarVisible:Function;
 }
@@ -21,14 +20,14 @@ export function FileContent(props: FileContentProps) {
     let style = 'contentWrapper'
     if (isMobile()) {
       style += ' mobile'
-      if (isLandscapeMode() && !props.type.includes('video')) { style += ' landscape' }
+      //if (isLandscapeMode() && !props.type.includes('video')) { style += ' landscape' }
     }
 
     return style
   }
   return (
     <div key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
-      <Content type={props.type} hash={props.hash} landscape={props.landscape} setTranscodedHash={props.setTranscodedHash} setTopBarVisible={props.setTopBarVisible} />
+      <Content type={props.type} hash={props.hash} setTranscodedHash={props.setTranscodedHash} setTopBarVisible={props.setTopBarVisible} />
     </div>
   );
 };

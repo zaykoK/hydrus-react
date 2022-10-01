@@ -255,7 +255,6 @@ export function FilePage(props: FilePageProps) {
             <FileContent
               hash={fileHash}
               type={metadata.mime}
-              landscape={landscape}
               setTranscodedHash={setTranscodedHash}
               setTopBarVisible={toggleTopBarVisible}
             />}
@@ -290,7 +289,6 @@ export function FilePage(props: FilePageProps) {
           <FileContent
             hash={fileHash}
             type={metadata.mime}
-            landscape={landscape}
             setTranscodedHash={setTranscodedHash}
             setTopBarVisible={toggleTopBarVisible}
           />}
