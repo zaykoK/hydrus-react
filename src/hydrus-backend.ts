@@ -4,6 +4,52 @@ import { setupCache } from 'axios-cache-interceptor'
 
 const axios = setupCache(Axios)
 
+axios.interceptors.request.use((config) => {
+  if (!config.cache) {
+    return config;
+  }
+
+  async function reject() {
+    const key = config.id ?? axios.generateKey(config);
+
+    const storage = await axios.storage.get(key, config);
+
+    // Request cancelled but response is already cached
+    if (storage.state === 'cached' || storage.state === 'stale') {
+      return;
+    }
+
+    await axios.storage.remove(key, config);
+  }
+
+  if (config.signal) {
+    // Already cancelled request
+    if (config.signal.aborted) {
+      config.cache = false;
+      return config;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    config.signal.addEventListener('abort', reject);
+  }
+
+  // NOTE: Cancel token is DEPRECATED but are here for backward compatibility
+  // you can remove this block if you don't use cancel token.
+  // https://axios-http.com/docs/cancellation
+  if (config.cancelToken) {
+    // Already cancelled request
+    if (Axios.isCancel(config.cancelToken.reason)) {
+      config.cache = false;
+      return config;
+    }
+
+    void config.cancelToken.promise.then(reject);
+  }
+
+  return config;
+});
+
+
 const server_address = localStorage.getItem('hydrus-server-address');
 
 export function api_version_clear() {
@@ -83,11 +129,11 @@ interface ApiSearchTagsProps {
   search: string;
   tag_service_key?: string;
   tag_service_name?: string;
-  abortController:AbortController;
+  abortController: AbortController;
 }
 export async function api_add_tags_search_tags(props: ApiSearchTagsProps) {
   return axios.get(server_address + '/add_tags/search_tags', {
-    signal:props.abortController.signal,
+    signal: props.abortController.signal,
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
       "search": props.search,
@@ -115,7 +161,8 @@ interface APISearchFilesProps {
   file_sort_type?: FileSortType;
   file_sort_asc?: boolean,
   return_file_ids?: boolean,
-  return_hashes: boolean
+  return_hashes: boolean,
+  abortController?:AbortController
 }
 
 export enum ServiceStatusNumber {
@@ -149,13 +196,13 @@ export enum FileSortType {
 }
 
 /* Converts enum (like one above) into an array of strings */
-export function enumToArray(enumerator:{ [s: number]: string }):Array<string> {
+export function enumToArray(enumerator: { [s: number]: string }): Array<string> {
   //@ts-ignore
   return Object.keys(enumerator).filter((key) => !isNaN(Number(enumerator[key])))
 }
 
 export async function api_get_files_search_files(props: APISearchFilesProps) {
-  let sentTags:Array<Array<string>|string> = []
+  let sentTags: Array<Array<string> | string> = []
   if (localStorage.getItem('hydrus-max-results') != undefined) {
     sentTags = props.tags.slice()
     if (Array.isArray(sentTags[0]) || sentTags.length === 0) { sentTags.push('system:limit=' + localStorage.getItem('hydrus-max-results')) }
@@ -167,6 +214,7 @@ export async function api_get_files_search_files(props: APISearchFilesProps) {
   }
 
   return axios.get(server_address + '/get_files/search_files', {
+    signal:props.abortController?.signal,
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
       "tags": JSON.stringify(sentTags),
@@ -294,15 +342,18 @@ interface APIGetFileMetadataProps {
   hashes?: Array<string>;
   hide_service_names_tags?: boolean;
   create_new_file_ids?: boolean;
-  only_return_identifiers?:boolean;
-  only_return_basic_information?:boolean;
-  detailed_url_information?:boolean;
-  include_notes?:boolean;
+  only_return_identifiers?: boolean;
+  only_return_basic_information?: boolean;
+  detailed_url_information?: boolean;
+  include_notes?: boolean;
+
+  abortController?: AbortController;
 }
 
 export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
   if (!props.file_id && !props.file_ids && !props.hash && !props.hashes) { return }
   return axios.get(server_address + '/get_files/file_metadata', {
+    signal: props.abortController?.signal,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
