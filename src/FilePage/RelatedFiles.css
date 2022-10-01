@@ -24,6 +24,7 @@
     flex-direction: column;
     overflow-x: auto;
     width: max-content;
+    overflow: hidden;
 }
 
 .relatedThumbnails.mobile {
@@ -72,7 +73,6 @@
 .relatedImages {
     max-height:inherit;
 }
-
 
 .relatedThumbnails.mobile.landscape {
     flex-direction: column;
