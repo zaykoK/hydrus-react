@@ -51,7 +51,6 @@ function ThumbContent(props: ThumbContentProps) {
 
 
   function determineThumbNavigation(replace: boolean) {
-    sessionStorage.setItem('searchScroll', window.scrollY.toString())
     props.navigate(returnFilePageURL(props.hash, parm, props.type), { replace: replace })
   }
 
