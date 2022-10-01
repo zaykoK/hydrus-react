@@ -70,7 +70,7 @@ function Navigation(props: NavigationProps) {
         <img src={IconSettings} alt='settings page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Settings</div>
       </NavLink >
-      <MobileModeButton />
+      {/*<MobileModeButton />*/}
       <div className={getFullScreenDarkenerStyle(expanded)} onClick={() => { props.setNavigationExpanded(!expanded) }} ></div>
     </nav>
   </>

@@ -15,23 +15,25 @@ export function MobileModeButton() {
     return false
   }
 
-  function toggleMobileMode() {
+  function toggleMobileMode():void {
     setMobileStyle(!mobileMode)
     setMobileMode(!mobileMode)
     window.location.reload()
   }
 
-  function getNavLinkStyle() {
-    if (isMobile()) { return "navLink mobile" }
-    return "navLink"
+  function getNavLinkStyle():string {
+    let style = 'navLink'
+    if (isMobile()) { style += " mobile" }
+    return style
   }
 
-  function getNavButtonStyle() {
-    if (isMobile()) { return "topBarButton mobile" }
-    return "topBarButton"
+  function getNavButtonStyle():string {
+    let style = 'topBarButton'
+    if (isMobile()) { style += " mobile" }
+    return style
   }
 
-  function getLabelText() {
+  function getLabelText():string {
     if (mobileMode) { return 'Mobile' }
     return "Desktop"
   }
