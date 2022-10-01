@@ -12,8 +12,9 @@
 }
 
 .settingsPage.mobile {
-    margin-top: 30%;
+    margin-top: 3.5em;
     text-align: center;
+    margin-bottom:10%;
 }
 
 .settingsBar {
@@ -84,6 +85,9 @@
     padding-top: 1em;
     padding-bottom: 1em;
     background-color: rgb(66, 65, 65);
+    border: 0px;
+    padding-left:0.5em;
+    padding-right:0.5em;
 }
 .transcodeEnabledButton.enabled {
     background-color: rgb(62, 112, 62);

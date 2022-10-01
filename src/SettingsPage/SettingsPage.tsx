@@ -71,7 +71,7 @@ export function TranscodeSettings() {
     setEnabled(!enabled)
   }
   function getTranscodeButtonStyle(enabled:boolean):string {
-    let style = 'transcodeEnabledButton'
+    let style = 'transcodeEnabledButton tagEntry blob'
     if (enabled) {style += ' enabled'}
     return style
   }

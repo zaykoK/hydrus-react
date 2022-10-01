@@ -13,6 +13,6 @@ function ApiTestButton() {
         setMessage(response.data.human_description)
     }
 
-    return <div><button style={TagTools.getTagButtonStyle('')} key='test api button' onClick={() => { buttonClick() }} >Test Api Connection</button>{message}</div>
+    return <div><button className='transcodeEnabledButton tagEntry blob' style={TagTools.getTagButtonStyle('')} key='test api button' onClick={() => { buttonClick() }} >Test Api Connection</button>{message}</div>
 }
 export default ApiTestButton;
