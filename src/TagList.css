@@ -11,6 +11,9 @@
     display:flex;
     flex-wrap:wrap;
 }
+.tagList::-webkit-scrollbar {
+    display: none;
+}
 
 .tagList.mobile {
     max-height: max-content;
