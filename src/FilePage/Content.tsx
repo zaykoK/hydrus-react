@@ -13,7 +13,8 @@ interface ContentProps {
     type: string;
     hash: string | undefined;
     landscape: boolean;
-    setTranscodedHash:Function;
+    setTranscodedHash: Function;
+    setTopBarVisible: Function;
 }
 
 function Content(props: ContentProps) {
@@ -61,14 +62,14 @@ function Content(props: ContentProps) {
                 break;
         }
     }
-
+    //TODO expose all key binds to options
     const handleKeyPress = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === 'ArrowLeft') { GoToFirstImage(navigate, parm); return }
-        if (e.ctrlKey && e.key === 'ArrowRight') { GoToLastImage(navigate, parm); return }
-        if (e.key === "ArrowRight") { NextImage(props.hash, navigate, parm) }
-        if (e.key === "ArrowLeft") { PreviousImage(props.hash, navigate, parm) }
-        if (e.key === "ArrowDown") { NextSearchImage(props.hash, navigate, parm) }
-        if (e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate, false, parm) }
+        if ((e.ctrlKey && e.key === "ArrowLeft") || e.key === 'A') { e.preventDefault(); GoToFirstImage(navigate, parm); return }
+        if ((e.ctrlKey && e.key === "ArrowRight") || e.key === 'D') { e.preventDefault(); GoToLastImage(navigate, parm); return }
+        if (e.key === "d" || e.key === "ArrowRight") { NextImage(props.hash, navigate, parm) }
+        if (e.key === "a" || e.key === "ArrowLeft") { PreviousImage(props.hash, navigate, parm) }
+        if (e.key === "s" || e.key === "ArrowDown") { NextSearchImage(props.hash, navigate, parm) }
+        if (e.key === "w" || e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate, false, parm) }
         if (e.key === "Home") { GoToFirstImage(navigate, parm) }
         if (e.key === "End") { GoToLastImage(navigate, parm) }
     }
@@ -151,50 +152,47 @@ function Content(props: ContentProps) {
             //document.removeEventListener('wheel', handleMouseScroll)
         }
     }, [])
-
     //Basically in case of images
     //When in portait mode
-    if (props.type.includes("image")) {
-        let image = <img
-            {...swipeHandlers}
-            key={'imgComponent' + props.hash}
-            onClick={() => changeZoom()}
-            onContextMenu={(e) => e.preventDefault()}
-            src={src}
-            className={style}
-            alt={props.hash} />
-        if (isMobile()) {
-            if (isLandscapeMode()) {
-                return <TransformWrapper
-                    centerZoomedOut={true}
-                    minScale={1}
-                    initialScale={1}>
-                    <TransformComponent>
-                        {image}
-                    </TransformComponent>
-                </TransformWrapper>
-            }
-            return image
-        }
-        return image
-    }
+    let content: JSX.Element = <img
+        key={'imgComponent' + props.hash}
+        onClick={() => changeZoom()}
+        onContextMenu={(e) => { e.preventDefault(); props.setTopBarVisible(false) }}
+        src={src}
+        className={style}
+        alt={props.hash} />
+    let doubleClick = {}
     if (props.type.includes("video")) {
-        return <video
-            {...swipeHandlers}
+        content = <video
             key={'imgComponent' + props.hash}
-            onContextMenu={(e) => e.preventDefault()}
+            onContextMenu={(e) => { e.preventDefault(); props.setTopBarVisible(false) }}
             className={style}
             autoPlay loop controls
             src={API.api_get_file_address(props.hash)} />
+        doubleClick = {...doubleClick, disabled:true}
     }
     //Default case - just use a thumbnail
-    return <img
-        {...swipeHandlers}
-        key={'imgComponent' + props.hash}
-        onContextMenu={(e) => e.preventDefault()}
-        src={API.api_get_file_thumbnail_address(props.hash)}
-        className={style}
-        alt={props.hash} />
+    return <TransformWrapper
+        centerZoomedOut={true}
+        centerOnInit={true}
+        limitToBounds={true}
+        doubleClick={doubleClick}
+        wheel={{ step: 0.5 }}
+        minScale={1}
+        initialScale={1}
+        panning={{ velocityDisabled: true }}
+        onPanning={(e) => {
+            if (e.state.scale === 1) {
+                if (e.state.positionX === 100) { PreviousImage(props.hash, navigate, parm) }
+                if (e.state.positionX === -100) { NextImage(props.hash, navigate, parm) }
+            }
+        }} >
+        <TransformComponent
+            wrapperStyle={{ width: "inherit", height: "inherit" }}
+            contentStyle={{ width: "inherit", height: "inherit", justifyContent: "center" }} >
+            {content}
+        </TransformComponent>
+    </TransformWrapper>
 }
 
 export default Content

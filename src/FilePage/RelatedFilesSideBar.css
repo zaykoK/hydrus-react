@@ -30,7 +30,7 @@
 .relatedStyle.mobile {
     z-index: 1;
     font-size: small;
-    bottom: 4em;
+    bottom: 0px;
     right: auto;
     top: auto;
     left: auto;

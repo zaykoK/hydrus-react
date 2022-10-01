@@ -7,15 +7,34 @@
 }
 
 .contentSideBar {
-    margin-top: 15px;
+    position:fixed;
+    left:0px;
+    padding-top: 3.2em;
+    padding-right: 5px;
     font-size: small;
+    z-index: 15;
+    border-radius: 0px 5px 5px 0px;
+    background-color: var(--COLOR1);
+    height: calc(100vh - 3.2em);
+    width: auto;
+    transition:transform 0.3s ease-in-out;
+    transform: translateX(-120%);
+    max-width: 20vw;
+}
+
+.contentSideBar.active {
+    transform: none;
 }
 
 .contentSideBar.mobile {
     position: fixed;
     font-size: large;
+    left:auto;
+    margin-top:0px;
+    padding-top: 0.5em;
+    max-width: 100vw;
     width: 100%;
-    bottom: 2.8em;
+    bottom: 0px;
     z-index: 5;
     background: var(--COLOR1);
     border-radius: 5px 5px 0px 0px;
@@ -76,7 +95,7 @@
 }
 
 .filePage {
-    display: grid;
+    display: block;
     grid-template-columns: minmax(auto, 1fr) minmax(auto, 5fr);
 }
 
@@ -90,7 +109,7 @@
 
 .filePage.mobile.landscape {
     font-size: x-large;
-    padding-left: 2.5em;
+    padding-left: 0px;
 }
 
 .fileContent.mobile {
@@ -108,6 +127,8 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    margin-left: 10px;
-    margin-top: 10px;
+    margin-top:3px;
+    margin-left:3px;
+    z-index: 15;
+    font-size: x-large;
 }

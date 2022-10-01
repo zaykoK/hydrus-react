@@ -51,11 +51,14 @@ export function FilePage(props: FilePageProps) {
   const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({ hash: '', tags: [] })
 
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
-  const [sidebarVisible, setSidebarVisible] = React.useState(false);
+  const [sidebarVisible, setSidebarVisible] = React.useState(false)
+  const [topBarVisible, setTopBarVisible] = React.useState(true)
 
-  const [transcodedHash, setTranscodedHash] = React.useState<string|undefined>()
+  const [transcodedHash, setTranscodedHash] = React.useState<string | undefined>()
 
   const emptyBlacklist = React.useRef([])
+
+  const abortControllerMetadata = React.useRef<AbortController | undefined>()
 
   const [landscape, setLandscape] = React.useState<boolean>(isLandscapeMode()) //This exists so page redraws on orientation change
 
@@ -79,28 +82,40 @@ export function FilePage(props: FilePageProps) {
   function handleScreenChange() {
     if (window.screen.orientation.type.includes('portrait')) {
       setLandscape(false);
-      document.exitFullscreen();
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      }
       return
     }
     setLandscape(true)
-    document.documentElement.requestFullscreen()
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.warn(`Error attempting to enable fullscreen mode: ${err.message} (${err.name}). Usually happens when multiple requests for fullscreen happen without any registered user input between them.`);})
   }
 
-
+  //MBY add a little reminder in corner of icons showing button bind for it
 
   const handleKeyPress = (e: KeyboardEvent) => {
-
+    if (e.key === "Tab") { e.preventDefault(); switchSidebar(); return }
+    if (e.key === "Escape") { e.preventDefault(); closeImageWindow(); return }
+    if (e.key === 'r') { e.preventDefault(); switchRelatedVisible(); return }
   }
 
   React.useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress)
+    //document.addEventListener('keydown', handleKeyPress)
     window.screen.orientation.addEventListener('change', handleScreenChange)
 
     return () => {
-      document.removeEventListener('keydown', handleKeyPress)
+      //document.removeEventListener('keydown', handleKeyPress)
       window.screen.orientation.removeEventListener('change', handleScreenChange)
     }
   }, [])
+
+  React.useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  })
 
   //If file hash changes reload tags
   React.useEffect(() => {
@@ -108,7 +123,12 @@ export function FilePage(props: FilePageProps) {
   }, [fileHash])
 
   async function loadTags() {
-    let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true })
+    if (abortControllerMetadata.current) {
+      abortControllerMetadata.current.abort()
+    }
+    abortControllerMetadata.current = new AbortController()
+
+    let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true, abortController: abortControllerMetadata.current }).catch((reason) => { return })
     if (!response) { return }
     let data: API.MetadataResponse = response.data.metadata[0]
     let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags') || '';
@@ -130,12 +150,13 @@ export function FilePage(props: FilePageProps) {
   }
 
   function getFilePageStyle(mobile: boolean, landscape: boolean): string {
+    let style = 'filePage'
     if (mobile) {
-      if (metadata?.mime.includes('video')) { return 'filePage mobile' } //This exist so rotating screen doesn't break the video playback
-      if (landscape) { return "filePage mobile landscape" }
-      return "filePage mobile"
+      style += ' mobile'
+      if (metadata?.mime.includes('video')) { return style } //This exist so rotating screen doesn't break the video playback
+      if (landscape) { style += ' landscape' }
     }
-    return "filePage"
+    return style
   }
 
   function generateClassName(name: string): string {
@@ -149,8 +170,18 @@ export function FilePage(props: FilePageProps) {
     return className
   }
 
+  function toggleTopBarVisible():void {
+    setTopBarVisible(!topBarVisible)
+  }
+
+  function getTopBarStyle():string {
+    let style = generateClassName('topBar filePageTopBar')
+    if (topBarVisible) {style += ' visible'}
+    return style
+  }
+
   function switchRelatedVisible() {
-    if (sidebarVisible) {
+    if (isMobile() && sidebarVisible) {
       setSidebarVisible(!sidebarVisible)
     }
     if (relatedVisible) {
@@ -182,7 +213,7 @@ export function FilePage(props: FilePageProps) {
   }
 
   function switchSidebar() {
-    if (relatedVisible) {
+    if (isMobile() && relatedVisible) {
       setRelateVisible(!relatedVisible)
     }
     setSidebarVisible(!sidebarVisible);
@@ -211,8 +242,7 @@ export function FilePage(props: FilePageProps) {
       </div>
       <div className={getSidebarScreenOverlayStyle()} onClick={() => { setSidebarVisible(false) }} ></div>
 
-      <div className={generateClassName('topBar filePageTopBar')}>
-        <img src={IconBack} alt='back' className="topBarButton active" onClick={() => { closeImageWindow() }} />
+      <div className={getTopBarStyle()}>
         <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onContextMenu={(e) => { e.preventDefault() }} onClick={() => { switchRelatedVisible() }} />
         <img src={IconLeft} alt='previous' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); PreviousSearchImage(fileHash, navigate, false, parm) }} onClick={() => { PreviousImage(fileHash, navigate, parm) }} />
         <img src={IconRight} alt='next' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); NextSearchImage(fileHash, navigate, parm) }} onClick={() => { NextImage(fileHash, navigate, parm) }} />
@@ -227,6 +257,7 @@ export function FilePage(props: FilePageProps) {
               type={metadata.mime}
               landscape={landscape}
               setTranscodedHash={setTranscodedHash}
+              setTopBarVisible={toggleTopBarVisible}
             />}
         </div>
 
@@ -239,10 +270,10 @@ export function FilePage(props: FilePageProps) {
   }
 
   return <>
-    <div className={generateClassName('barStylePadding')}></div>
     <div className={generateClassName('topBar filePageTopBar')}>
       <img src={IconBack} alt='back' className={getRelatedButtonStyle(true)} onClick={() => { closeImageWindow() }} />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
+      <img src={Info} alt='sidebar switch' onContextMenu={(e) => { e.preventDefault() }} className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
       <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash, navigate, false, parm) }} />
       <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash, navigate, parm) }} />
       <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash, navigate, parm) }} />
@@ -261,6 +292,7 @@ export function FilePage(props: FilePageProps) {
             type={metadata.mime}
             landscape={landscape}
             setTranscodedHash={setTranscodedHash}
+            setTopBarVisible={toggleTopBarVisible}
           />}
       </div>
 

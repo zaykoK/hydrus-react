@@ -12,6 +12,7 @@ interface FileContentProps {
   type: string;
   landscape:boolean;
   setTranscodedHash:Function;
+  setTopBarVisible:Function;
 }
 
 export function FileContent(props: FileContentProps) {
@@ -26,8 +27,8 @@ export function FileContent(props: FileContentProps) {
     return style
   }
   return (
-    <div id={"FileContent-" + props.hash} key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
-      <Content type={props.type} hash={props.hash} landscape={props.landscape} setTranscodedHash={props.setTranscodedHash} />
+    <div key={"FileContent-" + props.hash} className={getContentWrapperStyle()} >
+      <Content type={props.type} hash={props.hash} landscape={props.landscape} setTranscodedHash={props.setTranscodedHash} setTopBarVisible={props.setTopBarVisible} />
     </div>
   );
 };

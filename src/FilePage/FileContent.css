@@ -2,6 +2,7 @@
   position: relative;
   height: auto;
   overflow: hidden;
+  text-align: center;
 }
 .contentWrapper.mobile {
   height:inherit;
@@ -15,6 +16,15 @@
 }
 
 .styleFitHeight {
+  cursor: auto;
+  min-height: 100vh;
+  max-width: 100vw;
+  object-fit: contain;
+  max-height: 100vh;
+  pointer-events: auto;
+}
+
+.styleFitHeightCopy {
   display: block;
   padding: 0px;
   height: 94vh;
@@ -34,6 +44,7 @@
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
   margin:auto;
+  pointer-events: auto;
 }
 
 .styleFitHeight.mobile.landscape {
