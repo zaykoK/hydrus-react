@@ -15,21 +15,22 @@ interface RelatedFilesListProps {
 // This thing essentialy recreates the list every single goddamn time anything changes, which is stupid and wasteful
 // 
 
+
+function returnTagsFromNamespace(tags: Array<string>, namespace: string) {
+    //This function returns an array of joined tag strings from tuples
+    //{namespace:'character',value:'uzumaki naruto'} => 'character:uzumaki naruto'
+    if (tags === undefined) { return }
+    // @ts-ignore
+    let list: Array<TagTools.Tuple> = tags.filter((element) => element["namespace"] === namespace)
+    let joined = []
+    for (let tag in list) {
+        joined.push(list[tag].namespace + ':' + list[tag].value) //It has to have namespace
+    }
+    return joined
+}
+
 function RelatedFilesList(props: RelatedFilesListProps) {
     const [relatedList, setRelatedList] = useState<Array<JSX.Element>>([])
-
-    function returnTagsFromNamespace(tags: Array<string>, namespace: string) {
-        //This function returns an array of joined tag strings from tuples
-        //{namespace:'character',value:'uzumaki naruto'} => 'character:uzumaki naruto'
-        if (tags === undefined) { return }
-        // @ts-ignore
-        let list: Array<TagTools.Tuple> = tags.filter((element) => element["namespace"] === namespace)
-        let joined = []
-        for (let tag in list) {
-            joined.push(list[tag].namespace + ':' + list[tag].value) //It has to have namespace
-        }
-        return joined
-    }
 
     //If group important tags are not changed do not refresh
     //Which is if between two files group-title tags are same don't do anything
