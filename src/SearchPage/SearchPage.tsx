@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
-import { ImageWall } from "./ImageWall";
-import { TagSearchBar } from "./TagSearchbar";
-import { useParams } from 'react-router-dom';
-import * as API from '../hydrus-backend';
-import * as TagTools from '../TagTools';
-import { TagList } from '../TagList';
+import { useEffect, useRef, useState } from 'react'
+import { ImageWall } from "./ImageWall"
+import { TagSearchBar } from "./TagSearchbar"
+import { useParams } from 'react-router-dom'
+import * as API from '../hydrus-backend'
+import * as TagTools from '../TagTools'
+import { TagList } from '../TagList'
 
-import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace, getSortType, setSortType } from '../StorageUtils';
-import { setPageTitle } from '../misc';
+import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace, getSortType, setSortType } from '../StorageUtils'
+import { setPageTitle } from '../misc'
 
 import './SearchPage.css'
-import { isLandscapeMode, isMobile } from '../styleUtils';
-import localforage from 'localforage';
-import { addTag, createListOfUniqueTags } from './SearchPageHelpers';
+import { isLandscapeMode, isMobile } from '../styleUtils'
+import localforage from 'localforage'
+import { addTag, createListOfUniqueTags } from './SearchPageHelpers'
 
-import { FilePage } from '../FilePage/FilePage';
-import { readParams } from './URLParametersHelpers';
+import { FilePage } from '../FilePage/FilePage'
+import { readParams } from './URLParametersHelpers'
 
 interface SearchPageProps {
   type: string;
@@ -313,21 +313,18 @@ export function SearchPage(props: SearchPageProps) {
     let responseSize = 0
     let responseSizeReadable = ''
 
-    let thingy = false
-
-
     //If there are any results
     if (hashes.length > 0) {
       //Load the session storage metadata if exist
-      console.time('localforage')
+      //console.time('localforage')
       let cacheHashes: Array<string> = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
       //let cacheResponses: Array<API.MetadataResponse> = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
       let cacheResults: SearchResults = JSON.parse(await localforage.getItem('search-results-cache') as string)
-      console.timeEnd('localforage')
+      //console.timeEnd('localforage')
 
       //If current hashes matches cached search result just use that
       if ((cacheResults !== null) && (JSON.stringify(cacheHashes) === JSON.stringify(hashes))) {
-        console.log('loading cached results')
+        //console.log('loading cached results')
         responses = cacheResults.metadataResponses
         fileTags = createListOfUniqueTags(responses)
         sessionStorage.setItem('hashes-search', JSON.stringify(cacheResults.hashes))
@@ -341,7 +338,6 @@ export function SearchPage(props: SearchPageProps) {
         let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
         for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
           let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
-          if (thingy === false) { thingy = true }
           if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
           if (responseSize > 512) { //KB
             responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
@@ -362,7 +358,7 @@ export function SearchPage(props: SearchPageProps) {
         setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
       }
 
-      console.time('GroupImages')
+      //console.time('GroupImages')
 
       fileTags = createListOfUniqueTags(responses)
       let h = hashes
@@ -373,7 +369,7 @@ export function SearchPage(props: SearchPageProps) {
         h = groupImages(responses, hashes, getGroupNamespace())
       }
 
-      console.timeEnd('GroupImages')
+      //console.timeEnd('GroupImages')
 
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
