@@ -28,6 +28,10 @@ export function RelatedFiles(props: RelatedFilesProps) {
     const [currentTags, setCurrentTags] = useState<Array<string>>([])
     const [expanded, setExpanded] = useState<boolean>(props.initiallyExpanded)
 
+    const AbortControllerSearch = useRef<AbortController | undefined>()
+    const AbortControllerMetadata = useRef<AbortController | undefined>()
+
+
     /*
         Since it's impossible to declare navigate outside of component, navigate object gets "re-created" every time component re-renders
         this means that every it happens all the children get a new prop that change that also facilitates a re-render on them
@@ -43,6 +47,15 @@ export function RelatedFiles(props: RelatedFilesProps) {
         async function Search() {
             //console.log('settings new group hashes to storage')
             //console.log(props.tags)
+            if (AbortControllerSearch.current) {
+                AbortControllerSearch.current.abort()
+            }
+            if (AbortControllerMetadata.current) {
+                AbortControllerMetadata.current.abort()
+            }
+            AbortControllerSearch.current = new AbortController()
+            AbortControllerMetadata.current = new AbortController()
+
 
             if (props.tags === undefined) { return }
             let list = props.tags
@@ -52,14 +65,15 @@ export function RelatedFiles(props: RelatedFilesProps) {
                 return
             }
             //Get file hashes
-            let response = await API.api_get_files_search_files({ tags: tagArrayToNestedArray(list), return_hashes: true, return_file_ids: false })
+            let response = await API.api_get_files_search_files({ tags: tagArrayToNestedArray(list), return_hashes: true, return_file_ids: false, abortController: AbortControllerSearch.current }).catch((reason) => { return })
+            if (!response) { return }
             let hashes = response.data.hashes.slice()
             let responses: Array<API.MetadataResponse> = []
 
             //Sort hashes in order of first pages by order of page, then all the other files by order of import date
             const STEP = 100
             for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
-                let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
+                let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true,abortController:AbortControllerMetadata.current }).catch((reason) => {return})
                 if (metaDataResponse) { responses.push(metaDataResponse.data.metadata) }
             }
 
@@ -184,18 +198,25 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     }, [thumbs, scrollOffset])
 
-    function getRelatedTextStyle(landscape:boolean):string {
-        let style='relatedTextStyle'
-        if(isMobile()) {
+    function getRelatedTextStyle(landscape: boolean): string {
+        let style = 'relatedTextStyle'
+        if (isMobile()) {
             style += ' mobile'
-            if(landscape) {
+            if (landscape) {
                 style += ' landscape'
             }
         }
         return style
     }
 
-    function getRelatedThumbsStyle(landscape:boolean): string {
+    useEffect(() => {
+        return () => {
+            AbortControllerMetadata.current?.abort()
+            AbortControllerSearch.current?.abort()
+        }
+    },[])
+
+    function getRelatedThumbsStyle(landscape: boolean): string {
         if (isMobile()) {
             if (landscape) { return "relatedThumbnails mobile landscape" }
             return "relatedThumbnails mobile"
@@ -203,7 +224,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
         return "relatedThumbnails"
     }
 
-    function getRelatedThumbsWrapperStyle(landscape:boolean): string {
+    function getRelatedThumbsWrapperStyle(landscape: boolean): string {
         let style = 'relatedStyleThumbsWrapper'
         if (isMobile()) {
             style += ' mobile'
