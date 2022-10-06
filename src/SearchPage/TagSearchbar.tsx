@@ -27,20 +27,20 @@ interface SearchTagsProps {
   infoAction: Function;
   sortTypeChange: Function;
   setNavigationExpanded: Function;
-  type:string;
+  type: string;
 }
 
 type TagLookupResult = {
-  value:string;
-  count:number;
+  value: string;
+  count: number;
 }
 
-const blacklist = JSON.parse(localStorage.getItem('blacklisted-namespaces') || '[]' )
+const blacklist = JSON.parse(localStorage.getItem('blacklisted-namespaces') || '[]')
 
-function TagLookupResultToTuple(tags:Array<TagLookupResult>):Array<TagTools.Tuple> {
-  let filteredTags:Array<TagTools.Tuple> = []
+function TagLookupResultToTuple(tags: Array<TagLookupResult>): Array<TagTools.Tuple> {
+  let filteredTags: Array<TagTools.Tuple> = []
   for (let tag of tags) {
-    let splitted = tag.value.split(':',2)
+    let splitted = tag.value.split(':', 2)
     if (splitted.length > 1) {
       if (!blacklist.includes(splitted[0])) {
         filteredTags.push({
@@ -65,12 +65,12 @@ export function TagSearchBar(props: SearchTagsProps) {
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState(props.tags)
 
-  const [helpTags,setHelpTags] = useState<Array<TagTools.Tuple>>([])
-  const [helpTagsVisible,setHelpTagsVisible] = useState<boolean>(false)
+  const [helpTags, setHelpTags] = useState<Array<TagTools.Tuple>>([])
+  const [helpTagsVisible, setHelpTagsVisible] = useState<boolean>(false)
 
   const navigate = useNavigate()
 
-  const abortController = useRef<AbortController|undefined>()
+  const abortController = useRef<AbortController | undefined>()
 
   function submitTag(event: React.FormEvent) {
     event.preventDefault(); //necessary to not reload page after submit
@@ -104,16 +104,16 @@ export function TagSearchBar(props: SearchTagsProps) {
 
     //Don't search anything if less than 3 letters are written, this really improves performance as you don't wait for potentially dozens of thousands of results, that just 1 or 2 letters will give, this does create a bit of an issue for two or less letter words like "pi" or "character:l" (from death note)
     //Also clear search if less than 3 letters are typed in
-    if (search.length < 2 && JSON.stringify(helpTags) !== JSON.stringify([])) {setHelpTags([])}
+    if (search.length < 2 && JSON.stringify(helpTags) !== JSON.stringify([])) { setHelpTags([]) }
     if (search.length > 1) {
       let response = await API.api_add_tags_search_tags({
         search: search,
-        abortController:abortController.current
-      }).catch((reason) => {return})
+        abortController: abortController.current
+      }).catch((reason) => { return })
       /// Process the results
       if (response) {
-        let tags:Array<TagLookupResult> = response.data.tags
-        let filteredTags:Array<TagTools.Tuple> = TagLookupResultToTuple(tags)
+        let tags: Array<TagLookupResult> = response.data.tags
+        let filteredTags: Array<TagTools.Tuple> = TagLookupResultToTuple(tags)
         setHelpTags(filteredTags)
       }
     }
@@ -126,7 +126,7 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
   }, [props.tags, tags])
 
-  function TagInput(props: { tags: Array<Array<string>>, type:string, infoAction:Function }) {
+  function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction: Function }) {
 
     function getSearchBarStyle() {
       if (isMobile()) { return "searchBar mobile" }
@@ -134,11 +134,11 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
 
     return <div className={getSearchBarStyle()}>
-      <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type}/>
+      <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type} />
       <form className="searchForm" onSubmit={submitTag}>
         <input
-          onFocus={() => {setHelpTagsVisible(true); props.infoAction(false)}}
-          onBlur={() => setTimeout(() => {setHelpTagsVisible(false);setTag('');setHelpTags([])},100)}
+          onFocus={() => { setHelpTagsVisible(true); props.infoAction(false) }}
+          onBlur={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}
           className="searchInput"
           type="text"
           value={tag}
@@ -156,10 +156,10 @@ export function TagSearchBar(props: SearchTagsProps) {
     return "topBar"
   }
 
-  function getHelpTagsListStyle(visible:boolean) {
+  function getHelpTagsListStyle(visible: boolean) {
     let style = 'HelpTagsListOverlay'
-    if (visible) {style += ' visible'}
-    if (isMobile()) {style += ' mobile'}
+    if (visible) { style += ' visible' }
+    if (isMobile()) { style += ' mobile' }
     return style
   }
 
@@ -171,16 +171,13 @@ export function TagSearchBar(props: SearchTagsProps) {
   return <div className={getTopBarStyle()}>
     <div className="buttonsBar">
       <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
-      <GroupButton icon={IconGroup} activeValue={getGroupingToggle()}  clickAction={props.groupAction} />
+      <GroupButton icon={IconGroup} activeValue={getGroupingToggle()} clickAction={props.groupAction} />
       {/*<DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />*/}
       {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
     </div>
-    {TagInput({ tags: tags, type:props.type, infoAction:props.infoAction })}
+    {TagInput({ tags: tags, type: props.type, infoAction: props.infoAction })}
     <div className={getHelpTagsListStyle(helpTagsVisible)}>
       <TagList tags={helpTags} visibleCount={true} type={'image'} searchBar={true} />
-      {(helpTags.length > 0) ? <p className='helpTagsDisclaimer'>
-        <span>All results are "raw" tags, this is a limitation of hydrus.</span>
-      </p>:<></>}
     </div>
   </div>;
 }

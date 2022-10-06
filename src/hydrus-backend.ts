@@ -66,7 +66,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 32
+  const API_TARGET = 33
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -130,6 +130,7 @@ interface ApiSearchTagsProps {
   tag_service_key?: string;
   tag_service_name?: string;
   abortController: AbortController;
+  tag_display_type?: string;
 }
 export async function api_add_tags_search_tags(props: ApiSearchTagsProps) {
   return axios.get(server_address + '/add_tags/search_tags', {
@@ -138,7 +139,8 @@ export async function api_add_tags_search_tags(props: ApiSearchTagsProps) {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
       "search": props.search,
       "tag_service_key": props.tag_service_key,
-      "tag_service_name": props.tag_service_name
+      "tag_service_name": props.tag_service_name,
+      "tag_display_type": props.tag_display_type || 'display'
     }
   });
 }
