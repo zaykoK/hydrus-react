@@ -93,6 +93,14 @@ function Content(props: ContentProps) {
 
     }
 
+    async function loadFullSizeOriginal() {
+        //console.log('Loading original')
+        const img = new Image()
+        img.src = API.api_get_file_address(props.hash) || ''
+        props.setTranscodedHash()
+        img.onload = () => { setSrc(img.src); }
+    }
+
     React.useEffect(() => {
         const img = new Image()
         async function loadFullSizeImage() {
@@ -151,6 +159,10 @@ function Content(props: ContentProps) {
             //document.removeEventListener('wheel', handleMouseScroll)
         }
     }, [])
+
+    // This controls when loading of new image should kick in
+    const ZOOM_THRESHOLD = 3
+
     //Basically in case of images
     //When in portait mode
     let content: JSX.Element = <img
@@ -182,6 +194,11 @@ function Content(props: ContentProps) {
         minScale={1}
         initialScale={1}
         panning={{ velocityDisabled: true }}
+        onZoomStop={(e) => {
+            if (e.state.scale > ZOOM_THRESHOLD && src !== API.api_get_file_address(props.hash)) {
+                loadFullSizeOriginal()
+            }
+        }}
         onPanning={(e) => {
             if (e.state.scale === 1) {
                 if (e.state.positionX === 100) { PreviousImage(props.hash, navigate, parm) }
