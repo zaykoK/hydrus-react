@@ -94,11 +94,9 @@ function Content(props: ContentProps) {
     }
 
     async function loadFullSizeOriginal() {
-        //console.log('Loading original')
         const img = new Image()
         img.src = API.api_get_file_address(props.hash) || ''
-        props.setTranscodedHash()
-        img.onload = () => { setSrc(img.src); }
+        img.onload = () => { setSrc(img.src);props.setTranscodedHash(); }
     }
 
     React.useEffect(() => {
