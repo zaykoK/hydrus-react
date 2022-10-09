@@ -76,6 +76,8 @@ export function SearchPage(props: SearchPageProps) {
   const sortType = useRef<API.FileSortType>(getSortType())
   const searchType = useRef<string>(props.type)
 
+  const AbortControllerSearch = useRef<AbortController | undefined>()
+
   //const navigate = useNavigate()
 
   //console.log(props.globalState?.getGlobalValue())
@@ -275,6 +277,10 @@ export function SearchPage(props: SearchPageProps) {
 
     }
     setLoaded(false)
+    if (AbortControllerSearch.current) {
+      AbortControllerSearch.current.abort()
+    }
+    AbortControllerSearch.current = new AbortController()
 
     previousSearch.current = tags.slice()
     previousSearchSortType.current = sortType.current
@@ -286,7 +292,7 @@ export function SearchPage(props: SearchPageProps) {
     }
     //console.log('actually searching')
     //console.log(sortType.current)
-    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current });
+    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current,abortController:AbortControllerSearch.current });
     let responseHashes: Array<string> = response.data.hashes
     //console.log(responseHashes)
     if (responseHashes.length === 0) {
@@ -337,7 +343,7 @@ export function SearchPage(props: SearchPageProps) {
       else {
         let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
         for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-          let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true })
+          let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true,abortController:AbortControllerSearch.current })
           if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
           if (responseSize > 512) { //KB
             responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
@@ -506,7 +512,7 @@ export function SearchPage(props: SearchPageProps) {
     {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
       {(params.type !== 'comic') && <div className={getGridStyleList()}>
-        {(fileTags !== undefined) &&
+        {(fileTags !== undefined && loaded) &&
           <TagList
             visibleCount={true}
             tags={fileTags}
