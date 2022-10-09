@@ -66,7 +66,7 @@ function WrapperList(props: WrapperListProps) {
         >
             {displayedThumbs}
         </InfiniteScroll>
-        || <div className={getWrapperListStyle() + ' +loading'}>LOADING {props.loadingProgress}</div>
+        || <div className={getWrapperListStyle() + ' loading'}>LOADING {props.loadingProgress}</div>
     );
 }
 
