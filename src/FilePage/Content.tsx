@@ -16,9 +16,19 @@ interface ContentProps {
     setTopBarVisible: Function;
 }
 
+type doubleClick = {
+    disabled?: boolean;
+    step?: number;
+    mode?: "reset" | "zoomIn" | "zoomOut";
+    animationTime?: number;
+    animationType?: "easeOut" | "linear" | "easeInQuad" | "easeOutQuad" | "easeInOutQuad" | "easeInCubic" | "easeOutCubic" | "easeInOutCubic" | "easeInQuart" | "easeOutQuart" | "easeInOutQuart" | "easeInQuint" | "easeOutQuint" | "easeInOutQuint";
+    excluded?: Array<string>;
+}
+
 function Content(props: ContentProps) {
     const navigate = useNavigate()
     const { parm } = useParams()
+    const [doubleClick, setDoubleClick] = React.useState<doubleClick>({})
 
     const swipeHandlers = useSwipeable({
         onSwipedLeft: (eventData) => {
@@ -96,7 +106,7 @@ function Content(props: ContentProps) {
     async function loadFullSizeOriginal() {
         const img = new Image()
         img.src = API.api_get_file_address(props.hash) || ''
-        img.onload = () => { setSrc(img.src);props.setTranscodedHash(); }
+        img.onload = () => { setSrc(img.src); props.setTranscodedHash(); }
     }
 
     React.useEffect(() => {
@@ -161,6 +171,17 @@ function Content(props: ContentProps) {
     // This controls when loading of new image should kick in
     const ZOOM_THRESHOLD = 3
 
+    // Ok this is stupid probably
+    const [scale,setScale] = React.useState<number>(1)
+    React.useEffect(() => {
+        if (scale > 4) {
+            setDoubleClick({ ...doubleClick, mode: 'reset' })
+        }
+        else {
+            setDoubleClick({ ...doubleClick, mode: 'zoomIn' })
+        }
+    },[scale])
+
     //Basically in case of images
     //When in portait mode
     let content: JSX.Element = <img
@@ -170,7 +191,6 @@ function Content(props: ContentProps) {
         src={src}
         className={style}
         alt={props.hash} />
-    let doubleClick = {}
     if (props.type.includes("video")) {
         content = <video
             controlsList='nodownload noplaybackrate nofullscreen noremoteplayback'
@@ -181,7 +201,8 @@ function Content(props: ContentProps) {
             className={style}
             autoPlay loop controls
             src={API.api_get_file_address(props.hash)} />
-        doubleClick = {...doubleClick, disabled:true}
+        if (doubleClick.disabled !== true)
+            setDoubleClick({ ...doubleClick, disabled: true })
     }
     return <TransformWrapper
         centerZoomedOut={true}
@@ -192,15 +213,28 @@ function Content(props: ContentProps) {
         minScale={1}
         initialScale={1}
         panning={{ velocityDisabled: true }}
+        onWheelStop={(e) => {
+            //console.log('onWheelStop')
+            setScale(e.state.scale)
+        }}
         onZoomStop={(e) => {
+            //console.log('onZoomStop')
+            setScale(e.state.scale)
             if (e.state.scale > ZOOM_THRESHOLD && src !== API.api_get_file_address(props.hash)) {
                 loadFullSizeOriginal()
             }
         }}
         onPanning={(e) => {
             if (e.state.scale === 1) {
-                if (e.state.positionX === 100) { PreviousImage(props.hash, navigate, parm) }
-                if (e.state.positionX === -100) { NextImage(props.hash, navigate, parm) }
+                setScale(e.state.scale)
+                //This line locks vertical movement of image when scale == 1
+                e.setTransform(e.state.positionX,0,e.state.scale,0,'linear')
+                if (e.state.positionX === 100) { 
+                    PreviousImage(props.hash, navigate, parm) 
+                }
+                if (e.state.positionX === -100) { 
+                    NextImage(props.hash, navigate, parm) 
+                }
             }
         }} >
         <TransformComponent
