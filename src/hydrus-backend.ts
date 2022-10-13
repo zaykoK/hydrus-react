@@ -4,6 +4,9 @@ import { setupCache } from 'axios-cache-interceptor'
 
 const axios = setupCache(Axios)
 
+// This is a "fixed" function that won't stop api calls after aborting one
+// This will probably get fixed in the future
+// I didn't look into what it actually does, so it might be selling your soul to chinese goverment
 axios.interceptors.request.use((config) => {
   if (!config.cache) {
     return config;
@@ -49,7 +52,6 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-
 const server_address = localStorage.getItem('hydrus-server-address');
 
 export function api_version_clear() {
@@ -66,7 +68,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 33
+  const API_TARGET = 34
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -205,7 +207,7 @@ export function enumToArray(enumerator: { [s: number]: string }): Array<string> 
 
 export async function api_get_files_search_files(props: APISearchFilesProps) {
   let sentTags: Array<Array<string> | string> = []
-  if (localStorage.getItem('hydrus-max-results') != undefined) {
+  if (localStorage.getItem('hydrus-max-results') !== null) {
     sentTags = props.tags.slice()
     if (Array.isArray(sentTags[0]) || sentTags.length === 0) { sentTags.push('system:limit=' + localStorage.getItem('hydrus-max-results')) }
 
@@ -256,8 +258,6 @@ export function api_get_file_address(hash: string | undefined) {
   if (!hash) { return }
   let server = localStorage.getItem('hydrus-server-address')
 
-  //Something thats I will find stupid in the future
-  //Makes sure that sessionKey is string type
   let sessionKey = sessionStorage.getItem('hydrus-session-key')
   if (!sessionKey) { sessionKey = '' }
 
@@ -273,8 +273,6 @@ export function api_get_file_thumbnail_address(hash: string | undefined) {
   if (!hash) { return }
   let server = localStorage.getItem('hydrus-server-address')
 
-  //Something thats I will find stupid in the future
-  //Makes sure that sessionKey is string type
   let sessionKey = sessionStorage.getItem('hydrus-session-key')
   if (!sessionKey) { sessionKey = '' }
 
