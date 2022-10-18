@@ -1,7 +1,6 @@
 import * as API from '../hydrus-backend';
 import * as React from 'react';
 
-import { useSwipeable } from 'react-swipeable';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import { TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
 import { useNavigate, useParams } from "react-router-dom"
@@ -25,23 +24,16 @@ type doubleClick = {
     excluded?: Array<string>;
 }
 
+type transcodedFileServiceOptions = {
+    fileServiceName?: string;
+    fileServiceKey?: string;
+    namespace: string;
+}
+
 function Content(props: ContentProps) {
     const navigate = useNavigate()
     const { parm } = useParams()
-    const [doubleClick, setDoubleClick] = React.useState<doubleClick>({})
-
-    const swipeHandlers = useSwipeable({
-        onSwipedLeft: (eventData) => {
-            NextImage(props.hash, navigate, parm)
-        },
-        onSwipedRight: (eventData) => {
-            PreviousImage(props.hash, navigate, parm)
-        },
-        onTap: (eventData) => {
-            changeZoom()
-        },
-        delta: 150
-    })
+    const [doubleClick, setDoubleClick] = React.useState<doubleClick>({step:0.5})
 
     const [style, changeStyle] = React.useState(getStartingStyle())
     const [src, setSrc] = React.useState(API.api_get_file_thumbnail_address(props.hash))
@@ -56,21 +48,6 @@ function Content(props: ContentProps) {
         return 'styleFitHeight'
     }
 
-    function changeZoom() {
-        if (isMobile()) {
-            return
-        }
-        switch (style) {
-            case 'styleFitHeight':
-                changeStyle('styleFitWidth');
-                sessionStorage.setItem('fullscreen-view', 'true')
-                break;
-            case 'styleFitWidth':
-                changeStyle('styleFitHeight');
-                sessionStorage.setItem('fullscreen-view', 'false')
-                break;
-        }
-    }
     //TODO expose all key binds to options
     const handleKeyPress = (e: KeyboardEvent) => {
         if ((e.ctrlKey && e.key === "ArrowLeft") || e.key === 'A') { e.preventDefault(); GoToFirstImage(navigate, parm); return }
@@ -81,26 +58,6 @@ function Content(props: ContentProps) {
         if (e.key === "w" || e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate, false, parm) }
         if (e.key === "Home") { GoToFirstImage(navigate, parm) }
         if (e.key === "End") { GoToLastImage(navigate, parm) }
-    }
-
-    // const handleMouseScroll = (e: WheelEvent) => {
-    //     //console.log(e.deltaY)
-    //     if (sessionStorage.getItem('fullscreen-view') === 'true') {
-    //         const el = document.querySelector('.styleFitWidth')
-    //         //console.log(el)
-
-    //         //What I want to get here is ability to zoom in/out with mouse scroll and pan with drag
-
-    //         if (e.deltaY > 0) { console.log('scrolling down') }
-    //         if (e.deltaY < 0) { console.log('scrolling up') }
-    //     }
-    // }
-
-    type transcodedFileServiceOptions = {
-        fileServiceName?: string;
-        fileServiceKey?: string;
-        namespace: string;
-
     }
 
     async function loadFullSizeOriginal() {
@@ -148,7 +105,7 @@ function Content(props: ContentProps) {
                 img.src = API.api_get_file_address(props.hash) || ''
                 props.setTranscodedHash()
             }
-            img.onload = () => { setSrc(img.src); }//console.timeEnd(props.hash + ' loading time'); }
+            img.onload = () => { setSrc(img.src); }
 
         }
         //Immediately start loading full size image, and when ready change to it
@@ -156,7 +113,6 @@ function Content(props: ContentProps) {
         loadFullSizeImage()
 
         document.addEventListener('keydown', handleKeyPress)
-        //document.addEventListener('wheel', handleMouseScroll)
 
         return () => {
             //console.timeEnd(props.hash + ' loading time');
@@ -164,23 +120,11 @@ function Content(props: ContentProps) {
             img.src = ''
             img.onload = null
             document.removeEventListener('keydown', handleKeyPress)
-            //document.removeEventListener('wheel', handleMouseScroll)
         }
     }, [])
 
     // This controls when loading of new image should kick in
     const ZOOM_THRESHOLD = 3
-
-    // Ok this is stupid probably
-    const [scale,setScale] = React.useState<number>(1)
-    React.useEffect(() => {
-        if (scale > 4) {
-            setDoubleClick({ ...doubleClick, mode: 'reset' })
-        }
-        else {
-            setDoubleClick({ ...doubleClick, mode: 'zoomIn' })
-        }
-    },[scale])
 
     //Basically in case of images
     //When in portait mode
@@ -213,20 +157,13 @@ function Content(props: ContentProps) {
         minScale={1}
         initialScale={1}
         panning={{ velocityDisabled: true }}
-        onWheelStop={(e) => {
-            //console.log('onWheelStop')
-            setScale(e.state.scale)
-        }}
         onZoomStop={(e) => {
-            //console.log('onZoomStop')
-            setScale(e.state.scale)
             if (e.state.scale > ZOOM_THRESHOLD && src !== API.api_get_file_address(props.hash)) {
                 loadFullSizeOriginal()
             }
         }}
         onPanning={(e) => {
             if (e.state.scale === 1) {
-                setScale(e.state.scale)
                 //This line locks vertical movement of image when scale == 1
                 e.setTransform(e.state.positionX,0,e.state.scale,0,'linear')
                 if (e.state.positionX === 100) { 
