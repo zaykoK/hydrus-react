@@ -22,7 +22,7 @@ export function getTagButtonStyle(style: string): React.CSSProperties {
     style = style.substring(1); exclude = true
   }
   if (exclude) {
-    let gradient = 'linear-gradient(270deg,' + (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']) + ' , #020024)'
+    //let gradient = 'linear-gradient(270deg,' + (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']) + ' , #020024)'
     return {
       ...cssStyleCommon,
       background: TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other'],

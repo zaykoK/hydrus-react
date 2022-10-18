@@ -2,8 +2,6 @@ import ApiTestButton from './ButtonAPITest';
 import BlacklistedTagsInput from './formBlacklistedTags';
 import RelatedGroupsInput from './formRelatedTags';
 
-import { GlobalStateObject } from '../index.js';
-
 import IconHamburger from '../assets/menu-burger.svg'
 
 import './SettingsPage.css'
@@ -15,7 +13,6 @@ import { useState } from 'react';
 
 
 interface SettingsPageProps {
-  globalState: any;
   setNavigationExpanded: Function;
 }
 

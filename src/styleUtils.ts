@@ -1,5 +1,3 @@
-import { getMobileStyle } from "./StorageUtils"
-
 /** Returns true if running in mobile view mode
  */
 export function isMobile() {
@@ -10,10 +8,6 @@ export function isMobile() {
         // false for not mobile device
         return false
       }
-
-
-    if (getMobileStyle() === 'true') { return true }
-    return false
 }
 
 export function isLandscapeMode() {

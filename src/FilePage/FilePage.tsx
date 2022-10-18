@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { MemoFileContent as FileContent } from './FileContent';
-//import { FileContent } from './FileContent';
 import { FileMetaData } from './FileMetaData';
 import { useParams } from 'react-router-dom';
 import * as TagTools from '../TagTools'
 import { TagList } from '../TagList'
 import * as API from '../hydrus-backend';
 
-import IconHamburger from '../assets/menu-burger.svg'
 import IconRelated from '../assets/related.svg'
 import IconLeft from '../assets/arrow-left.svg'
 import Info from '../assets/info.svg'
@@ -18,7 +16,6 @@ import IconBack from '../assets/back.svg'
 
 import { getRelatedVisibile } from '../StorageUtils';
 import { useNavigate } from "react-router-dom";
-
 import { isMobile } from '../styleUtils';
 
 import './FilePage.css'
@@ -29,7 +26,6 @@ import { readParams } from '../SearchPage/URLParametersHelpers';
 import { generateSearchURL } from '../SearchPage/SearchPageHelpers';
 
 interface FilePageProps {
-  globalState: any;
   setNavigationExpanded: Function;
   hash: string;
 }

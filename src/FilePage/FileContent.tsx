@@ -1,10 +1,6 @@
 import * as React from 'react';
-
-import { isLandscapeMode, isMobile } from '../styleUtils';
-
+import { isMobile } from '../styleUtils';
 import './FileContent.css'
-
-
 import Content from './Content';
 
 interface FileContentProps {
