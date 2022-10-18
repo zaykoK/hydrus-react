@@ -1,19 +1,18 @@
 import * as React from 'react';
 import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
-import PageButtons from './PageButtons';
 
 import './ImageWall.css'
 
-import { isMobile } from '../styleUtils'
-import { Result } from './SearchPage';
+import { ResultGroup } from './SearchPage';
 import { MemoWrapperList as WrapperList } from './WrapperList';
 import { useNavigate } from 'react-router-dom';
+import ResultComponent from './ResultComponent';
 
 interface ImageWallProps {
   grouping: boolean;
   type: string;
   page: number;
-  hashes: Array<Result>;
+  results: Array<ResultGroup>;
   addTag: Function;
   changePage: Function;
   loadingProgress: string;
@@ -23,115 +22,79 @@ interface ImageWallProps {
 }
 
 export function ImageWall(props: ImageWallProps) {
-  const [loaded, setLoaded] = React.useState<boolean>(false)
   const [thumbs, setThumbs] = React.useState<JSX.Element[]>([])
 
   const navigate = useNavigate()
 
 
-  let width = (5 / 6) * (window.innerWidth);
-  let elements = Math.floor(width / 180);
-
-  //TODO
-  //tie this into some sort of user settings
-  let viewSize = 5000;
-  if (props.type === 'comic') {
-    viewSize = 1000;
-  }
-
-  function CreateNewThumbnailList(page: number) {
-    let hashSlice = props.hashes.slice(0 + ((page - 1) * viewSize), Math.min((page) * viewSize, props.hashes.length))
+  function CreateNewThumbnailList() {
+    let resultSlice = props.results
     let list: Array<JSX.Element> = [];
-    for (let hash of hashSlice) {
-      list.push(
-        <ImageThumbnail
-          navigate={navigate}
-          loadMeta={true}
-          type={props.type}
-          key={hash.cover}
-          hash={hash.cover}
-          replace={false}
-          metadata={hash.entries}
-          size={1}
-          hideWidgetCount={props.grouping}
-        />);
+    if (props.type === 'comic') {
+      for (let result of resultSlice) {
+        list.push(
+          <ImageThumbnail
+            navigate={navigate}
+            loadMeta={true}
+            type={props.type}
+            key={result.cover}
+            hash={result.cover}
+            replace={false}
+            metadata={result.entries}
+            size={1}
+            hideWidgetCount={props.grouping}
+          />);
+      }
+    }
+    else {
+      for (let result of resultSlice) {
+        let key = result.cover + result.title
+        list.push(
+          <ResultComponent key={key}
+            navigate={navigate} result={result} type={props.type} grouping={props.grouping}
+          />
+        )
+      }
     }
     return list;
   }
 
-  function getHashSlice(hashes: Array<Result>, page: number): string {
+  function getHashSlice(hashes: Array<ResultGroup>): string {
     let slices = ''
 
-    let condition = Math.min((page) * viewSize, props.hashes.length)
+    //let condition = Math.min((page) * viewSize, props.results.length)
 
-    for (let id = 0 + ((page - 1) * viewSize); id < condition; id++) {
-      slices += hashes[id]?.cover
+    for (let result of hashes) {
+      slices += result?.title
     }
 
     return slices
   }
 
-
-
-  React.useEffect(() => {
-    function handleKeyPress(e: KeyboardEvent) {
-      function NextPage() {
-        if (props.page + 1 <= returnPageCount()) { props.changePage(props.page + 1) }
-      }
-      function PreviousPage() {
-        if (props.page - 1 > 0) { props.changePage(props.page - 1) }
-
-      }
-
-      if (e.key === "ArrowRight") { NextPage() }
-      if (e.key === "ArrowLeft") { PreviousPage() }
-    }
-
-    //document.addEventListener('keyup', handleKeyPress)
-    return () => {
-      //document.removeEventListener('keyup', handleKeyPress)
-    }
-  })
-
   //Redraw when image hashes or page changes
   React.useEffect(() => {
-    setThumbs(CreateNewThumbnailList(props.page))
-  }, [props.hashes, props.page])
+    setThumbs(CreateNewThumbnailList())
+  }, [props.results])
 
   React.useEffect(() => {
-    if(props.loaded === false && thumbs.length > 0) {
+    if (props.loaded === false && thumbs.length > 0) {
       setThumbs([])
     }
-  },[props.loaded])
+  }, [props.loaded])
 
-  function returnPageCount() {
-    let count = Math.max(Math.floor(props.hashes.length / (viewSize)) + 1, 1)
-    return count
-  }
-
-
-  function getOffsetValue(mobile: boolean): number {
-    if (mobile) { return 2 }
-    return 6
-  }
-
-  const sm = getHashSlice(props.hashes, props.page)
+  const sm = getHashSlice(props.results)
 
   return (
     <div className='imageWall' >
-      {(props.empty) ? <div className='emptyStyle'>No results</div> : <>
-        <WrapperList
+      {(props.empty) ? 
+      <div className='emptyStyle'>No results</div> 
+      : <><WrapperList
           key={sm}
           thumbs={thumbs}
           type={props.type}
           loadingProgress={props.loadingProgress}
           loaded={props.loaded}
-        />
-        <PageButtons
-          pages={returnPageCount()}
-          offset={getOffsetValue(isMobile())}
-          currentPage={props.page}
-          changePage={props.changePage} /></>}
+        /></>}
     </div>
   );
 }

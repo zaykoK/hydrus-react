@@ -19,7 +19,6 @@ import { readParams } from './URLParametersHelpers'
 
 interface SearchPageProps {
   type: string;
-  globalState: any;
   setNavigationExpanded: Function;
 }
 
@@ -31,15 +30,17 @@ type ParamsType = {
 }
 
 type SearchResults = {
-  results: Array<Result>;
-  groupedResults: Array<Result>;
+  results: Array<ResultGroup>;
+  groupedResults: Array<ResultGroup>;
   metadataResponses: Array<API.MetadataResponse>;
   hashes?: Array<string>;
 }
 
-export type Result = {
-  cover: string; //Representant of a result
-  entries: Array<API.MetadataResponse>; //List of Metadata responses since they have hash anyway already and this way i get access to all
+export type ResultGroup = {
+  cover: string; // This is a hash for cover image of the group
+  title: string; // title of the group - should allow for for easy searching for the rest of the group with adding * after it
+  subgroups: Map<string, ResultGroup>; // Subgroups if any
+  entries: Array<API.MetadataResponse>; // This will be probably empty for groups that also have subgroups as those files should belong to the subgroups entries
 }
 
 export function changePage() {
@@ -80,9 +81,6 @@ export function SearchPage(props: SearchPageProps) {
 
   //const navigate = useNavigate()
 
-  //console.log(props.globalState?.getGlobalValue())
-  //props.globalState?.setGlobalValue('search')
-
   function changeSortType(newSortType: API.FileSortType) {
     console.log('new sort type is ' + API.FileSortType[newSortType].toString())
     sortType.current = newSortType
@@ -96,41 +94,120 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
+    function processTieredGroup(groupString: string, metadata: API.MetadataResponse, resultGroupMap: Map<string, ResultGroup>) {
+      const SplitSymbol = '/'
+      // Idea is that groups can get subgroups
+      // Scheme is as following <group-namespace>:<master group>/<sub group 1>/<sub group 2> etc.
+      // So let's say we have a set that might have 12 pictures out of which only 4 are actually distinct(they have 3 variants each)
+      // This way we can group them independentely for each image but also keep them coherent for ordered sets, 
+      // where you sometimes get standalone images that combined create some sort of narrative
+      // Subgroups can essentialy save as ordered pages explicitely tied to a group
+      // IMPORTANT - this does create a necesssity to understand that '/' symbol is for splitting
+      //
+      // Split by this symbol
+      let splitted = groupString.split(SplitSymbol)
+
+      // Nidoqueen,1
+      // Nidoqueen,2
+
+      let result = resultGroupMap.get(splitted[0])
+      // If group map already has entry append this one to it
+      if (result !== undefined) {
+        resultGroupMap.set(splitted[0], appendToSubGroup(splitted.splice(1), metadata, result))
+      }
+      else { // Else create new one
+        resultGroupMap.set(splitted[0], createSubGroup(splitted, metadata))
+      }
+    }
+    // This essentialy overwrites already existing group
+    function appendToSubGroup(stack: Array<string>, metadata: API.MetadataResponse, currentResultGroup: ResultGroup): ResultGroup {
+      // If there are any more subgroups
+      if (stack.length > 0) {
+        // If subgroups exists give me back current group object with modified subgroup
+        let currentSubGroup = currentResultGroup.subgroups.get(stack[0])
+        if (currentSubGroup !== undefined) { //Subgroup already exist
+          let subgroups = currentResultGroup.subgroups
+          currentResultGroup.subgroups.set(stack[0], appendToSubGroup(stack.slice(1), metadata, currentSubGroup))
+
+
+
+          let group: ResultGroup = {
+            cover: currentResultGroup.cover,
+            title: currentResultGroup.title,
+            subgroups: subgroups,
+            entries: currentResultGroup.entries
+          }
+
+          return group
+        }
+        else { // Else append a new one
+          // Get existing subgroups
+          let subgroups = currentResultGroup.subgroups
+          // Add the new one
+          subgroups.set(stack[0], createSubGroup(stack, metadata))
+          // Create new object with updated subgroups data and return it
+          let group: ResultGroup = {
+            cover: currentResultGroup.cover,
+            title: currentResultGroup.title,
+            subgroups: subgroups,
+            entries: currentResultGroup.entries
+          }
+          return group
+        }
+      }
+      else { // If not just add current metadata to entries
+        let group: ResultGroup = {
+          cover: currentResultGroup.cover,
+          title: currentResultGroup.title,
+          subgroups: currentResultGroup.subgroups,
+          entries: [...currentResultGroup.entries, metadata]
+        }
+        return group
+      }
+
+    }
+
+    function createSubGroup(groups: Array<string>, metadata: API.MetadataResponse): ResultGroup {
+      let subgroups: Map<string, ResultGroup> = new Map<string, ResultGroup>()
+      if (groups.length > 0) {
+        //console.log("Doing group:" + groups)
+        //console.log("It's length is : "+ groups.length)
+        //console.log("It's subgroup slice is: " + groups.slice(1))
+
+        let entries: Array<API.MetadataResponse>
+        if (groups.length === 1) {
+          entries = [metadata]
+        }
+        else {
+          subgroups.set(groups[1], createSubGroup(groups.slice(1), metadata))
+          entries = []
+        }
+
+        let resultGroup: ResultGroup = {
+          cover: metadata.hash,
+          title: groups[0],
+          subgroups: subgroups,
+          entries: entries
+        }
+        return resultGroup
+      }
+      // This is a single file result
+      return {
+        cover: metadata.hash,
+        title: metadata.hash,
+        subgroups: subgroups,
+        entries: [metadata]
+      }
+    }
+    //#######################################################################
     //TODO
     //Sort tags in groups according to page(or some other) order
     //Add option to use oldest file in group as representant
 
     //BASICALLY RESORT METADATA TO FIT RECEIVED HASHES ORDER
-    //let responsesResorted = []
-
     let hashesCopy = hashes.slice()
     let responsesCopy = responses.slice()
 
-    //let i = 0
-    //let testSort2 = []
-    //let testSort3 = []
-
-    //console.time('Resorting#2')
-    //i = 0
-    //Approach #2
-    //Add break to second loop
-    //Keep this for a while until I'm sure there's no problems with approach #3
-    /*
-    for (let hash in hashesCopy) {
-      for (let response in responsesCopy) {
-        i += 1
-
-        if (hashesCopy[hash] === responsesCopy[response].hash) {
-          testSort2.push(responsesCopy.splice(parseInt(response), 1)[0])
-          break
-        }
-      }
-    }
-    console.timeEnd('Resorting#2')
-    console.log('Steps:' + i)
-    */
-
-    //console.time('Resorting#3')
     //Approach #3
     //Custom Sort function
     //Convert array into a hash map with given order for each hash
@@ -150,25 +227,20 @@ export function SearchPage(props: SearchPageProps) {
       if (hashA > hashB) { return 1 }
       return 0
     }
-    //testSort3 = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
-    //console.timeEnd('Resorting#3')
-
-    //console.log("Are sorting results same?")
-    //console.log(JSON.stringify(testSort2) === JSON.stringify(testSort3))
-
-    //responsesResorted = testSort3
 
     let responsesSorted = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
 
-    let resultMap: Map<string, Result> = new Map<string, Result>()
-    let unsortedArray: Array<Result> = []
+    //let resultMap: Map<string, Result> = new Map<string, Result>()
+    let unsortedArray: Array<ResultGroup> = []
+
+    let resultGroupMap: Map<string, ResultGroup> = new Map<string, ResultGroup>()
 
     //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
     let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags') || '';
     if (!allKnownTagsKey || allKnownTagsKey === null) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
 
     for (let element of responsesSorted) {
-      unsortedArray.push({ cover: element.hash, entries: [element] })
+      unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element] })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
 
@@ -182,38 +254,65 @@ export function SearchPage(props: SearchPageProps) {
 
         //This turns the responses into a map for later filtering
         //transformIntoTuple could be done once frankly, saving some execution time
-        let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
-        //This gives all tags for grouping namespace, ideally only 1 result should exist
-        let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === groupNamespace)
+        let tagMap = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
+
+        let tagTuples = TagTools.transformIntoTuple(tagMap)
+
+        // This gives all tags for grouping namespace, ideally only 1 result should exist
+        let foundGroupTags = tagTuples.filter((element) => element["namespace"] === groupNamespace)
+        // Same just for comic tags
+        let foundComicTags = tagTuples.filter((element) => element["namespace"] === getComicNamespace())
+
+        // I can do cool stuff like this now
+        // This groups all images by their creator tag
+        //let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'creator')
+
         //This gives the page tags for given file, ideally should exist only 1 but who knows
         //let pageTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
 
-        if (filterTags.length !== 0) { //Don't create group for files with no group namespace
-          let tempResult = resultMap.get(filterTags[0].value)           //Check if tag group already exist in tempResult
-          if (tempResult !== undefined) {           //If exist update with appending a current one
-            resultMap.set(filterTags[0].value, { cover: tempResult.cover, entries: [...tempResult.entries, element] })
-          }
-          else {           //If not create a new entry
-            resultMap.set(filterTags[0].value, { cover: element.hash, entries: [element] })
+        // Determine whether to use comic tags or group tags
+        // Mby add some user setting to choose which you prefer
+        let usedNamespace = 'group'
+        if (foundComicTags.length > 0) {
+          usedNamespace = 'comic'
+        }
+
+        if (usedNamespace === 'group') {
+           // For each of group tags create a result group
+        for (let result of foundGroupTags) {
+          processTieredGroup(result.value, element, resultGroupMap)
+        }
+        // Create a solo result group for files without any grouping
+        if (foundGroupTags.length === 0) {
+          processTieredGroup(element.hash, element, resultGroupMap)
+        }
+        }
+        if (usedNamespace === 'comic') {
+          for (let result of foundComicTags) {
+            processTieredGroup(result.value, element, resultGroupMap)
           }
         }
-        else { //If no grouping namespaces just push a single
-          resultMap.set(element.hash, { cover: element.hash, entries: [element] })
-        }
+
+       
+        // I'm going to make an assumption, that every file inside a group is going to have info about the groups it's in
+        // > It would be easier if groups had proper support in hydrus itself, as then I would probably only need to pull one set of data and that's it
+        // That might hold things like flags as to how display a given group, I'm mostly seeing it as a way to for example decide by user whether they want a given group to display as single results or have entries for every subgroup
       }
     }
+    //console.log(resultGroupMap)
     let returnHashes: Array<string> = []
-    let searchArray: Array<Result> = []
+    let searchArray: Array<ResultGroup> = []
 
     function sortResults(a: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }, b: { hash: string, page: Array<TagTools.Tuple>, modifiedDate: number }): number {
-      //If posssible to compare pages
-      //TODO make it so having page makes you first
+      // If one of results have pages and other doesn't put the one that does first
       if (a.page.length > 0 && b.page.length === 0) {
         return -1
       }
       if (a.page.length === 0 && b.page.length > 0) {
         return 1
       }
+      // If posssible to compare pages
+      // Sort by page number
       if (a.page.length > 0 && b.page.length > 0) {
         return parseInt(a.page[0].value) - parseInt(b.page[0].value)
       }
@@ -222,40 +321,22 @@ export function SearchPage(props: SearchPageProps) {
       }
     }
 
-    resultMap.forEach((entry) => {
-      //Potential Sortings
-      //#1. By date (usually images are imported in canon order)
-      //#2. By page number (for comics/ordered image groups)
-      //#3. Some hybrid way of putting all page tag containing images first in proper order then putting all non page number having at the end in order of date
-      //Altough not sure if it's necessary here as right now all I care about is proper group cover
-
-
-      let tempArray = []
-
-      for (let t of entry.entries) {
-
-        let serviceKeys = t.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
-        let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
-        //This gives all tags for grouping namespace, ideally only 1 result should exist
-        let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
-        tempArray.push({ hash: t.hash, page: filterTags, modifiedDate: t.time_modified })
-      }
-
-      tempArray.sort((a, b) => sortResults(a, b))
-      let reverseHashes = tempArray.map((value, index) => { return value.hash })
-
-
-      //entry.entries.sort((a, b) => { return a.time_modified - b.time_modified })
-      entry.cover = reverseHashes[0]
+    // This whole thing basically sorts the internals of the results
+    // TODO - Rewrite for new format
+    resultGroupMap.forEach((entry) => {
+      // Return each group hash representant (cover)
+      // Sort internal lists (somehow)
 
       returnHashes.push(entry.cover)
       searchArray.push(entry)
-    })
-    let searchResultObject: SearchResults = { results: unsortedArray, metadataResponses: responsesSorted, groupedResults: searchArray, hashes: returnHashes }
 
-    localforage.setItem('search-results-cache', JSON.stringify(searchResultObject))
+    })
+
+    let searchResultObject: SearchResults = { results: unsortedArray, metadataResponses: responsesSorted, groupedResults: searchArray }
+
+    //localforage.setItem('search-results-cache', JSON.stringify(searchResultObject))
     setSearchResults(searchResultObject)
-    return returnHashes //This is what will be displayed in the end
+    return returnHashes //This is used to keep search result cached
   }
 
   async function search() {
@@ -292,7 +373,7 @@ export function SearchPage(props: SearchPageProps) {
     }
     //console.log('actually searching')
     //console.log(sortType.current)
-    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current,abortController:AbortControllerSearch.current });
+    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current, abortController: AbortControllerSearch.current });
     let responseHashes: Array<string> = response.data.hashes
     //console.log(responseHashes)
     if (responseHashes.length === 0) {
@@ -312,7 +393,12 @@ export function SearchPage(props: SearchPageProps) {
     //Might require higher than default 'large_client_header_buffers' in nginx configuration if using ssl proxy
     //Otherwise you will get an error when getting metadata with this large request
     //Workaround - lower STEP variable to something like 50
-    const STEP = 1000
+    let STEP = 1000
+    let loadSize = localStorage.getItem('metadata-load-size')
+    if (loadSize !== null) {
+      STEP = parseInt(loadSize)
+    }
+
     let responses: Array<API.MetadataResponse> = []
     let fileTags: Array<TagTools.Tuple> = []
 
@@ -323,46 +409,47 @@ export function SearchPage(props: SearchPageProps) {
     if (hashes.length > 0) {
       //Load the session storage metadata if exist
       //console.time('localforage')
-      let cacheHashes: Array<string> = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
+      //let cacheHashes: Array<string> = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
       //let cacheResponses: Array<API.MetadataResponse> = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
-      let cacheResults: SearchResults = JSON.parse(await localforage.getItem('search-results-cache') as string)
+      //let cacheResults: SearchResults = JSON.parse(await localforage.getItem('search-results-cache') as string)
+      //console.log(cacheResults)
       //console.timeEnd('localforage')
 
       //If current hashes matches cached search result just use that
-      if ((cacheResults !== null) && (JSON.stringify(cacheHashes) === JSON.stringify(hashes))) {
-        //console.log('loading cached results')
-        responses = cacheResults.metadataResponses
-        fileTags = createListOfUniqueTags(responses)
-        sessionStorage.setItem('hashes-search', JSON.stringify(cacheResults.hashes))
-        setLoaded(true)
-        setFileTags(fileTags)
-        setSearchResults(cacheResults)
-        return
-      }
+      // if ((cacheResults !== null) && (JSON.stringify(cacheHashes) === JSON.stringify(hashes))) {
+      //   //console.log('loading cached results')
+      //   responses = cacheResults.metadataResponses
+      //   fileTags = createListOfUniqueTags(responses)
+      //   sessionStorage.setItem('hashes-search', JSON.stringify(cacheResults.hashes))
+      //   setLoaded(true)
+      //   setFileTags(fileTags)
+      //   setSearchResults(cacheResults)
+      //   return
+      //}
       //Else load them from the server and then add do indexedDB
-      else {
-        let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
-        for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-          let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true,abortController:AbortControllerSearch.current })
-          if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
-          if (responseSize > 512) { //KB
-            responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
-          }
-          if (responseSize > 1024 * (512)) { //MB
-            responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'MB'
-          }
-          if (responseSize < 512) {
-            responseSizeReadable = (responseSize * 2).toLocaleString() + 'B'
-          }
-          setLoadingProgress(i + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+      //else {
+      let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
+      for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
+        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true, abortController: AbortControllerSearch.current })
+        if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
+        if (responseSize > 512) { //KB
+          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
         }
-        responses = responses.flat()
-        //Save results for later
-        localforage.setItem('search-metadata-cache-hashes', JSON.stringify(hashes))
-        localforage.setItem('search-metadata-cache-responses', JSON.stringify(responses))
-
-        setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+        if (responseSize > 1024 * (512)) { //MB
+          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'MB'
+        }
+        if (responseSize < 512) {
+          responseSizeReadable = (responseSize * 2).toLocaleString() + 'B'
+        }
+        setLoadingProgress(i + '/' + hashes.length + '\n(' + responseSizeReadable + ')')
       }
+      responses = responses.flat()
+      //Save results for later
+      //localforage.setItem('search-metadata-cache-hashes', JSON.stringify(hashes))
+      //localforage.setItem('search-metadata-cache-responses', JSON.stringify(responses))
+
+      setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
+      //}
 
       //console.time('GroupImages')
 
@@ -377,6 +464,7 @@ export function SearchPage(props: SearchPageProps) {
 
       //console.timeEnd('GroupImages')
 
+      //This exists for Previous/Next Image controls
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
     }
@@ -449,32 +537,37 @@ export function SearchPage(props: SearchPageProps) {
   //Don't display those namespaces in tag list, eventually to move this into a setting
   const tagBlacklist = useRef(getBlacklistedNamespaces())
 
-  function toggleSideBar(setting?:boolean) {
-    if (setting !== undefined) {setSideBarVisible(setting); return}
+  function toggleSideBar(setting?: boolean) {
+    if (setting !== undefined) { setSideBarVisible(setting); return }
     setSideBarVisible(!sideBarVisible)
   }
 
   function getGridStyleList() {
+    let style = 'gridStyleList'
     if (isMobile()) {
-      if (sideBarVisible) { return 'gridStyleList mobile active' }
-      return "gridStyleList mobile"
+      style += ' mobile'
+      if (sideBarVisible) { style += ' active' }
     }
-    return "gridStyleList"
+    return style
   }
 
   function getGridStyleThumbs(): string {
+    let style = 'gridStyleThumbs'
     if (isMobile()) {
-      return "gridStyleThumbs mobile"
+      style += ' mobile'
     }
-    return "gridStyleThumbs"
+    return style
   }
 
   function getTopBarPaddingStyle(): string {
+    let style = 'topBarPadding'
     if (isMobile()) {
-      if (isLandscapeMode()) { return "topBarPadding mobile landscape" }
-      return "topBarPadding mobile"
+      style += ' mobile'
+      if (isLandscapeMode()) {
+        style += ' landscape'
+      }
     }
-    return "topBarPadding"
+    return style
   }
 
   /* Mobile Layout */
@@ -497,13 +590,13 @@ export function SearchPage(props: SearchPageProps) {
         addTag={addTag}
         type={params.type}
         page={params.page}
-        hashes={(groupFiles) ? searchResults.groupedResults : searchResults.results}
+        results={(groupFiles) ? searchResults.groupedResults : searchResults.results}
         changePage={changePage}
         loadingProgress={loadingProgress}
         loaded={loaded}
         empty={emptySearch}
       />
-      {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage globalState={props.globalState} setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
+      {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
     </>;
   }
   /* Desktop Layout */
@@ -523,11 +616,12 @@ export function SearchPage(props: SearchPageProps) {
       </div>}
       <div className={getGridStyleThumbs()}>
         <ImageWall
+          key={searchResults.groupedResults.toString()}
           grouping={groupFiles}
           addTag={addTag}
           type={params.type}
           page={params.page}
-          hashes={(groupFiles) ? searchResults.groupedResults : searchResults.results}
+          results={(groupFiles) ? searchResults.groupedResults : searchResults.results}
           changePage={changePage}
           loadingProgress={loadingProgress}
           loaded={loaded}
@@ -535,6 +629,6 @@ export function SearchPage(props: SearchPageProps) {
         />
       </div>
     </div>
-    {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage globalState={props.globalState} setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
+    {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
   </>;
 }

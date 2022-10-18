@@ -23,13 +23,14 @@
     gap: 0px;
     flex-direction: column;
     overflow-x: auto;
-    width: max-content;
+    width: 100%;
     overflow: hidden;
 }
 
 .relatedThumbnails.mobile {
     flex-direction: row;
     padding-right: 1em;
+    width: max-content;
 }
 
 .relatedStyleThumbsWrapper {

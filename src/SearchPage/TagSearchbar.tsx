@@ -68,6 +68,8 @@ export function TagSearchBar(props: SearchTagsProps) {
   const [helpTags, setHelpTags] = useState<Array<TagTools.Tuple>>([])
   const [helpTagsVisible, setHelpTagsVisible] = useState<boolean>(false)
 
+  const [hidden, setHidden] = useState<boolean>(false)
+
   const navigate = useNavigate()
 
   const abortController = useRef<AbortController | undefined>()
@@ -119,6 +121,25 @@ export function TagSearchBar(props: SearchTagsProps) {
     }
 
   }
+  const scrollPosition = useRef(window.scrollY)
+
+  function scrollHandler() {
+    if (scrollPosition.current > window.scrollY && hidden === true) {
+      setHidden(false)
+    }
+    if (scrollPosition.current < window.scrollY && hidden === false) {
+      setHidden(true)
+    }
+    scrollPosition.current = window.scrollY
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', scrollHandler)
+
+    return () => {
+      window.removeEventListener('scroll', scrollHandler)
+    }
+  })
 
   useEffect(() => {
     if (JSON.stringify(props.tags) !== JSON.stringify(tags)) {
@@ -148,12 +169,18 @@ export function TagSearchBar(props: SearchTagsProps) {
     </div>
   }
 
-  function getTopBarStyle() {
-    if (isMobile()) {
-      if (isLandscapeMode()) { return "topBar mobile landscape" }
-      return "topBar mobile"
+  function getTopBarStyle(active: boolean) {
+    let style = 'topBar'
+    if (active) {
+      style += ' hidden'
     }
-    return "topBar"
+    if (isMobile()) {
+      style += " mobile"
+      if (isLandscapeMode()) {
+        style += " landscape"
+      }
+    }
+    return style
   }
 
   function getHelpTagsListStyle(visible: boolean) {
@@ -168,7 +195,7 @@ export function TagSearchBar(props: SearchTagsProps) {
   ///TODO
   ///Maybe some form of favourite tags visible when nothing else stands, or history of them
 
-  return <div className={getTopBarStyle()}>
+  return <div className={getTopBarStyle(hidden)}>
     <div className="buttonsBar">
       <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
       <GroupButton icon={IconGroup} activeValue={getGroupingToggle()} clickAction={props.groupAction} />

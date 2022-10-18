@@ -1,49 +1,63 @@
 .WrapperList {
-    display: flex;
-    flex-flow: row wrap;
-    place-items: flex-start;
+    --CELL_SIZE: 125px;
+    --CELL_SIZE_MOBILE: 100px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 15px;
-    gap: 0px;
+    gap: 0.15em;
     border-radius: 15px;
+    grid-auto-flow: row dense;
+    justify-content: center;
 }
+
+.WrapperList.mobile {
+    grid-template-columns: repeat(auto-fill, var(--CELL_SIZE_MOBILE));
+    grid-template-rows: repeat(auto-fill, var(--CELL_SIZE_MOBILE));
+    justify-content: center;
+    padding: 0px;
+    padding-top: 15px;
+    padding-bottom: 25px;
+}
+
 .WrapperList.comic {
-    padding:0px;
-    height:auto;
+    display:flex;
+    flex-wrap: wrap;
+    padding: 0px;
+    height: auto;
     align-items: stretch;
     aspect-ratio: auto;
     place-content: center;
 }
+
 .WrapperList.comic.mobile {
-    display:block;
+    display: block;
     padding: 0px;
     gap: 0px;
     padding-top: 15px;
     padding-bottom: 25px;
-    height:auto;
+    height: auto;
 }
 
 .WrapperList.loading {
-    width:auto;
+    display: block;
+    width: auto;
     height: min-content;
-    position:fixed;
-    top:0px;
-    bottom:0px;
-    left:0px;
-    right:0px;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
     background-color: rgba(0, 0, 0, 0.733);
     border-radius: 0px;
     margin: auto auto auto auto;
     justify-content: center;
     text-align: center;
-    padding:1em;
+    padding: 1em;
     font-size: x-large;
 }
 
-.WrapperList.mobile {
-    justify-content: center;
-    padding: 0px;
-    padding-top: 15px;
-    padding-bottom: 25px;
+.WrapperList.loading p {
+    margin: 0px;
 }
 
 .imageWall {
@@ -57,7 +71,14 @@
     margin: auto auto auto auto;
     justify-content: center;
     text-align: center;
-    padding:4em;
+    padding: 4em;
     font-size: x-large;
+}
 
+.infiniteLoader {
+    background-color: black;
+    border-radius: 10px;
+    width: 100%;
+    grid-row: span 4;
+    grid-column: 1/-1;
 }

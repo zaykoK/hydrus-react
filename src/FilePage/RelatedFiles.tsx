@@ -29,32 +29,15 @@ export function RelatedFiles(props: RelatedFilesProps) {
     const [expanded, setExpanded] = useState<boolean>(props.initiallyExpanded)
 
     const AbortControllerSearch = useRef<AbortController | undefined>()
-    const AbortControllerMetadata = useRef<AbortController | undefined>()
-
-
-    /*
-        Since it's impossible to declare navigate outside of component, navigate object gets "re-created" every time component re-renders
-        this means that every it happens all the children get a new prop that change that also facilitates a re-render on them
-        based on the fact that this works I'm potentialy saving some 10-300ms on re-render whenever changing to new image
-        using useRef means object gets created once and only changes whenever i actually change navigate.current or (maybe) redeclare a new useRef
-        Seems to potentialy be the same thing as
-        const [navigate,setNavigate] = useState<NavigateFunction>(useNavigate())
-    */
 
     const navigate = useRef(useNavigate())
 
     useEffect(() => {
         async function Search() {
-            //console.log('settings new group hashes to storage')
-            //console.log(props.tags)
             if (AbortControllerSearch.current) {
                 AbortControllerSearch.current.abort()
             }
-            if (AbortControllerMetadata.current) {
-                AbortControllerMetadata.current.abort()
-            }
             AbortControllerSearch.current = new AbortController()
-            AbortControllerMetadata.current = new AbortController()
 
 
             if (props.tags === undefined) { return }
@@ -73,7 +56,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
             //Sort hashes in order of first pages by order of page, then all the other files by order of import date
             const STEP = 100
             for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
-                let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true,abortController:AbortControllerMetadata.current }).catch((reason) => {return})
+                let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true,abortController:AbortControllerSearch.current }).catch((reason) => {return})
                 if (metaDataResponse) { responses.push(metaDataResponse.data.metadata) }
             }
 
@@ -167,7 +150,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
                         key={relatedHashes[hash]}
                         hash={relatedHashes[hash]}
                         loadMeta={false}
-                        size={1}
+                        size={5}
                     />)
             }
             setThumbs(temp)
@@ -211,7 +194,6 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     useEffect(() => {
         return () => {
-            AbortControllerMetadata.current?.abort()
             AbortControllerSearch.current?.abort()
         }
     },[])

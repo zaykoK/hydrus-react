@@ -38,6 +38,11 @@
     100% {transform: scale(1);}
 }
 
+@keyframes coverIntro {
+    0% {transform:translateY(-150%);}
+    100% {transform:translateY(0%);}
+}
+
 .thumbnailWrapper {
     position: relative;
     margin: 5px;
@@ -65,14 +70,42 @@
 }
 
 .thumbnailWrapper.small {
-    width: calc(80vw/11.1);
-    height: calc(80vw/11.1);
+    min-width: 3vw;
+    min-height: 3vw;
+    width: auto;
+    height: auto;
+    aspect-ratio: 1/1;
+    margin:0px;
+    box-shadow: none;
 }
 .thumbnailWrapper.small.mobile {
-    width: 27vw;
-    height: 27vw;
-    max-height: 130px;
-    max-width: 130px;
+    min-width: 5vw;
+    min-height: 5vw;
+    aspect-ratio: 1/1;
+    width: auto;
+    height: auto;
+}
+
+.thumbnailWrapper.relatedSmall {
+    min-width: 3vw;
+    min-height: 3vw;
+    width: auto;
+    height: auto;
+    aspect-ratio: 1/1;
+    margin:0px;
+    box-shadow: none;
+}
+
+.thumbnailWrapper.relatedSmall.mobile {
+    min-width: 3vw;
+    min-height: 3vw;
+    margin:0px;
+    box-shadow: none;
+    min-width: 100px;
+    min-height: 100px;
+    aspect-ratio: 1/1;
+    width: 100px;
+    height: 100px;
 }
 
 .thumbnailWrapper.medium {
@@ -91,6 +124,19 @@
 .thumbnailWrapper.large.mobile {
     width: 98vw;
     height: 98vw;
+}
+
+.thumbnailWrapper.fill {
+    width: inherit;
+    height: inherit;
+    max-width: none;
+    max-height: none;
+    transition: none;
+    margin:0px;
+    box-shadow:none;
+    border-radius: none;
+    animation-name: coverIntro;
+    animation-duration: 1s;
 }
 
 .thumbnailWrapper.mobile {

@@ -12,7 +12,7 @@ interface WrapperListProps {
 }
 
 const COMICSTEP = 28 //For now I'm doing multiples of 4 as that's how many fit in row on 1080p screen
-const IMAGESTEP = 50
+const IMAGESTEP = 60
 
 function WrapperList(props: WrapperListProps) {
     const [displayedThumbs, setDisplayedThumbs] = React.useState<Array<JSX.Element>>([])
@@ -60,13 +60,13 @@ function WrapperList(props: WrapperListProps) {
             pageStart={0}
             loadMore={moreData}
             hasMore={hasMore}
-            loader={<div key='infiniteloader'>Loading</div>}
-            threshold={150}
+            loader={<div className='infiniteLoader' key='infiniteloader'>Loading</div>}
+            threshold={250}
             className={getWrapperListStyle()}
         >
             {displayedThumbs}
         </InfiniteScroll>
-        || <div className={getWrapperListStyle() + ' loading'}>LOADING {props.loadingProgress}</div>
+        || <div className={getWrapperListStyle() + ' loading'}><p>LOADING</p><p>{props.loadingProgress}</p></div>
     );
 }
 
