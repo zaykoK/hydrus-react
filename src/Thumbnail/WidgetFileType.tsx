@@ -1,7 +1,6 @@
 import IconImage from '../assets/filetype-picture.svg'
 import IconVideo from '../assets/filetype-video.svg'
 import IconOther from '../assets/filetype-unknown.svg'
-import { MetadataResponse } from '../hydrus-backend';
 import './WidgetFileType.css'
 
 interface WidgetFileTypeProps {
