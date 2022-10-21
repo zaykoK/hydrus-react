@@ -1,6 +1,6 @@
 .WrapperList {
     --CELL_SIZE: 125px;
-    --CELL_SIZE_MOBILE: 100px;
+    --CELL_SIZE_MOBILE: 85px;
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 15px;
