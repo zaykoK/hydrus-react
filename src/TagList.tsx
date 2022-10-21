@@ -38,7 +38,7 @@ export function TagList(props: TagListProps) {
 
             //Don't display tags in certain namespaces like titles,page etc on overall list
             if (!blacklist.includes(tuples[element].namespace)) {
-                tagList.push(<TagListButton key={tuples[element].namespace+tuples[element].value} tag={tuples[element]} navigate={navigate} type={props.type} visibleCount={props.visibleCount} />)
+                tagList.push(<TagListButton key={tuples[element].namespace+':'+tuples[element].value} tag={tuples[element]} navigate={navigate} type={props.type} visibleCount={props.visibleCount} />)
             }
         }
         return tagList;
