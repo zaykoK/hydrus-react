@@ -46,7 +46,7 @@ function ResultComponent(props: ResultComponentProps) {
             if (tLength > 2) {
                 setCover(<ImageThumbnail
                     navigate={props.navigate}
-                    loadMeta={false}
+                    loadMeta={true}
                     type={props.type}
                     key={props.result.cover}
                     hash={props.result.cover}
@@ -64,7 +64,7 @@ function ResultComponent(props: ResultComponentProps) {
             for (let entry of sortedEntries) {
                 let thumb = <ImageThumbnail
                     navigate={props.navigate}
-                    loadMeta={false}
+                    loadMeta={true}
                     type={props.type}
                     key={entry.hash + props.result.title}
                     hash={entry.hash}
@@ -77,7 +77,7 @@ function ResultComponent(props: ResultComponentProps) {
                 if (entries.length > 2) {
                     setCover(<ImageThumbnail
                         navigate={props.navigate}
-                        loadMeta={false}
+                        loadMeta={true}
                         type={props.type}
                         key={props.result.cover + props.result.title}
                         hash={props.result.cover}
@@ -113,6 +113,9 @@ function ResultComponent(props: ResultComponentProps) {
         if (size > 15) {
             style += ' bigger threes' // fours
         }
+        if (props.result.type === 'comic') {
+            style += ' comic'
+        }
         return style
     }
     function getWrapperComponentStyle(size: number, scrollable: boolean) {
@@ -134,6 +137,9 @@ function ResultComponent(props: ResultComponentProps) {
         }
         if (size > 15) {
             style += ' bigger threes' // fours
+        }
+        if (props.result.type === 'comic') {
+            style += ' comic'
         }
         return style
     }

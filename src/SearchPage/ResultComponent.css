@@ -103,6 +103,26 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-auto-rows: calc(var(--CELL_SIZE));
 }
+.ResultComponent.bigger.comic {
+    grid-row: span 3;
+    grid-column: span 2;
+    height: calc(var(--CELL_SIZE)*3);
+    width: calc(var(--CELL_SIZE)*2);
+}
+.ResultComponent.bigger.comic.mobile {
+    grid-row: span 3;
+    grid-column: span 4;
+    height: calc(var(--CELL_SIZE)*4);
+    width: calc(var(--CELL_SIZE)*3);
+}
+.ResultComponentWrapper.bigger.comic {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: calc(var(--CELL_SIZE));
+}
+.ResultComponentWrapper.bigger.comic.mobile {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: calc(var(--CELL_SIZE_MOBILE));
+}
 
 .ResultComponent.bigger.fours.mobile {
     grid-row: span 4;

@@ -41,6 +41,7 @@ export type ResultGroup = {
   title: string; // title of the group - should allow for for easy searching for the rest of the group with adding * after it
   subgroups: Map<string, ResultGroup>; // Subgroups if any
   entries: Array<API.MetadataResponse>; // This will be probably empty for groups that also have subgroups as those files should belong to the subgroups entries
+  type:string; // What type the group is, used for proper formatting and tag display ex. image,comic,photoset etc.
 }
 
 export function changePage() {
@@ -94,7 +95,7 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
-    function processTieredGroup(groupString: string, metadata: API.MetadataResponse, resultGroupMap: Map<string, ResultGroup>) {
+    function processTieredGroup(groupString: string, metadata: API.MetadataResponse, resultGroupMap: Map<string, ResultGroup>, type: string = 'group') {
       const SplitSymbol = '/'
       // Idea is that groups can get subgroups
       // Scheme is as following <group-namespace>:<master group>/<sub group 1>/<sub group 2> etc.
@@ -116,7 +117,7 @@ export function SearchPage(props: SearchPageProps) {
         resultGroupMap.set(splitted[0], appendToSubGroup(splitted.splice(1), metadata, result))
       }
       else { // Else create new one
-        resultGroupMap.set(splitted[0], createSubGroup(splitted, metadata))
+        resultGroupMap.set(splitted[0], createSubGroup(splitted, metadata, type))
       }
     }
     // This essentialy overwrites already existing group
@@ -135,7 +136,8 @@ export function SearchPage(props: SearchPageProps) {
             cover: currentResultGroup.cover,
             title: currentResultGroup.title,
             subgroups: subgroups,
-            entries: currentResultGroup.entries
+            entries: currentResultGroup.entries,
+            type: currentResultGroup.type
           }
 
           return group
@@ -144,13 +146,14 @@ export function SearchPage(props: SearchPageProps) {
           // Get existing subgroups
           let subgroups = currentResultGroup.subgroups
           // Add the new one
-          subgroups.set(stack[0], createSubGroup(stack, metadata))
+          subgroups.set(stack[0], createSubGroup(stack, metadata,currentResultGroup.type))
           // Create new object with updated subgroups data and return it
           let group: ResultGroup = {
             cover: currentResultGroup.cover,
             title: currentResultGroup.title,
             subgroups: subgroups,
-            entries: currentResultGroup.entries
+            entries: currentResultGroup.entries,
+            type: currentResultGroup.type
           }
           return group
         }
@@ -160,14 +163,15 @@ export function SearchPage(props: SearchPageProps) {
           cover: currentResultGroup.cover,
           title: currentResultGroup.title,
           subgroups: currentResultGroup.subgroups,
-          entries: [...currentResultGroup.entries, metadata]
+          entries: [...currentResultGroup.entries, metadata],
+          type: currentResultGroup.type
         }
         return group
       }
 
     }
 
-    function createSubGroup(groups: Array<string>, metadata: API.MetadataResponse): ResultGroup {
+    function createSubGroup(groups: Array<string>, metadata: API.MetadataResponse, type: string): ResultGroup {
       let subgroups: Map<string, ResultGroup> = new Map<string, ResultGroup>()
       if (groups.length > 0) {
         //console.log("Doing group:" + groups)
@@ -179,7 +183,7 @@ export function SearchPage(props: SearchPageProps) {
           entries = [metadata]
         }
         else {
-          subgroups.set(groups[1], createSubGroup(groups.slice(1), metadata))
+          subgroups.set(groups[1], createSubGroup(groups.slice(1), metadata, type))
           entries = []
         }
 
@@ -187,7 +191,8 @@ export function SearchPage(props: SearchPageProps) {
           cover: metadata.hash,
           title: groups[0],
           subgroups: subgroups,
-          entries: entries
+          entries: entries,
+          type: type
         }
         return resultGroup
       }
@@ -196,7 +201,8 @@ export function SearchPage(props: SearchPageProps) {
         cover: metadata.hash,
         title: metadata.hash,
         subgroups: subgroups,
-        entries: [metadata]
+        entries: [metadata],
+        type: type
       }
     }
     //#######################################################################
@@ -240,7 +246,7 @@ export function SearchPage(props: SearchPageProps) {
     if (!allKnownTagsKey || allKnownTagsKey === null) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
 
     for (let element of responsesSorted) {
-      unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element] })
+      unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element], type:'single' })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
 
@@ -278,22 +284,22 @@ export function SearchPage(props: SearchPageProps) {
         }
 
         if (usedNamespace === 'group') {
-           // For each of group tags create a result group
-        for (let result of foundGroupTags) {
-          processTieredGroup(result.value, element, resultGroupMap)
-        }
-        // Create a solo result group for files without any grouping
-        if (foundGroupTags.length === 0) {
-          processTieredGroup(element.hash, element, resultGroupMap)
-        }
+          // For each of group tags create a result group
+          for (let result of foundGroupTags) {
+            processTieredGroup(result.value, element, resultGroupMap, usedNamespace)
+          }
+          // Create a solo result group for files without any grouping
+          if (foundGroupTags.length === 0) {
+            processTieredGroup(element.hash, element, resultGroupMap, usedNamespace)
+          }
         }
         if (usedNamespace === 'comic') {
           for (let result of foundComicTags) {
-            processTieredGroup(result.value, element, resultGroupMap)
+            processTieredGroup(result.value, element, resultGroupMap, usedNamespace)
           }
         }
 
-       
+
         // I'm going to make an assumption, that every file inside a group is going to have info about the groups it's in
         // > It would be easier if groups had proper support in hydrus itself, as then I would probably only need to pull one set of data and that's it
         // That might hold things like flags as to how display a given group, I'm mostly seeing it as a way to for example decide by user whether they want a given group to display as single results or have entries for every subgroup
