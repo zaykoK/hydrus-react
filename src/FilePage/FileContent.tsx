@@ -16,7 +16,6 @@ export function FileContent(props: FileContentProps) {
     let style = 'contentWrapper'
     if (isMobile()) {
       style += ' mobile'
-      //if (isLandscapeMode() && !props.type.includes('video')) { style += ' landscape' }
     }
 
     return style

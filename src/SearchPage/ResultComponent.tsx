@@ -28,7 +28,6 @@ function ResultComponent(props: ResultComponentProps) {
         if (tLength > 0) {
             let sortedList = [...props.result.subgroups.values()].sort((a, b) => a.title.localeCompare(b.title))
             props.result.cover = sortedList[0].cover
-            //console.log(sortedList)
             for (let subgroup of sortedList) {
                 let thumb = <ImageThumbnail
                     navigate={props.navigate}
@@ -161,7 +160,7 @@ function ResultComponent(props: ResultComponentProps) {
     return <div onMouseLeave={(e) => { setScrollable(false); }} onMouseEnter={(e) => { }} onClick={(e) => { e.stopPropagation(); setScrollable(true); }} className={getComponentStyle(thumblist.length)}>
         <div className={getWrapperComponentStyle(thumblist.length, scrollable)}>{thumblist}</div>
         <div className='ResultComponentCover'>
-            <div className='ResultComponentTopBar'>{getTopText()}</div>
+            {(thumblist.length > 2) ? <div className='ResultComponentTopBar'>{getTopText()}</div>:<></>}
             {cover}
             <div className="ResultComponentCountWidget">{getResultCount()}</div>
         </div>
