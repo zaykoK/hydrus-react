@@ -78,10 +78,10 @@
 .ResultComponent.bigger.mobile {
     height: calc(var(--CELL_SIZE_MOBILE)*2);
     width: calc(var(--CELL_SIZE_MOBILE)*2);
-
 }
 .ResultComponentWrapper.bigger.mobile {
     grid-auto-rows: var(--CELL_SIZE_MOBILE);
+    gap:0px;
 }
 
 .ResultComponentWrapper.bigger.threes {
@@ -111,9 +111,9 @@
 }
 .ResultComponent.bigger.comic.mobile {
     grid-row: span 3;
-    grid-column: span 4;
-    height: calc(var(--CELL_SIZE)*4);
-    width: calc(var(--CELL_SIZE)*3);
+    grid-column: span 2;
+    height: calc(var(--CELL_SIZE_MOBILE)*3);
+    width: calc(var(--CELL_SIZE_MOBILE)*2);
 }
 .ResultComponentWrapper.bigger.comic {
     grid-template-columns: 1fr 1fr;
@@ -159,6 +159,7 @@
 
 .ResultComponentTopBar {
     background-color: rgba(0, 0, 0, 0.74);
+    font-size: smaller;
     position: absolute;
     top:0px;
     left:0px;
