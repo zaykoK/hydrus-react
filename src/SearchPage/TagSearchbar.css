@@ -156,7 +156,7 @@
     width: auto;
     max-width: 100%;
     height: auto;
-    max-height: 90%;
+    max-height: 90vh;
     overflow: auto;
     margin: auto;
     z-index: -1;
