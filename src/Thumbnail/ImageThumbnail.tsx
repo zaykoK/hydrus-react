@@ -337,7 +337,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
   }
 
   React.useEffect(() => {
-    if (metadata == undefined && props.loadMeta) {
+    if (metadata === undefined && props.loadMeta) {
       //Grab metadata for single file
       if (props.type === 'comic') {
         GrabMetadata(props.hash, true, 'doujin-title');
