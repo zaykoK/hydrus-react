@@ -14,7 +14,7 @@ Inspired by [hydrus-web by floogulinc](https://github.com/floogulinc/hydrus-web)
  - Desktop and mobile support
  
 ## Requirements
- - [Hydrus](https://github.com/hydrusnetwork/hydrus) instance with client API turned on [GUIDE](https://hydrusnetwork.github.io/hydrus/client_api.html)
+ - [Hydrus](https://github.com/hydrusnetwork/hydrus) instance with client API configured and activated [GUIDE](https://hydrusnetwork.github.io/hydrus/client_api.html)
  - [NodeJS](https://nodejs.dev)
 
 ## Running the app (online version)
@@ -41,8 +41,13 @@ While slightly harder to get running production mode might get better performanc
 In the settings page you have to point to your client API address (by default http://127.0.0.1:45869 ) add your access key (you can copy it from under *services/review services/client api*).
 
 ## Transcode support
-Hydrus-react supports usage of smaller file transcodes. It's done using separate local file service and a namespace. It allows users to use transcode large videos/images etc. into smaller "web-friendly" versions which will help with page load speed and responsivness.
+Hydrus-react supports usage of smaller file transcodes. It's done using separate local file service and a namespace. It allows users to have smaller "web friendly" versions of large videos and images, which helps with page load speed and responsivness. Whenever a large zoom happens transcoded version will be replaced by original.
 
+### Automated tool
+Automated script is available under [http://github.com/zaykok/hydrus-transcode](http://github.com/zaykok/hydrus-transcode). Check for more details.
+
+### Manual way - Guideline
+Below is older explanation of what transcoding does and how to set it up manually. I recommend trying out the script above.
 
 ### How to use
 Information below is more of a recommendation on how to use this feature, based on my own usage. The way it actually works allows for more specific/creative ways of replacing what file gets loaded and how. This is just a basic use case I came up with.
@@ -54,7 +59,7 @@ Information below is more of a recommendation on how to use this feature, based 
 1. Export files you want to have transcoded versions making sure they keep their hydrus hash as a filename.
 This happens by default when drag and dropping them from hydrus window.
 2. Use image converter of your choice to create a smaller version of a file.
-Personally I use ImageMagick converting image files to WebP and gifs (especially large ones >100MB) using google's gif2webp
+Personally I use ImageMagick converting image files to WebP and gifs (especially large ones >100MB) using Google's gif2webp
 2. Make sure that gifs are encoded into webp not webm format as then the file type mismatch will prevent displaying of them in hydrus-react
 3. This should give you output that keeps the file name (hash) with changed file extension.
 
@@ -70,5 +75,3 @@ You can configure file domain name, namespace of original filename hash, and whe
 
 If everything was done correctly next time you load given image in hydrus-react you should get transcoded image instead of original one.
 
-### Future
-I'm planning to create some sort of tool to automate above steps.
