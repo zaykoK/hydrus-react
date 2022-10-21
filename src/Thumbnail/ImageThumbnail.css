@@ -5,16 +5,6 @@
     --COLORRELATED: #252526b3;
 }
 
-.thumbnail {
-    padding: 0px;
-    vertical-align: bottom;
-    object-fit: cover;
-    background: var(--COLOR2);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    /* Disables ugly blue highlight on long press */
-}
-
 .wrapperLabel {
     position: absolute;
     bottom: 0px;
@@ -159,19 +149,6 @@
     opacity: 1;
 }
 
-.thumbnailImage {
-    width: 100%;
-    height: 100%;
-}
-.thumbnailImage.inactiveThumbnail {
-    opacity: 0.3;
-}
-
-.thumbnailComic {
-    width: 100%;
-    height: auto;
-}
-
 .comic {
     width: auto;
     height: auto;
@@ -208,77 +185,4 @@
     width: 100%;
     text-align: center;
     opacity: 1;
-}
-
-.comicCard {
-    background: var(--COLOR2);
-    flex-grow: 1;
-    flex-shrink: 1;
-    width: auto;
-    max-width: 23vw;
-    min-height: 300px;
-    padding: 5px;
-    margin:5px;
-    border-radius: 0.5em;
-}
-
-.comicCard.mobile {
-    background: var(--COLOR2);
-    width: calc(100% - 12px);
-    max-width: 100%;
-    min-height: 25vh;
-    padding: 5px;
-    padding-bottom: 15px;
-    margin-bottom: 5px;
-    margin-left: 1px;
-    margin-right: 1px;
-    border-radius: 0.5em;
-}
-
-.comicCardTitle {
-    padding: 3px 3px 1em 0px;
-}
-
-.comicCardTitle.mobile {
-    font-size: x-large;
-    padding: 3px;
-}
-
-.comicCardContent {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-
-.comicCardContent.mobile {
-    grid-template-columns: 2fr 3fr;
-    min-height: 24vh;
-}
-
-.comicCardThumbnailRow {
-    grid-column: 1;
-    grid-row: 1;
-    text-align: center;
-    margin: 0px auto;
-}
-
-.comicCardThumbnailRow.mobile {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.comicCardThumbnailRowMetadata {
-    padding:5px;
-}
-
-.comicCardMetadataRow {
-    overflow: hidden;
-    margin-left: 10px;
-    padding-right: 2px;
-    max-width: 100%;
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.comicCardMetadataRow.mobile {
-    font-size: larger;
 }

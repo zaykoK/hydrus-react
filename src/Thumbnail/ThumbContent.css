@@ -1,0 +1,22 @@
+.thumbnail {
+    padding: 0px;
+    vertical-align: bottom;
+    object-fit: cover;
+    background: var(--COLOR2);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    /* Disables ugly blue highlight on long press */
+}
+
+.thumbnailImage {
+    width: 100%;
+    height: 100%;
+}
+.thumbnailImage.inactiveThumbnail {
+    opacity: 0.3;
+}
+
+.thumbnailComic {
+    width: 100%;
+    height: auto;
+}
