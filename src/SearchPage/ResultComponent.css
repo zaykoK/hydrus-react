@@ -85,6 +85,13 @@
     grid-column: span 2;
 }
 
+.ResultComponent.bigger.portrait.mobile {
+    height: calc(8px + var(--CELL_SIZE_MOBILE)*3);
+    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
+    grid-row:span 3;
+    grid-column: span 2;
+}
+
 .ResultComponent.bigger.square {
     height: calc(4px + var(--CELL_SIZE)*2);
     width: calc(4px + var(--CELL_SIZE)*2);
@@ -98,14 +105,22 @@
     grid-row:span 2;
     grid-column: span 3;
 }
+.ResultComponent.bigger.widescreen.mobile {
+    height: calc(4px + var(--CELL_SIZE_MOBILE)*2);
+    width: calc(8px + var(--CELL_SIZE_MOBILE)*3);
+    grid-row:span 2;
+    grid-column: span 3;
+}
+
 .ResultComponentWrapper.bigger.widescreen {
     grid-template-columns: 1fr 1fr 1fr;
 }
 
 .ResultComponent.bigger.mobile {
-    height: calc(var(--CELL_SIZE_MOBILE)*2);
-    width: calc(var(--CELL_SIZE_MOBILE)*2);
+    height: calc(4px + var(--CELL_SIZE_MOBILE)*2);
+    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
 }
+
 .ResultComponentWrapper.bigger.mobile {
     grid-auto-rows: var(--CELL_SIZE_MOBILE);
     gap:0px;
@@ -115,6 +130,7 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-auto-rows: calc(var(--CELL_SIZE) *2/3);
 }
+
 .ResultComponentWrapper.bigger.threes.widescreen {
     grid-template-columns: 1fr 1fr 1fr 1fr;
 
@@ -125,46 +141,28 @@
     grid-auto-rows: calc(var(--CELL_SIZE_MOBILE) *2/3);
 }
 
-.ResultComponent.bigger.fours {
-    grid-row: span 3;
-    grid-column: span 3;
-    height: calc(var(--CELL_SIZE)*3);
-    width: calc(var(--CELL_SIZE)*3);
-}
-.ResultComponentWrapper.bigger.fours {
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-auto-rows: calc(var(--CELL_SIZE));
-}
 .ResultComponent.bigger.comic {
     grid-row: span 3;
     grid-column: span 2;
     height: calc(var(--CELL_SIZE)*3);
     width: calc(var(--CELL_SIZE)*2);
 }
+
 .ResultComponent.bigger.comic.mobile {
     grid-row: span 3;
     grid-column: span 2;
-    height: calc(var(--CELL_SIZE_MOBILE)*3);
-    width: calc(var(--CELL_SIZE_MOBILE)*2);
+    height: calc(8px + var(--CELL_SIZE_MOBILE)*3);
+    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
 }
+
 .ResultComponentWrapper.bigger.comic {
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: calc(var(--CELL_SIZE));
 }
+
 .ResultComponentWrapper.bigger.comic.mobile {
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: calc(var(--CELL_SIZE_MOBILE));
-}
-
-.ResultComponent.bigger.fours.mobile {
-    grid-row: span 4;
-    grid-column: span 4;
-    height: calc(var(--CELL_SIZE_MOBILE)*4);
-    width: calc(var(--CELL_SIZE_MOBILE)*4);
-}
-.ResultComponentWrapper.ResultComponent.bigger.fours.mobile {
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-auto-rows: calc(var(--CELL_SIZE_MOBILE)*4/3);
 }
 
 .ResultComponent .ResultComponentCover {
