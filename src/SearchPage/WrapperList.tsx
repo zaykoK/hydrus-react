@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { isMobile } from "../styleUtils";
-
 import InfiniteScroll from 'react-infinite-scroller'
-
 
 interface WrapperListProps {
     thumbs: Array<JSX.Element>;
@@ -27,7 +25,6 @@ function WrapperList(props: WrapperListProps) {
         }
         return style
     }
-    // <div className={getWrapperListStyle()}>{props.thumbs}</div> 
 
     useEffect(() => {
         if (props.type === 'comic') {
@@ -36,7 +33,6 @@ function WrapperList(props: WrapperListProps) {
         else {
             setDisplayedThumbs(props.thumbs.slice(0, Math.min(3*IMAGESTEP, props.thumbs.length)))
         }
-
     }, [props.thumbs])
 
     function moreData() {
@@ -52,7 +48,6 @@ function WrapperList(props: WrapperListProps) {
                 setHasMore(false)
             }
         }
-
     }
 
     return ((props.loaded && props.thumbs.length > 0) &&
