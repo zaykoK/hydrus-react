@@ -1,10 +1,13 @@
 
 .ResultComponent {
     position: relative;
-    width: var(--CELL_SIZE);
-    height: var(--CELL_SIZE);
+    width: calc(var(--CELL_SIZE));
+    height: calc(var(--CELL_SIZE));
     transition: transform 0.12s ease-out;
     overflow: auto;
+    grid-row:span 1;
+    grid-column: span 1;
+    border-radius: 0px;
 }
 
 .ResultComponentWrapper {
@@ -17,6 +20,7 @@
     height: inherit;
     overflow: hidden;
     pointer-events: auto;
+    gap:4px;
 }
 .ResultComponentWrapper.bigger.scrollable {
     overflow: auto;
@@ -37,10 +41,9 @@
 
 .ResultComponent.duo {
     background-color: var(--COLOR2);
-    width: calc(var(--CELL_SIZE)*2);
-    height: var(--CELL_SIZE);
+    width: calc(4px + var(--CELL_SIZE)*2);
+    height: calc(var(--CELL_SIZE)*1);
     border-radius: 10px;
-
     box-sizing: border-box;
     grid-row: span 1;
     grid-column: span 2;
@@ -52,14 +55,14 @@
 }
 
 .ResultComponent.duo.mobile {
-    width: calc(var(--CELL_SIZE_MOBILE)*2);
+    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
     height: var(--CELL_SIZE_MOBILE);
 }
 
 .ResultComponent.bigger {
     background-color: var(--COLOR2);
-    height: calc(var(--CELL_SIZE)*2);
-    width: calc(var(--CELL_SIZE)*2);
+    height: calc(4px + var(--CELL_SIZE)*2);
+    width: calc(4px + var(--CELL_SIZE)*2);
     border-radius: 10px;
     box-shadow: 0px 0px 7px 0px black;
     grid-row: span 2;
@@ -71,8 +74,32 @@
     grid-template-columns: subgrid;
     grid-template-rows: subgrid;
     grid-auto-rows: var(--CELL_SIZE);
-    gap:2px;
+    gap:4px;
     pointer-events: none;
+}
+
+.ResultComponent.bigger.portrait {
+    height: calc(8px + var(--CELL_SIZE)*3);
+    width: calc(4px + var(--CELL_SIZE)*2);
+    grid-row:span 3;
+    grid-column: span 2;
+}
+
+.ResultComponent.bigger.square {
+    height: calc(4px + var(--CELL_SIZE)*2);
+    width: calc(4px + var(--CELL_SIZE)*2);
+    grid-row:span 2;
+    grid-column: span 2;
+}
+
+.ResultComponent.bigger.widescreen {
+    height: calc(4px + var(--CELL_SIZE)*2);
+    width: calc(8px + var(--CELL_SIZE)*3);
+    grid-row:span 2;
+    grid-column: span 3;
+}
+.ResultComponentWrapper.bigger.widescreen {
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .ResultComponent.bigger.mobile {
@@ -86,6 +113,11 @@
 
 .ResultComponentWrapper.bigger.threes {
     grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: calc(var(--CELL_SIZE) *2/3);
+}
+.ResultComponentWrapper.bigger.threes.widescreen {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
     grid-auto-rows: calc(var(--CELL_SIZE) *2/3);
 }
 

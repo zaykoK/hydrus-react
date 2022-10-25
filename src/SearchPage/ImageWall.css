@@ -1,11 +1,11 @@
 .WrapperList {
-    --CELL_SIZE: 125px;
+    --CELL_SIZE: 100px;
     --CELL_SIZE_MOBILE: 85px;
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 15px;
-    gap: 0.15em;
     border-radius: 15px;
+    gap:4px;
     grid-auto-flow: row dense;
     justify-content: center;
 }
