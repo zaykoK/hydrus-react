@@ -3,11 +3,9 @@ import { NavLink } from "react-router-dom";
 import IconHome from './assets/menu-home.svg'
 import IconComics from './assets/filetype-picture.svg'
 import IconSettings from './assets/menu-settings.svg'
-import IconHamburger from './assets/menu-burger.svg'
 
 import "./NavBar.css"
-import MobileModeButton from "./MobileModeButton";
-import { isLandscapeMode, isMobile } from "./styleUtils";
+import { isMobile } from "./styleUtils";
 
 type NavigationProps = {
   expanded: boolean;
@@ -69,8 +67,7 @@ function Navigation(props: NavigationProps) {
       <NavLink key={'navLink-settings'} className={getNavLinkStyle()} to="/settings">
         <img src={IconSettings} alt='settings page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Settings</div>
-      </NavLink >
-      {/*<MobileModeButton />*/}
+      </NavLink>
       <div className={getFullScreenDarkenerStyle(expanded)} onClick={() => { props.setNavigationExpanded(!expanded) }} ></div>
     </nav>
   </>
