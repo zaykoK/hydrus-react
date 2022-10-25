@@ -1,12 +1,11 @@
+import './WidgetCount.css';
+import * as API from '../hydrus-backend';
 import { useEffect, useState } from 'react';
-import './WidgetCount.css'
-import * as API from '../hydrus-backend'
 
 interface WidgetCountProps {
     tag: string;
+    style?: number; //1-"number",2-"pages"
 }
-
-//TODO Merge this with WidgetCountTag, as those pretty much do the same
 
 function WidgetCount(props: WidgetCountProps) {
     const [tagCount, setTagCount] = useState<number>(0)
@@ -20,7 +19,14 @@ function WidgetCount(props: WidgetCountProps) {
     useEffect(() => {
         getFileCount(props.tag)
     }, [props.tag])
+    if (props.style === 2) {
+        return <div>{tagCount} pages</div>
+    }
+    else {
+        return <>{(tagCount !== 0) && <div key={'widgetCount-' + tagCount} className="widgetCount">{tagCount}</div>}</>
+    }
+    
 
-    return <>{(tagCount !== 0) && <div key={'widgetCount-' + tagCount} className="widgetCount">{tagCount}</div>}</>
+    
 }
 export default WidgetCount
