@@ -8,7 +8,7 @@ import { MemoNavigation } from './NavBar';
 import * as API from './hydrus-backend'
 
 import './index.css'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function App() {
   const [token, setToken] = useState<boolean>(false)
