@@ -1,5 +1,5 @@
 import { NavigateFunction } from "react-router-dom";
-import WidgetCountTag from "./WidgetCountTag";
+import WidgetCount from "./WidgetCount";
 import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools'
 import { isMobile } from "../styleUtils";
@@ -119,7 +119,7 @@ function ResultComicCard(props: ResultComicCardProps) {
                         hash: props.hash
                     })}
                 </div>
-                <WidgetCountTag tag={getComicTitle(props.metadata, getComicNamespace(), false)} />
+                <WidgetCount tag={getComicTitle(props.metadata, getComicNamespace(), false)} style={2}/>
                 {/* TODO Those tags should be limited to something like max 15-20 tags, and selection of which should be done by counting all tags on files in the collection (assuming that separate file tags differ from each other) and showing essentialy the 15-20 that happen most across all files in collection. Other solution is to use separate tag repository for group tags. Or keep as is and force users to tag 0/1st page with the correct comic tags OR maybe just maybe hydrus-dev will deliever nice support for image groups and this will be a single API call... ahh dreams. */}
                 <div style={{ fontSize: 'small' }}>
                     {createTagPreviewFromGroup({
