@@ -13,6 +13,7 @@ import TagLink from './TagLink';
 import { createListOfUniqueTags } from '../SearchPage/SearchPageHelpers';
 import ResultComicCard from './ResultComicCard';
 import ThumbContent from './ThumbContent';
+import { TagList } from '../TagList';
 
 // @ts-check
 
@@ -57,38 +58,41 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
 
     let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
     let tagArrays = []
-    for (let space in args.spaces) {
-      let t = tagsSorted.filter((element) => element["namespace"] === args.spaces[space])
-      let innerArray = []
-      let limitCount = 0
-      for (let element in t) {
-        let tagStyle = TagTools.getTagTextStyle(t[element].namespace)
+    if (args.type === 'comic') {
+      for (let space in args.spaces) {
+        let t = tagsSorted.filter((element) => element["namespace"] === args.spaces[space])
+        let innerArray = []
+        let limitCount = 0
+        for (let element in t) {
+          let tagStyle = TagTools.getTagTextStyle(t[element].namespace)
 
-        //If tag limit reach stop adding new ones
-        //THIS IS EXPERIMENTAL
-        //if (limitCount === LIMIT) {break}
+          //If tag limit reach stop adding new ones
+          //THIS IS EXPERIMENTAL
+          //if (limitCount === LIMIT) {break}
 
-        if (parseInt(element) !== t.length) {
-          tagStyle = {
-            ...tagStyle,
-            paddingRight: '5px',
-            cursor: 'pointer',
+          if (parseInt(element) !== t.length) {
+            tagStyle = {
+              ...tagStyle,
+              paddingRight: '5px',
+              cursor: 'pointer',
+            }
           }
+
+          innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate: args.navigate, type: args.type }))
+          limitCount += 1
         }
-        innerArray.push(TagLink({ style: tagStyle, tag: t[element].value, namespace: t[element].namespace, navigate: args.navigate, type: args.type }))
-        limitCount += 1
+        tagArrays.push(innerArray)
       }
-      tagArrays.push(innerArray)
     }
     let finalString = []
-    for (let space in tagArrays) {
-      if (args.type === 'comic') {
+    if (args.type === 'comic') {
+      for (let space in tagArrays) {
         finalString.push(<p onContextMenu={(e) => e.preventDefault()} key={args.hash + args.spaces[space]} style={{ margin: '0px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap' }}>{tagArrays[space]}</p>)
       }
-      else {
-        finalString.push(<p onContextMenu={(e) => e.preventDefault()} key={args.hash + args.spaces[space]} style={{ margin: '0px' }}>{tagArrays[space]}</p>)
-      }
-
+    }
+    else {
+      tagsSorted = tagsSorted.sort((a, b) => TagTools.compareNamespaces(a, b))
+      finalString.push(<TagList tags={tagsSorted} visibleCount={false} type={'image'} />)
     }
     return finalString;
   }
@@ -117,7 +121,7 @@ export function getComicTitle(metadata: API.MetadataResponse | undefined, space:
   return ''
 }
 
-const thumbnailTopTags: Array<string> = ['creator', 'person', 'series']
+const thumbnailTopTags: Array<string> = ['creator', 'person', 'series', 'character', '']
 const thumbnailBottomTags: Array<string> = []
 
 function ImageThumbnail(props: ImageThumbnailProps) {
@@ -259,7 +263,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
   return (
     <div className={getWrapperStyle(props.type)}
       key={"thumb-" + props.hash}>
-      {(isMobile() === false) && <div className='topTags'>
+      {/* {(isMobile() === false) && <div className='topTags'>
         {createTagPreview({
           metadata: metadata, spaces: thumbnailTopTags,
           type: props.type,
@@ -270,13 +274,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       <div className='bottomTags'>
         {(props.hideWidgetCount === undefined || props.hideWidgetCount === true) ? <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} /> : <></>}
         <WidgetFileType mime={metadata?.mime || EMPTYSTRING} />
-        {createTagPreview({
-          metadata: metadata, spaces: thumbnailBottomTags,
-          type: props.type,
-          hash: props.hash,
-          navigate: props.navigate
-        })}
-      </div>
+      </div> */}
       <ThumbContent
         navigate={props.navigate}
         type={props.type}

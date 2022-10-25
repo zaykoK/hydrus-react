@@ -164,12 +164,14 @@
 
 .topTags {
     color: white;
-    position: absolute;
-    top: 0px;
-    max-height: 35%;
+    position: fixed;
+    top: 3em;
+    left:0px;
+    right:auto;
+    max-height: 90%;
     background: #000000d1;
     margin: 0px;
-    width: 100%;
+    width: 15%;
     text-align: center;
     font-size: 1em;
     opacity: 0;
