@@ -50,13 +50,18 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             //If no tags in namespace, don't add to the list
             //@ts-ignore
             let tags = returnTagsFromNamespace(dataTags, element) || []
+            // Split subgroups and sort
+            const SplitSymbol = '/'
             for (let groupTag of tags) {
+                let splitted = groupTag.split(SplitSymbol)
+                // Right now this just displays all images from each group, not just the subgroup
+
                 let newElement =
                 <RelatedFiles
                     id={'relatedElements' + element}
                     currentHash={dataHash}
                     key={element + groupTag}
-                    tags={[groupTag]}
+                    tags={[splitted[0]+'*']}
                     space={element}
                     initiallyExpanded={shouldBeExpanded}
                     landscape={props.landscape}
