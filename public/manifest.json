@@ -23,7 +23,7 @@
       "name":"Open Comics",
       "short name":"Comics",
       "description":"Instantly opens comics page",
-      "url":"/comics/page=1"
+      "url":"/search/page=1&type=comic"
     }
   ],
   "start_url": ".",
