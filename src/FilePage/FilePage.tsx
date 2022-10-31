@@ -78,14 +78,14 @@ export function FilePage(props: FilePageProps) {
   function handleScreenChange() {
     if (window.screen.orientation.type.includes('portrait')) {
       setLandscape(false);
-      if (document.fullscreenElement) {
+/*       if (document.fullscreenElement) {
         document.exitFullscreen()
-      }
+      } */
       return
     }
     setLandscape(true)
-    document.documentElement.requestFullscreen().catch((err) => {
-      console.warn(`Error attempting to enable fullscreen mode: ${err.message} (${err.name}). Usually happens when multiple requests for fullscreen happen without any registered user input between them.`);})
+/*     document.documentElement.requestFullscreen().catch((err) => {
+      console.warn(`Error attempting to enable fullscreen mode: ${err.message} (${err.name}). Usually happens when multiple requests for fullscreen happen without any registered user input between them.`);}) */
   }
 
   //MBY add a little reminder in corner of icons showing button bind for it
