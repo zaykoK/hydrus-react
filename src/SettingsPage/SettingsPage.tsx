@@ -62,6 +62,8 @@ function loadSettingsFromFile(settings: HRSettings) {
   setTranscodeFileDomain(transcodeSettings.fileServiceName)
   setTranscodeFileNamespace(transcodeSettings.namespace)
 
+  // Easiest way to reload settins display
+  window.location.reload()
 }
 
 function handleFileImport(uploadedFiles: FileList | null) {
@@ -80,6 +82,10 @@ function handleFileImport(uploadedFiles: FileList | null) {
   }
   if (uploadedFiles !== null && uploadedFiles?.length > 0) {
     console.log(uploadedFiles[0])
+    if (uploadedFiles[0].type !== 'application/json') {
+      console.warn('Wrong file type')
+      return
+    }
     fileReader.readAsText(uploadedFiles[0])
   }
 
@@ -105,7 +111,7 @@ export function SettingsPage(props: SettingsPageProps) {
       <div className='settingsImportExport'>
         <a className='exportButton' href={exportSettings()} download='hydrus-react-settings.json' >Export Settings</a>
         <label className='exportButton'>
-          <input type='file' style={{display:'none'}} accept='.json' onChange={(e) => { handleFileImport(e.target.files);e.target.value = '';window.location.reload() }} />
+          <input type='file' style={{display:'none'}} accept='application/json' onChange={(e) => { handleFileImport(e.target.files);e.target.value = '' }} />
           Import Settings
         </label>
       </div>
