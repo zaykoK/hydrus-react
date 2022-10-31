@@ -9,6 +9,7 @@
     box-shadow: 0px 0px 2px 0px black;
     display:flex;
     flex-wrap:wrap;
+    overscroll-behavior: none;
 }
 .tagList::-webkit-scrollbar {
     display: none;
