@@ -153,23 +153,29 @@ export function getTranscodeEnabled():boolean {
 }
 
 export function exportSettings() {
+  // Server address
+  // Server Key
+  // Max results
+  // Comic Namespace
+  // Group Namespaces
+  // Hidden Namespaces
+  // Transcode Settings
+  /// -Enabled
+  /// -File Service
+  /// -Namespace
 
-  //Server address
-  //Server Key
-  //Max results
-  //Group Namespaces
-  //Hidden Namespaces
-  //Comic Namespace
-  //Mobile Style
+  const defaultTranscodeSettings = {fileServiceName: "web-transcodes", namespace: "original"}
 
   let settings = {
     'hydrus-server-address': (localStorage.getItem('hydrus-server-address') || ''),
     'hydrus-api-key': (localStorage.getItem('hydrus-api-key') || ''),
     'hydrus-max-results': (localStorage.getItem('hydrus-max-results') || "5000"),
     'group-namespace': (localStorage.getItem('group-namespace') || 'group-title'),
-    'blacklisted-namespaces': (localStorage.getItem('blacklisted-namespaces') || ''),
     'comic-namespace': (localStorage.getItem('comic-namespace') || 'doujin-title'),
-    'mobile-mode': (localStorage.getItem('mobile-mode') || 'false')
+    'related-namespaces': (localStorage.getItem('related-namespaces') || '[]' ),
+    'blacklisted-namespaces': (localStorage.getItem('blacklisted-namespaces') || '[]'),
+    'transcoded-enabled': (localStorage.getItem('transcoded-enabled') || 'false'),
+    'transcoded-file-options': (localStorage.getItem('transcoded-file-options'), JSON.stringify(defaultTranscodeSettings))
   }
 
   let stringified = JSON.stringify(settings)

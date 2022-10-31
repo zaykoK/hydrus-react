@@ -6,7 +6,7 @@ import IconHamburger from '../assets/menu-burger.svg'
 
 import './SettingsPage.css'
 
-import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings, getTranscodeFileDomain, setTranscodeFileDomain, getTranscodeFileNamespace, setTranscodeFileNamespace, getTranscodeEnabled, setTranscodeEnabled } from '../StorageUtils'
+import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings, getTranscodeFileDomain, setTranscodeFileDomain, getTranscodeFileNamespace, setTranscodeFileNamespace, getTranscodeEnabled, setTranscodeEnabled, setBlacklistedNamespaces, setRelatedNamespaces } from '../StorageUtils'
 import SettingInputSingle from './SettingsInputSingle';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import { useState } from 'react';
@@ -33,11 +33,60 @@ function getSettingsPageStyle() {
   return style
 }
 
+type HRSettings = {
+  "comic-namespace": string;
+  "group-namespace": string;
+  "hydrus-api-key": string;
+  "hydrus-max-results": string;
+  "hydrus-server-address": string;
+  "mobile-mode": string;
+  "blacklisted-namespaces": string;
+  "related-namespaces": string;
+  'transcoded-enabled': string,
+  'transcoded-file-options': string
+}
+
+function loadSettingsFromFile(settings: HRSettings) {
+  setServerAddress(settings['hydrus-server-address'])
+  setAPIKey(settings['hydrus-api-key'])
+  setGroupNamespace(settings['group-namespace'])
+  setComicNamespace(settings['comic-namespace'])
+  setMaxResults(settings['hydrus-max-results'])
+  console.log(JSON.parse(settings['blacklisted-namespaces']))
+  setBlacklistedNamespaces(JSON.parse(settings['blacklisted-namespaces']))
+  setRelatedNamespaces(JSON.parse(settings['related-namespaces']))
+  let transcodeEnabled = settings['transcoded-enabled'] === "true"
+  setTranscodeEnabled(transcodeEnabled)
+  let transcodeSettings:{ fileServiceName: string, namespace: string } = JSON.parse(settings['transcoded-file-options'])
+  console.log(transcodeSettings)
+  setTranscodeFileDomain(transcodeSettings.fileServiceName)
+  setTranscodeFileNamespace(transcodeSettings.namespace)
+
+}
+
+function handleFileImport(uploadedFiles: FileList | null) {
+  const fileReader = new FileReader();
+  fileReader.onloadend = () => {
+    try {
+      let result = fileReader.result || ''
+      let object: HRSettings = JSON.parse(result.toString())
+      console.log(object)
+      loadSettingsFromFile(object)
+
+    }
+    catch (e) {
+      console.warn(e)
+    }
+  }
+  if (uploadedFiles !== null && uploadedFiles?.length > 0) {
+    console.log(uploadedFiles[0])
+    fileReader.readAsText(uploadedFiles[0])
+  }
+
+}
+
 
 export function SettingsPage(props: SettingsPageProps) {
-  //console.log(props.globalState?.getGlobalValue())
-  //props.globalState?.setGlobalValue('settings')
-
   return <>
     <div className={generateClassName('topBar topBarSettings')}>
       <img src={IconHamburger} alt='related switch' className='topBarButton' onClick={() => { props.setNavigationExpanded(true) }} />
@@ -55,21 +104,21 @@ export function SettingsPage(props: SettingsPageProps) {
 
 
       <a href={exportSettings()} download='hydrus-react-settings.json' >Export Settings</a>
-      <input type='file' />
+      <input type='file' onChange={(e) => { handleFileImport(e.target.files) }} />
     </div>
   </>;
 }
 
 
 export function TranscodeSettings() {
-  const [enabled,setEnabled] = useState(getTranscodeEnabled())
+  const [enabled, setEnabled] = useState(getTranscodeEnabled())
   function switchEnabledTranscoding() {
     setTranscodeEnabled(!enabled)
     setEnabled(!enabled)
   }
-  function getTranscodeButtonStyle(enabled:boolean):string {
+  function getTranscodeButtonStyle(enabled: boolean): string {
     let style = 'transcodeEnabledButton tagEntry blob'
-    if (enabled) {style += ' enabled'}
+    if (enabled) { style += ' enabled' }
     return style
   }
 
