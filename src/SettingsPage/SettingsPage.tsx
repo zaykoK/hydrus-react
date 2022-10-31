@@ -57,7 +57,7 @@ function loadSettingsFromFile(settings: HRSettings) {
   setRelatedNamespaces(JSON.parse(settings['related-namespaces']))
   let transcodeEnabled = settings['transcoded-enabled'] === "true"
   setTranscodeEnabled(transcodeEnabled)
-  let transcodeSettings:{ fileServiceName: string, namespace: string } = JSON.parse(settings['transcoded-file-options'])
+  let transcodeSettings: { fileServiceName: string, namespace: string } = JSON.parse(settings['transcoded-file-options'])
   console.log(transcodeSettings)
   setTranscodeFileDomain(transcodeSettings.fileServiceName)
   setTranscodeFileNamespace(transcodeSettings.namespace)
@@ -102,9 +102,15 @@ export function SettingsPage(props: SettingsPageProps) {
       <BlacklistedTagsInput />
       <TranscodeSettings />
 
+      <div className='settingsImportExport'>
+        <a className='exportButton' href={exportSettings()} download='hydrus-react-settings.json' >Export Settings</a>
+        <label className='exportButton'>
+          <input type='file' style={{display:'none'}} accept='.json' onChange={(e) => { handleFileImport(e.target.files);e.target.value = '';window.location.reload() }} />
+          Import Settings
+        </label>
+      </div>
 
-      <a href={exportSettings()} download='hydrus-react-settings.json' >Export Settings</a>
-      <input type='file' onChange={(e) => { handleFileImport(e.target.files) }} />
+
     </div>
   </>;
 }
