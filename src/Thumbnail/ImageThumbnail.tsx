@@ -260,6 +260,8 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     return <ResultComicCard metadata={metadata} navigate={props.navigate} type={props.type} replace={props.replace} thumbnail={thumbnail || ''} hash={props.hash} metadataGroup={metadataGroup} />
   }
 
+  let type = props.type.replace('related ','')
+
   return (
     <div className={getWrapperStyle(props.type)}
       key={"thumb-" + props.hash}>
@@ -277,7 +279,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       </div> */}
       <ThumbContent
         navigate={props.navigate}
-        type={props.type}
+        type={type}
         replace={props.replace}
         thumbnail={thumbnail}
         hash={props.hash}

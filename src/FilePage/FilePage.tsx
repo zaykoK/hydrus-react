@@ -28,6 +28,7 @@ import { generateSearchURL } from '../SearchPage/SearchPageHelpers';
 interface FilePageProps {
   setNavigationExpanded: Function;
   hash: string;
+  type:string;
 }
 
 export type relatedDataCartType = {
@@ -259,7 +260,7 @@ export function FilePage(props: FilePageProps) {
         <div className={generateClassName('backIconWrapper')}>
           <img src={IconBack} alt='back' className="topBarButton active" onClick={() => { closeImageWindow() }} />
         </div>
-        <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} landscape={landscape} />
+        <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} landscape={landscape} type={props.type} />
       </div>
     </>;
   }
@@ -290,7 +291,7 @@ export function FilePage(props: FilePageProps) {
           />}
       </div>
 
-      <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} landscape={landscape} />
+      <RelatedFilesSideBar visible={relatedVisible} relatedData={relatedDatacart} landscape={landscape} type={props.type} />
     </div>
   </>;
 }

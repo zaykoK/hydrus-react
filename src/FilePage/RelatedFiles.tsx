@@ -15,6 +15,7 @@ interface RelatedFilesProps {
     space: string;
     initiallyExpanded: boolean;
     landscape: boolean;
+    type: string;
 }
 
 function emptyFunction() {
@@ -146,7 +147,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
                         navigate={navigate.current}
                         currentImage={current}
                         replace={true}
-                        type='image'
+                        type={"related " + props.type}
                         key={relatedHashes[hash]}
                         hash={relatedHashes[hash]}
                         loadMeta={false}

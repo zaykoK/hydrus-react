@@ -9,6 +9,7 @@ import './RelatedFilesSideBar.css'
 interface RelatedFilesListProps {
     relatedData: relatedDataCartType;
     landscape:boolean;
+    type:string;
 }
 
 ///TODO
@@ -65,6 +66,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
                     space={element}
                     initiallyExpanded={shouldBeExpanded}
                     landscape={props.landscape}
+                    type={props.type}
                 />
                 shouldBeExpanded=false
             returned.push(newElement)
@@ -88,6 +90,7 @@ interface RelatedFilesSideBarProps {
     visible: boolean;
     relatedData: relatedDataCartType;
     landscape:boolean;
+    type:string;
 }
 
 export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
@@ -102,7 +105,7 @@ export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
     }
 
     return <div className={getRelatedStyle(props.visible,props.landscape)}>
-        <RelatedFilesList relatedData={props.relatedData} landscape={props.landscape} />
+        <RelatedFilesList relatedData={props.relatedData} landscape={props.landscape} type={props.type} />
     </div>
 }
 

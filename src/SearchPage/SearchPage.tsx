@@ -97,19 +97,17 @@ export function SearchPage(props: SearchPageProps) {
   function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
     function processTieredGroup(groupString: string, metadata: API.MetadataResponse, resultGroupMap: Map<string, ResultGroup>, type: string = 'group') {
       const SplitSymbol = '/'
-      // Idea is that groups can get subgroups
-      // Scheme is as following <group-namespace>:<master group>/<sub group 1>/<sub group 2> etc.
-      // So let's say we have a set that might have 12 pictures out of which only 4 are actually distinct(they have 3 variants each)
-      // This way we can group them independentely for each image but also keep them coherent for ordered sets, 
-      // where you sometimes get standalone images that combined create some sort of narrative
-      // Subgroups can essentialy save as ordered pages explicitely tied to a group
-      // IMPORTANT - this does create a necesssity to understand that '/' symbol is for splitting
-      //
+      /* EXPLANATATION
+        Idea is that groups can get subgroups
+        Scheme is as following <group-namespace>:<master group>/<sub group 1>/<sub group 2> etc.
+        So let's say we have a set that might have 12 pictures out of which only 4 are actually distinct(they have 3 variants each)
+        This way we can group them independentely for each image but also keep them coherent for ordered sets, 
+        where you sometimes get standalone images that combined create some sort of narrative
+        Subgroups can essentialy save as ordered pages explicitely tied to a group
+        IMPORTANT - this does create a necesssity to understand that '/' symbol is for splitting
+      */
       // Split by this symbol
       let splitted = groupString.split(SplitSymbol)
-
-      // Nidoqueen,1
-      // Nidoqueen,2
 
       let result = resultGroupMap.get(splitted[0])
       // If group map already has entry append this one to it
@@ -129,8 +127,6 @@ export function SearchPage(props: SearchPageProps) {
         if (currentSubGroup !== undefined) { //Subgroup already exist
           let subgroups = currentResultGroup.subgroups
           currentResultGroup.subgroups.set(stack[0], appendToSubGroup(stack.slice(1), metadata, currentSubGroup))
-
-
 
           let group: ResultGroup = {
             cover: currentResultGroup.cover,
@@ -478,7 +474,7 @@ export function SearchPage(props: SearchPageProps) {
     //console.timeEnd('meta')
   }
 
-  //Everytime user lands on search page, remove group-hashes item from sessionStorage
+  // Everytime user lands on search page, remove group-hashes item from sessionStorage
   useEffect(() => {
     sessionStorage.removeItem('group-hashes')
   }, [])
@@ -486,12 +482,12 @@ export function SearchPage(props: SearchPageProps) {
   useEffect(() => {
     function refreshParams(): void {
       let p = readParams(parm)
-      /*WARNING - this is not exactly correct way to do this
-      There is a weird occurence when sometimes empty tag parameter gets added to the page url --> "&tags="
-      When this happens on empty search compare doesn't work properly as it is comparing [] and [[]] objects
-      When that compare fails opening/closing image viewer overlay will re-render whole search page, losing scroll progress
-      Unfortunately (or fortunately) this happened once to me and I can't replicate that behaviour anymore,
-       seems that changing default search value somehow "fixed it", so I'm not bothering with trying to fix it more
+      /*  WARNING - this is not exactly correct way to do this
+          There is a weird occurence when sometimes empty tag parameter gets added to the page url --> "&tags="
+          When this happens on empty search compare doesn't work properly as it is comparing [] and [[]] objects
+          When that compare fails opening/closing image viewer overlay will re-render whole search page, losing scroll progress
+          Unfortunately (or fortunately) this happened once to me and I can't replicate that behaviour anymore,
+          seems that changing default search value somehow "fixed it", so I'm not bothering with trying to fix it more
       */
 
       setPageTitle(p.tags, parseInt(p.page), p.type)
@@ -602,7 +598,7 @@ export function SearchPage(props: SearchPageProps) {
         loaded={loaded}
         empty={emptySearch}
       />
-      {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
+      {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} type={params.type} /></div>}
     </>;
   }
   /* Desktop Layout */
@@ -635,6 +631,6 @@ export function SearchPage(props: SearchPageProps) {
         />
       </div>
     </div>
-    {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} /></div>}
+    {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} type={params.type} /></div>}
   </>;
 }

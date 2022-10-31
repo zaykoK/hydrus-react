@@ -66,7 +66,6 @@ function App() {
         <Routes>
           <Route key="route-main" path='/' element={<Navigate replace to='/search/tags=&page=1' />} />
           <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' setNavigationExpanded={setNavigationExpanded} />} />
-          <Route key="route-file" path='/file/:fileHash' element={<FilePage setNavigationExpanded={setNavigationExpanded} hash='' />} />
           <Route key="route-settings" path='/settings' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
           <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' setNavigationExpanded={setNavigationExpanded} />} />
         </Routes>) || <Routes>
