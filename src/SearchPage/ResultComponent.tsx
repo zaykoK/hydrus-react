@@ -27,18 +27,22 @@ function ResultComponent(props: ResultComponentProps) {
 
     React.useEffect(() => {
         let tempThumbs: Array<JSX.Element> = []
+        // If subgroups exist display subgroups
         let tLength = props.result.subgroups.size
         if (tLength > 0) {
             let sortedList = [...props.result.subgroups.values()].sort((a, b) => a.title.localeCompare(b.title))
 
             let aspectRatio = (sortedList[0].entries[0]?.width / sortedList[0].entries[0]?.height) || 1
             let ratio = RATIO.square
-            if (aspectRatio < 0.8 ) {
-                ratio = RATIO.portrait
+            if (tLength > 4) {
+                if (aspectRatio < 0.8) {
+                    ratio = RATIO.portrait
+                }
+                if (aspectRatio >= 1.2) {
+                    ratio = RATIO.widescreen
+                }
             }
-            if (aspectRatio >= 1.2) {
-                ratio = RATIO.widescreen
-            }
+
             setRatio(ratio)
 
             props.result.cover = sortedList[0].cover
@@ -76,11 +80,13 @@ function ResultComponent(props: ResultComponentProps) {
 
             let aspectRatio = (sortedEntries[0]?.width / sortedEntries[0]?.height) || 1
             let ratio = RATIO.square
-            if (aspectRatio < 0.8 ) {
-                ratio = RATIO.portrait
-            }
-            if (aspectRatio >= 1.20) {
-                ratio = RATIO.widescreen
+            if (entries.length > 4) {
+                if (aspectRatio < 0.8) {
+                    ratio = RATIO.portrait
+                }
+                if (aspectRatio >= 1.2) {
+                    ratio = RATIO.widescreen
+                }
             }
             setRatio(ratio)
 
@@ -128,15 +134,15 @@ function ResultComponent(props: ResultComponentProps) {
         if (size === 2) {
             style += ' duo'
         }
-        if (size > 2 && size < 9) {
+        if (size > 2) {
             style += ' bigger'
         }
-        if (size > 8 && size < 16) {
-            style += ' bigger threes'
-        }
-        if (size > 15) {
-            style += ' bigger threes' // fours
-        }
+        //if (size > 8 && size < 16) {
+        //    style += ' bigger threes'
+        //}
+        //if (size > 15) {
+        //    style += ' bigger threes' // fours
+        //}
         if (props.result.type === 'comic') {
             style += ' comic'
         }
@@ -162,15 +168,15 @@ function ResultComponent(props: ResultComponentProps) {
         if (size === 2) {
             style += ' duo'
         }
-        if (size > 2 && size < 9) {
+        if (size > 2) {
             style += ' bigger'
         }
-        if (size > 8 && size < 16) {
-            style += ' bigger threes'
-        }
-        if (size > 15) {
-            style += ' bigger threes' // fours
-        }
+        //if (size > 8 && size < 16) {
+        //    style += ' bigger threes'
+        //}
+        //if (size > 15) {
+        //    style += ' bigger threes' // fours
+        //}
         if (props.result.type === 'comic') {
             style += ' comic'
         }
@@ -203,7 +209,7 @@ function ResultComponent(props: ResultComponentProps) {
     return <div onMouseLeave={(e) => { setScrollable(false); }} onMouseEnter={(e) => { }} onClick={(e) => { e.stopPropagation(); setScrollable(true); console.log('marking ' + props.result.cover) }} className={getComponentStyle(thumblist.length)}>
         <div className={getWrapperComponentStyle(thumblist.length, scrollable)}>{thumblist}</div>
         <div className='ResultComponentCover'>
-            {(thumblist.length > 2) ? <div className='ResultComponentTopBar'>{getTopText()}</div>:<></>}
+            {(thumblist.length > 2) ? <div className='ResultComponentTopBar'>{getTopText()}</div> : <></>}
             {cover}
             <div className="ResultComponentCountWidget">{getResultCount()}</div>
         </div>

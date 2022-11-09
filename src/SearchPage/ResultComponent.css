@@ -144,8 +144,8 @@
 .ResultComponent.bigger.comic {
     grid-row: span 3;
     grid-column: span 2;
-    height: calc(var(--CELL_SIZE)*3);
-    width: calc(var(--CELL_SIZE)*2);
+    height: calc(8px + var(--CELL_SIZE)*3);
+    width: calc(4px + var(--CELL_SIZE)*2);
 }
 
 .ResultComponent.bigger.comic.mobile {
