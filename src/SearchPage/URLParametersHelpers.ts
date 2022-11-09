@@ -2,22 +2,11 @@ import { tagArrayToNestedArray } from '../TagTools';
 
 function setDefaultSearch(): Array<Array<string>> {
     return []
-    //@ts-ignore
-    switch (props.type) {
-        case 'image':
-            return [[]]
-        case 'comic':
-            return [[]]
-        // Removed because I added it in search function, should be better user experience without those 2 queries visible
-        //return [[getComicNamespace() + ':*'], ['page:0', 'page:1']]
-        default:
-            return [[]]
-    }
 }
 
 
-export function readParams(par: string | undefined): { tags: Array<Array<string>>, page: string, hash: string, type:string } {
-    if (par === undefined) {console.log('parm undefined'); return { tags: [[]], page: '1', hash: '',type:'image' } }
+export function readParams(par: string | undefined): { tags: Array<Array<string>>, page: string, hash: string, type: string } {
+    if (par === undefined) { console.log('parm undefined'); return { tags: [[]], page: '1', hash: '', type: 'image' } }
     let parameters = new URLSearchParams(par);
     let tags = setDefaultSearch()
 
@@ -51,7 +40,7 @@ export function readParams(par: string | undefined): { tags: Array<Array<string>
     let type = 'image'
     if (parameters.get('page') !== undefined) { page = parameters.get('page') || '1' } //This last OR is to make the checking not whine, it shouldn't ever need to use it
     if (parameters.get('hash') !== undefined) { hash = parameters.get('hash') || '' }
-    if (parameters.get('type') !== undefined) { type = parameters.get('type') || 'image'}
+    if (parameters.get('type') !== undefined) { type = parameters.get('type') || 'image' }
 
     return { tags: tags, page: page, hash: hash, type: type }
 }
