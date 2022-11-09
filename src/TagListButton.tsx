@@ -13,16 +13,16 @@ function displayTagString(tag: TagTools.Tuple, full = false): string {
     //User toggle whether to show just the tag value => "naruto" or namespace and value => "character:naruto"
     //Eventually move this into props so it doesn't have to access this value on every tag render
     if (full || sessionStorage.getItem('show-tag-namespace') === 'true') {
-        return tag.namespace + ":" + tag.value
+        return `${tag.namespace}:${tag.value}`
     }
     return tag.value
 }
 
 function displayTagCount(count: number, visible: boolean) {
     if (visible) {
-        return ' (' + count + ')'
+        return ` (${count})`
     }
-    return ''
+    return ``
 }
 
 interface TagListButtonProps {
