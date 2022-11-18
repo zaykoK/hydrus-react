@@ -1,9 +1,3 @@
-multipage/view thing
--artist page /artist/[artist-name]
--file page /file/[file-hash]
--comic page /comic/[comic-title?]
--etc 
-
 Some way to streamline styling
 
 changePage to starting hash, this way i can do dynamic result number etc.
@@ -16,3 +10,15 @@ Redo Tag Buttons so OR queries are two buttons that change into normal tag query
 Modularize stuff
 
 Add JSDoc comments
+
+
+Add search/result strictness - Add a toggle which will determine if result are supposed to be showing groups in which given file tag exist or strictly only files with given tag.
+
+
+
+Possible Grouping styles:
+- Comic - has to be ordered by page, all images must have page: tag
+- Single-variants - single image with multiple variants, ordering not necessary
+- Single-ordered - single image that has an (obvious or not) ordering of it
+- Ordered imageset - image set that requires ordering to make sense from it
+- 
