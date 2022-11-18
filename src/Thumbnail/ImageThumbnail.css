@@ -23,9 +23,10 @@
 */
 
 @keyframes thumbnailIntro {
-    0% {transform: scale(0);}
-    50% {transform: scale(1.2);}
-    100% {transform: scale(1);}
+    0% {filter:brightness(900%);}
+    50% {filter:brightness(900%);}
+    99% {filter:brightness(100%);}
+    100% {filter:none;}
 }
 
 @keyframes coverIntro {
@@ -46,7 +47,7 @@
     max-width: 100%;
     transition: all 1s;
     animation-name: thumbnailIntro;
-    animation-duration: 1s;
+    animation-duration: 0.7s;
 }
 
 .thumbnailWrapper.xsmall {
