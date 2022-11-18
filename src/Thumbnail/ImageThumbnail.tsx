@@ -46,15 +46,9 @@ export function createTagPreview(args: { metadata: API.MetadataResponse | undefi
 
 export function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string>, type: string, hash: string, navigate: NavigateFunction }) {
   if (args.metadata != null) {
-    let index = sessionStorage.getItem('hydrus-all-known-tags')
-    if (!index) { return }
-
     //const LIMIT = 200
 
-    let tags = args.metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
-    if (tags === undefined) {
-      tags = []
-    }
+    let tags = API.getTagsFromMetadata(args.metadata,'ImportedTags')
 
     let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
     let tagArrays = []
@@ -101,13 +95,8 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
 
 export function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
   if (metadata != null) {
-    let index = sessionStorage.getItem('hydrus-all-known-tags')
-    if (!index) { return '' }
 
-    let tags = metadata.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
-    if (tags === undefined) {
-      tags = []
-    }
+    let tags = API.getTagsFromMetadata(metadata,'')
     let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
     let t = tagsSorted.filter((element) => element["namespace"] === space)
     if (t[0] === undefined) {
@@ -192,8 +181,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
         },
         deleted: {}
       },
-      service_keys_to_statuses_to_display_tags: {},
-      service_keys_to_statuses_to_tags: {}
+      tags:{}
     }
     if (props.metadata !== undefined && props.metadata.length > 0) {
       //Find index of hash
@@ -205,26 +193,22 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       }
     }
     else {
-      let responseMeta = await API.api_get_file_metadata({ hash: hash, hide_service_names_tags: true })
+      let responseMeta = await API.api_get_file_metadata({ hash: hash })
       if (!responseMeta) { return }
       meta = responseMeta.data.metadata[0]
     }
     //Load rest of metadata for the hash
     if (group === true) {
       //Get a group-title or doujin-title namespace for the hash
-      let index = sessionStorage.getItem('hydrus-all-known-tags')
-      if (index === null) { console.warn('no index for all tags, something went wrong, try refreshing'); index = '' }
-      let tags = meta.service_keys_to_statuses_to_display_tags[index][API.ServiceStatusNumber.Current];
-      if (tags === undefined) {
-        tags = []
-      }
+      let tags = API.getTagsFromMetadata(meta,'')
+
       let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
       let t: Array<TagTools.Tuple> = tagsSorted.filter((element) => element["namespace"] === getComicNamespace())
       //Load hashes for all the tags in that namespace
       let namespaceHashes = await API.api_get_files_search_files({ tags: [[t[0].namespace + ':' + t[0].value]], return_hashes: true })
       //console.log(namespaceHashes)
 
-      let namespaceMetadata = await API.api_get_file_metadata({ hashes: namespaceHashes.data.hashes, hide_service_names_tags: true })
+      let namespaceMetadata = await API.api_get_file_metadata({ hashes: namespaceHashes.data.hashes })
       //console.log(namespaceMetadata?.data.metadata)
 
       ///UNFINISHED///

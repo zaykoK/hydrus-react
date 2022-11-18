@@ -57,19 +57,16 @@ export function RelatedFiles(props: RelatedFilesProps) {
             //Sort hashes in order of first pages by order of page, then all the other files by order of import date
             const STEP = 100
             for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
-                let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true,abortController:AbortControllerSearch.current }).catch((reason) => {return})
+                let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current }).catch((reason) => { return })
                 if (metaDataResponse) { responses.push(metaDataResponse.data.metadata) }
             }
 
             responses = responses.flat()
             let tempArray = []
 
-            let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags');
-            if (!allKnownTagsKey) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
-
             for (let entry of responses) {
-                let serviceKeys = entry.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
-                let filter = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
+                let tags = API.getTagsFromMetadata(entry,'ImportedTags')
+                let filter = TagTools.tagArrayToMap(tags || [])
                 //This gives all tags for grouping namespace, ideally only 1 result should exist
                 let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
                 tempArray.push({ hash: entry.hash, page: filterTags, modifiedDate: entry.time_modified })
@@ -197,7 +194,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
         return () => {
             AbortControllerSearch.current?.abort()
         }
-    },[])
+    }, [])
 
     function getRelatedThumbsStyle(landscape: boolean): string {
         if (isMobile()) {

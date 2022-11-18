@@ -48,7 +48,7 @@ function App() {
       sessionStorage.setItem("hydrus-session-key", response.data.session_key);
     }
     //If no known services get them
-    if (sessionStorage.getItem('hydrus-all-known-tags') === null) {
+    if (sessionStorage.getItem('hydrus-services') === null) {
       API.api_get_services();
     }
     API.api_version()

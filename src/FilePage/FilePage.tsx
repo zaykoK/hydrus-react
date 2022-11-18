@@ -125,11 +125,10 @@ export function FilePage(props: FilePageProps) {
     }
     abortControllerMetadata.current = new AbortController()
 
-    let response = await API.api_get_file_metadata({ hash: fileHash, hide_service_names_tags: true, abortController: abortControllerMetadata.current }).catch((reason) => { return })
+    let response = await API.api_get_file_metadata({ hash: fileHash, abortController: abortControllerMetadata.current }).catch((reason) => { return })
     if (!response) { return }
     let data: API.MetadataResponse = response.data.metadata[0]
-    let allKnownTags = sessionStorage.getItem('hydrus-all-known-tags') || '';
-    let responseTags = data.service_keys_to_statuses_to_display_tags[allKnownTags][API.ServiceStatusNumber.Current]
+    let responseTags = API.getTagsFromMetadata(data,'ImportedTags')
     let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
     tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
     setMetaData(response.data.metadata[0])

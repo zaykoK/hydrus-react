@@ -68,7 +68,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 34
+  const API_TARGET = 35
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -100,6 +100,24 @@ export function api_version() {
     });
 }
 
+type TagRepositoryTuple = {
+  name:string;
+  service_key:string;
+}
+
+type ResponseGetService = {
+  all_known_files:Array<TagRepositoryTuple>;
+  all_known_tags:Array<TagRepositoryTuple>;
+  all_local_files:Array<TagRepositoryTuple>;
+  all_local_media:Array<TagRepositoryTuple>;
+  file_repositories:Array<TagRepositoryTuple>;
+  local_files:Array<TagRepositoryTuple>;
+  local_tags:Array<TagRepositoryTuple>;
+  local_updates:Array<TagRepositoryTuple>;
+  tag_repositories:Array<TagRepositoryTuple>;
+  trash:Array<TagRepositoryTuple>;
+}
+
 export async function api_get_services() {
   axios.get(server_address + '/get_services', {
     params: {
@@ -107,8 +125,9 @@ export async function api_get_services() {
     }
   })
     .then(function (response) {
-      //console.log(response.data['all_known_tags'][0].service_key)
-      sessionStorage.setItem('hydrus-all-known-tags', response.data['all_known_tags'][0].service_key)
+      let data:ResponseGetService = response.data
+      let stringified = JSON.stringify(data)
+      sessionStorage.setItem('hydrus-services', stringified)
     })
     .catch(function (error) {
       // handle error
@@ -327,12 +346,13 @@ export type MetadataResponse = {
     }
     deleted: {}
   }
-  service_keys_to_statuses_to_display_tags: {
-    [key: string]: Array<Array<string>>
-  };
-  service_keys_to_statuses_to_tags: {
-    [key: string]: Array<Array<string>>
-  }
+  tags: {[key:string]: {
+    display_tags:{[key:number]:Array<string>};
+    name:string;
+    storage_tags:{[key:number]:Array<string>};
+    type:number;
+    type_pretty:string;
+  }}
 }
 
 interface APIGetFileMetadataProps {
@@ -340,7 +360,6 @@ interface APIGetFileMetadataProps {
   file_ids?: Array<number>;
   hash?: string;
   hashes?: Array<string>;
-  hide_service_names_tags?: boolean;
   create_new_file_ids?: boolean;
   only_return_identifiers?: boolean;
   only_return_basic_information?: boolean;
@@ -364,7 +383,6 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
       "file_ids": JSON.stringify(props.file_ids),
       "hash": props.hash,
       "hashes": JSON.stringify(props.hashes),
-      'hide_service_names_tags': props.hide_service_names_tags,
       'create_new_file_ids': props.create_new_file_ids,
       'only_return_identifiers': props.only_return_identifiers,
       'only_return_basic_information': props.only_return_basic_information,
@@ -372,4 +390,32 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
       'include_notes': props.include_notes
     }
   })
+}
+/*** This return a tag array from metadata object
+ * 
+ */
+export function getTagsFromMetadata(metadata:MetadataResponse,key:string):Array<string> {
+  // Load services data
+  let sessionData = sessionStorage.getItem('hydrus-services')
+  if (sessionData === null) {
+    console.warn('No service data in memory, try refreshing.')
+    return []
+  }
+  let servicesData:ResponseGetService = JSON.parse(sessionData)
+  let tags:Array<string> = []
+
+  let blacklist = localStorage.getItem('tag-services-blacklist')
+
+  // For now I load every tag service tag
+  // This should later be changed to only load enabled ones
+
+  for (let element of servicesData.local_tags) {
+    let wanted = metadata.tags[element.service_key].display_tags[0]
+    if (wanted !== undefined) {
+      tags = tags.concat(wanted)
+    }
+    
+  }
+  //console.log(tags)
+  return tags
 }

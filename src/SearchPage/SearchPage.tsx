@@ -237,17 +237,13 @@ export function SearchPage(props: SearchPageProps) {
 
     let resultGroupMap: Map<string, ResultGroup> = new Map<string, ResultGroup>()
 
-    //Grab key for 'all known tags' service from session storage, if properly grabbed API key then should work
-    let allKnownTagsKey = sessionStorage.getItem('hydrus-all-known-tags') || '';
-    if (!allKnownTagsKey || allKnownTagsKey === null) { allKnownTagsKey = ''; console.error('Could not grab "all known tags" key from sessionStorage, this is bad.') }
-
     for (let element of responsesSorted) {
       unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element], type:'single' })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
+      let tags = API.getTagsFromMetadata(element,'ImportedTags')
 
-      let serviceKeys = element.service_keys_to_statuses_to_display_tags[allKnownTagsKey]
-      if (serviceKeys) {
+      if (tags) {
         //For each entry in metadataResponses 
         //Turn response into a tag map (key:'tag text', value:'counts of tag, should be 1 for everything anyway'),
         //*this is used so it filters out duplicate tags?, not sure why i'm doing this here, probably just to easily move between coversion functions
@@ -256,7 +252,7 @@ export function SearchPage(props: SearchPageProps) {
 
         //This turns the responses into a map for later filtering
         //transformIntoTuple could be done once frankly, saving some execution time
-        let tagMap = TagTools.tagArrayToMap(serviceKeys[API.ServiceStatusNumber.Current] || [])
+        let tagMap = TagTools.tagArrayToMap(tags || [])
 
         let tagTuples = TagTools.transformIntoTuple(tagMap)
 
@@ -432,7 +428,7 @@ export function SearchPage(props: SearchPageProps) {
       //else {
       let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
       for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), hide_service_names_tags: true, abortController: AbortControllerSearch.current })
+        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
         if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
         if (responseSize > 512) { //KB
           responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
