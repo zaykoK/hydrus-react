@@ -49,21 +49,21 @@ function getMetadataCardStyle(): string {
 
 //Displays non-tag metadata about file
 export function FileMetaData(props: FileMetaDataProps) {
-    const [imageSize,setImageSize] = useState<Array<number>>([props.metadata.width, props.metadata.height])
+    const [imageSize, setImageSize] = useState<Array<number>>([props.metadata.width, props.metadata.height])
     const [mime, setMime] = useState<string>(props.metadata.mime)
-    const [urls,setURLs] = useState(props.metadata.known_urls)
+    const [urls, setURLs] = useState(props.metadata.known_urls)
     //console.log(props)
-    const [inbox,setInbox] = useState(props.metadata.is_inbox)
-    const [size,setSize] = useState(props.metadata.size)
-    const [hash,setHash] = useState(props.metadata.hash)
-    const [date,setDate] = useState(props.metadata.time_modified)
+    const [inbox, setInbox] = useState(props.metadata.is_inbox)
+    const [size, setSize] = useState(props.metadata.size)
+    const [hash, setHash] = useState(props.metadata.hash)
+    const [date, setDate] = useState(props.metadata.time_modified)
 
-    
+
     useEffect(() => {
         async function loadTranscodedInfo() {
             if (props.transcode) {
                 let response = await API.api_get_file_metadata({ hash: props.transcode, only_return_basic_information: true })
-                setImageSize([response?.data.metadata[0].width,response?.data.metadata[0].height])
+                setImageSize([response?.data.metadata[0].width, response?.data.metadata[0].height])
                 setMime(response?.data.metadata[0].mime)
                 setSize(response?.data.metadata[0].size)
                 setURLs(props.metadata.known_urls)
@@ -82,10 +82,9 @@ export function FileMetaData(props: FileMetaDataProps) {
             }
         }
         loadTranscodedInfo()
-    ///THIS NEEDS BETTER WAY OF DETERMINING WHEN AS IT IS DOING THIS FUNCTION TWICE
-    ///when metadata changes and then when transcode changes
+        ///THIS NEEDS BETTER WAY OF DETERMINING WHEN AS IT IS DOING THIS FUNCTION TWICE
+        ///when metadata changes and then when transcode changes
     }, [props])
-
 
     let links = []
     for (let el in urls) {
