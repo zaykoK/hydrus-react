@@ -68,7 +68,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 35
+  const API_TARGET = 36
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -103,6 +103,8 @@ export function api_version() {
 type TagRepositoryTuple = {
   name:string;
   service_key:string;
+  type:number;
+  type_pretty:string;
 }
 
 type ResponseGetService = {
@@ -365,7 +367,6 @@ interface APIGetFileMetadataProps {
   only_return_basic_information?: boolean;
   detailed_url_information?: boolean;
   include_notes?: boolean;
-
   abortController?: AbortController;
 }
 
@@ -387,7 +388,9 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
       'only_return_identifiers': props.only_return_identifiers,
       'only_return_basic_information': props.only_return_basic_information,
       'detailed_url_information': props.detailed_url_information,
-      'include_notes': props.include_notes
+      'include_notes': props.include_notes,
+      'hide_service_keys_tags':JSON.stringify(false), /* This should be removed some time soon after hydrus removes this */
+      'hide_service_names_tags':JSON.stringify(true),
     }
   })
 }
