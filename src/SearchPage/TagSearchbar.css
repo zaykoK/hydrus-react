@@ -120,6 +120,25 @@
     z-index: inherit;
 }
 
+.emptyButton {
+    margin:2px;
+    padding: 6px;
+    width: min-content;
+    aspect-ratio: 1/1;
+    justify-content: center;
+    text-align: center;
+    color:white;
+    cursor: pointer;
+    user-select: none;
+    background-color: black;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.emptyButton:hover {
+    background-color: red;
+}
+
 .searchInput {
     display: block;
     height: inherit;

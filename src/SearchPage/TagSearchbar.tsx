@@ -37,12 +37,13 @@ type TagLookupResult = {
 
 const blacklist = JSON.parse(localStorage.getItem('blacklisted-namespaces') || '[]')
 
-function TagLookupResultToTuple(tags: Array<TagLookupResult>): Array<TagTools.Tuple> {
+function TagLookupResultToTuple(tags: Array<TagLookupResult>,currentSearch:string): Array<TagTools.Tuple> {
   let filteredTags: Array<TagTools.Tuple> = []
+  let currentNamespace = currentSearch.split(':',2)
   for (let tag of tags) {
     let splitted = tag.value.split(':', 2)
     if (splitted.length > 1) {
-      if (!blacklist.includes(splitted[0])) {
+      if ((!blacklist.includes(splitted[0])) || (splitted[0] === currentNamespace[0])) {
         filteredTags.push({
           namespace: splitted[0],
           value: splitted[1],
@@ -115,7 +116,7 @@ export function TagSearchBar(props: SearchTagsProps) {
       /// Process the results
       if (response) {
         let tags: Array<TagLookupResult> = response.data.tags
-        let filteredTags: Array<TagTools.Tuple> = TagLookupResultToTuple(tags)
+        let filteredTags: Array<TagTools.Tuple> = TagLookupResultToTuple(tags,search)
         setHelpTags(filteredTags)
       }
     }
@@ -153,19 +154,18 @@ export function TagSearchBar(props: SearchTagsProps) {
       if (isMobile()) { return "searchBar mobile" }
       return "searchBar"
     }
-
     return <div className={getSearchBarStyle()}>
       <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type} />
       <form className="searchForm" onSubmit={submitTag}>
         <input
           onFocus={() => { setHelpTagsVisible(true); props.infoAction(false) }}
-          onBlur={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}
           className="searchInput"
           type="text"
           value={tag}
           placeholder="Search tags, -tag excludes, tag1 OR tag2 for alternative"
           onChange={(e) => searchTag(e.target.value)} />
       </form>
+      {(tag) ? <div className='emptyButton' onClick={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}>X</div> : null }
     </div>
   }
 
