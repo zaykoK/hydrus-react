@@ -100,14 +100,14 @@ export function api_version() {
     });
 }
 
-type TagRepositoryTuple = {
+export type TagRepositoryTuple = {
   name:string;
   service_key:string;
   type:number;
   type_pretty:string;
 }
 
-type ResponseGetService = {
+export type ResponseGetService = {
   all_known_files:Array<TagRepositoryTuple>;
   all_known_tags:Array<TagRepositoryTuple>;
   all_local_files:Array<TagRepositoryTuple>;
@@ -397,28 +397,21 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
 /*** This return a tag array from metadata object
  * 
  */
-export function getTagsFromMetadata(metadata:MetadataResponse,key:string):Array<string> {
+export function getTagsFromMetadata(metadata:MetadataResponse,key:string,servicesData:ResponseGetService|null):Map<string,Array<string>> {
   // Load services data
-  let sessionData = sessionStorage.getItem('hydrus-services')
-  if (sessionData === null) {
-    console.warn('No service data in memory, try refreshing.')
-    return []
-  }
-  let servicesData:ResponseGetService = JSON.parse(sessionData)
-  let tags:Array<string> = []
+  let tagsByService:Map<string,Array<string>> = new Map()
 
   let blacklist = localStorage.getItem('tag-services-blacklist')
 
   // For now I load every tag service tag
   // This should later be changed to only load enabled ones
+  if (servicesData === null) {return new Map()}
+
+  tagsByService.set(servicesData.all_known_tags[0].service_key,metadata.tags[servicesData.all_known_tags[0].service_key].display_tags[0])
 
   for (let element of servicesData.local_tags) {
-    let wanted = metadata.tags[element.service_key].display_tags[0]
-    if (wanted !== undefined) {
-      tags = tags.concat(wanted)
-    }
-    
+    tagsByService.set(element.service_key,metadata.tags[element.service_key].display_tags[0] || [])
   }
   //console.log(tags)
-  return tags
+  return tagsByService
 }
