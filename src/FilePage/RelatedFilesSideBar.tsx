@@ -3,6 +3,7 @@ import { getRelatedNamespaces } from "../StorageUtils";
 import { isLandscapeMode, isMobile } from "../styleUtils";
 import { relatedDataCartType } from "./FilePage";
 import { RelatedFiles } from "./RelatedFiles"
+import { getAllTagsServiceKey } from "../SearchPage/SearchPageHelpers"
 
 import './RelatedFilesSideBar.css'
 
