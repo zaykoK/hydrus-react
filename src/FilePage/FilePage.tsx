@@ -3,7 +3,7 @@ import { MemoFileContent as FileContent } from './FileContent';
 import { FileMetaData } from './FileMetaData';
 import { useParams } from 'react-router-dom';
 import * as TagTools from '../TagTools'
-import { TagList } from '../TagList'
+import { TagListTabs } from '../TagList'
 import * as API from '../hydrus-backend';
 
 import IconRelated from '../assets/related.svg'
@@ -23,7 +23,7 @@ import '../SearchPage/GroupButton.css'
 import { RelatedFilesSideBar } from './RelatedFilesSideBar';
 import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage } from './ImageControls';
 import { readParams } from '../SearchPage/URLParametersHelpers';
-import { generateSearchURL } from '../SearchPage/SearchPageHelpers';
+import { createListOfUniqueTags, generateSearchURL } from '../SearchPage/SearchPageHelpers';
 
 interface FilePageProps {
   setNavigationExpanded: Function;
@@ -33,7 +33,7 @@ interface FilePageProps {
 
 export type relatedDataCartType = {
   hash: string;
-  tags: Array<TagTools.Tuple>;
+  tags: Map<string,Array<TagTools.Tuple>>;
 }
 
 export function FilePage(props: FilePageProps) {
@@ -42,10 +42,10 @@ export function FilePage(props: FilePageProps) {
   }
   const fileHash = props.hash;
   const { parm } = useParams();
-  const [metadata, setMetaData] = React.useState<API.MetadataResponse>();
-  const [tags, setTags] = React.useState([]);
+  const [metadata, setMetaData] = React.useState<API.MetadataResponse>()
+  const [tags, setTags] = React.useState<Map<string,Array<TagTools.Tuple>>>(new Map())
 
-  const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({ hash: '', tags: [] })
+  const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({ hash: '', tags: new Map() })
 
   const [relatedVisible, setRelateVisible] = React.useState(getRelatedVisibile())
   const [sidebarVisible, setSidebarVisible] = React.useState(false)
@@ -75,18 +75,12 @@ export function FilePage(props: FilePageProps) {
 
   }
 
-
   function handleScreenChange() {
     if (window.screen.orientation.type.includes('portrait')) {
       setLandscape(false);
-/*       if (document.fullscreenElement) {
-        document.exitFullscreen()
-      } */
       return
     }
     setLandscape(true)
-/*     document.documentElement.requestFullscreen().catch((err) => {
-      console.warn(`Error attempting to enable fullscreen mode: ${err.message} (${err.name}). Usually happens when multiple requests for fullscreen happen without any registered user input between them.`);}) */
   }
 
   //MBY add a little reminder in corner of icons showing button bind for it
@@ -128,13 +122,14 @@ export function FilePage(props: FilePageProps) {
     let response = await API.api_get_file_metadata({ hash: fileHash, abortController: abortControllerMetadata.current }).catch((reason) => { return })
     if (!response) { return }
     let data: API.MetadataResponse = response.data.metadata[0]
-    let responseTags = API.getTagsFromMetadata(data,'ImportedTags')
-    let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags))
-    tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
+    let tags = createListOfUniqueTags([data])
+    //let responseTags = API.getTagsFromMetadata(data,'ImportedTags')
+    //let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags.get(getAllTagsServiceKey()) || []))
+    //tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
     setMetaData(response.data.metadata[0])
     // @ts-ignore
-    setTags(tagTuples)
-    setRelatedDatacart({ hash: fileHash || '', tags: tagTuples })
+    setTags(tags)
+    setRelatedDatacart({ hash: fileHash || '', tags: tags })
   }
 
   function getRelatedButtonStyle(enabled: boolean) {
@@ -233,7 +228,7 @@ export function FilePage(props: FilePageProps) {
     return <>
       <div className={getSideBarStyle()}>
 
-        {(tags !== undefined) && <TagList type='image' tags={tags} visibleCount={false} />}
+        {(tags !== undefined) && <TagListTabs type='image' tags={tags} visibleCount={false} />}
         {(metadata !== undefined) && <FileMetaData metadata={metadata} transcode={transcodedHash} />}
       </div>
       <div className={getSidebarScreenOverlayStyle()} onClick={() => { setSidebarVisible(false) }} ></div>
@@ -277,7 +272,7 @@ export function FilePage(props: FilePageProps) {
     </div>
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>
       <div className={getSideBarStyle()}>
-        {(tags !== undefined) && <TagList type='image' tags={tags} visibleCount={false} />}
+        {(tags !== undefined) && <TagListTabs blacklist={['Good Tags','zTranslations']} type='image' tags={tags} visibleCount={false} />}
         {(metadata !== undefined) && <FileMetaData metadata={metadata} transcode={transcodedHash} />}
       </div>
       <div key={'FilePageContentWrapper' + fileHash + isMobile().toString()} className={generateClassName('fileContent')} >

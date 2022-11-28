@@ -10,7 +10,7 @@ import { isMobile } from '../styleUtils';
 import { getComicNamespace, getGroupNamespace } from '../StorageUtils';
 
 import TagLink from './TagLink';
-import { createListOfUniqueTags } from '../SearchPage/SearchPageHelpers';
+import { createListOfUniqueTags, getAllTagsServiceKey, loadServiceData } from '../SearchPage/SearchPageHelpers';
 import ResultComicCard from './ResultComicCard';
 import ThumbContent from './ThumbContent';
 import { TagList } from '../TagList';
@@ -48,9 +48,9 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
   if (args.metadata != null) {
     //const LIMIT = 200
 
-    let tags = API.getTagsFromMetadata(args.metadata,'ImportedTags')
+    let tags = API.getTagsFromMetadata(args.metadata,'ImportedTags',loadServiceData())
 
-    let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
+    let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || []))
     let tagArrays = []
     if (args.type === 'comic') {
       for (let space in args.spaces) {
@@ -96,8 +96,8 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
 export function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
   if (metadata != null) {
 
-    let tags = API.getTagsFromMetadata(metadata,'')
-    let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
+    let tags = API.getTagsFromMetadata(metadata,'',loadServiceData())
+    let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || []))
     let t = tagsSorted.filter((element) => element["namespace"] === space)
     if (t[0] === undefined) {
       return ''
@@ -200,9 +200,9 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     //Load rest of metadata for the hash
     if (group === true) {
       //Get a group-title or doujin-title namespace for the hash
-      let tags = API.getTagsFromMetadata(meta,'')
+      let tags = API.getTagsFromMetadata(meta,'',loadServiceData())
 
-      let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags))
+      let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || []))
       let t: Array<TagTools.Tuple> = tagsSorted.filter((element) => element["namespace"] === getComicNamespace())
       //Load hashes for all the tags in that namespace
       let namespaceHashes = await API.api_get_files_search_files({ tags: [[t[0].namespace + ':' + t[0].value]], return_hashes: true })
@@ -216,7 +216,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       ///Commented for now
       let uniqueTags = createListOfUniqueTags(namespaceMetadata?.data.metadata)
       //console.log(uniqueTags)
-      setMetadataGroup(uniqueTags)
+      setMetadataGroup(uniqueTags.get(getAllTagsServiceKey()) || [])
 
       // 
 
@@ -258,7 +258,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
         })}
       </div>}
       <div className='bottomTags'>
-        {(props.hideWidgetCount === undefined || props.hideWidgetCount === true) ? <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} /> : <></>}
+        {(props.hideWidgetCount === undefined || props.hideWidgetCount === true) ? <WidgetCount tag={getComicTitle(metadata, getGroupNamespace(), false)} /> : null}
         <WidgetFileType mime={metadata?.mime || EMPTYSTRING} />
       </div> */}
       <ThumbContent

@@ -4,7 +4,7 @@ import { TagSearchBar } from "./TagSearchbar"
 import { useParams } from 'react-router-dom'
 import * as API from '../hydrus-backend'
 import * as TagTools from '../TagTools'
-import { TagList } from '../TagList'
+import { TagListTabs } from '../TagList'
 
 import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace, getSortType, setSortType } from '../StorageUtils'
 import { setPageTitle } from '../misc'
@@ -12,7 +12,7 @@ import { setPageTitle } from '../misc'
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils'
 import localforage from 'localforage'
-import { addTag, createListOfUniqueTags } from './SearchPageHelpers'
+import { addTag, createListOfUniqueTags, getAllTagsServiceKey, loadServiceData } from './SearchPageHelpers'
 
 import { FilePage } from '../FilePage/FilePage'
 import { readParams } from './URLParametersHelpers'
@@ -41,7 +41,7 @@ export type ResultGroup = {
   title: string; // title of the group - should allow for for easy searching for the rest of the group with adding * after it
   subgroups: Map<string, ResultGroup>; // Subgroups if any
   entries: Array<API.MetadataResponse>; // This will be probably empty for groups that also have subgroups as those files should belong to the subgroups entries
-  type:string; // What type the group is, used for proper formatting and tag display ex. image,comic,photoset etc.
+  type: string; // What type the group is, used for proper formatting and tag display ex. image,comic,photoset etc.
 }
 
 export function changePage() {
@@ -56,7 +56,7 @@ export function SearchPage(props: SearchPageProps) {
   const [emptySearch, setEmptySearch] = useState<boolean>(false)
   const [tags, setTags] = useState<Array<Array<string>>>()
   //List of unique tags for given files
-  const [fileTags, setFileTags] = useState<Array<TagTools.Tuple>>([])
+  const [fileTags, setFileTags] = useState<Map<string, Array<TagTools.Tuple>>>(new Map())
   //Current search parameters, tags(unused?) and current page of search results
   const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0, hash: '', type: props.type })
   //Field that accesses "actual" current URL parameters
@@ -142,7 +142,7 @@ export function SearchPage(props: SearchPageProps) {
           // Get existing subgroups
           let subgroups = currentResultGroup.subgroups
           // Add the new one
-          subgroups.set(stack[0], createSubGroup(stack, metadata,currentResultGroup.type))
+          subgroups.set(stack[0], createSubGroup(stack, metadata, currentResultGroup.type))
           // Create new object with updated subgroups data and return it
           let group: ResultGroup = {
             cover: currentResultGroup.cover,
@@ -238,10 +238,10 @@ export function SearchPage(props: SearchPageProps) {
     let resultGroupMap: Map<string, ResultGroup> = new Map<string, ResultGroup>()
 
     for (let element of responsesSorted) {
-      unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element], type:'single' })
+      unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element], type: 'single' })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
-      let tags = API.getTagsFromMetadata(element,'ImportedTags')
+      let tags = API.getTagsFromMetadata(element, 'ImportedTags',loadServiceData()).get(getAllTagsServiceKey())
 
       if (tags) {
         //For each entry in metadataResponses 
@@ -398,7 +398,7 @@ export function SearchPage(props: SearchPageProps) {
     }
 
     let responses: Array<API.MetadataResponse> = []
-    let fileTags: Array<TagTools.Tuple> = []
+    let fileTags: Map<string, Array<TagTools.Tuple>> = new Map()
 
     let responseSize = 0
     let responseSizeReadable = ''
@@ -573,7 +573,7 @@ export function SearchPage(props: SearchPageProps) {
     return <>
       <div className={getGridStyleList()}>
         {(fileTags !== undefined) &&
-          <TagList
+          <TagListTabs
             visibleCount={true}
             tags={fileTags}
             blacklist={tagBlacklist.current}
@@ -603,14 +603,15 @@ export function SearchPage(props: SearchPageProps) {
     {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
       {(params.type !== 'comic') && <div className={getGridStyleList()}>
-        {(fileTags !== undefined && loaded) &&
-          <TagList
+        {(fileTags !== undefined && loaded) && <>
+          <TagListTabs 
+            key="tagListTabs" 
+            blacklist={tagBlacklist.current} 
+            type={params.type} 
+            tags={fileTags} 
             visibleCount={true}
-            tags={fileTags}
-            blacklist={tagBlacklist.current}
-            clickFunction={addTag}
-            type={params.type}
-          />}
+            displayTagCount={true} />
+            </>}
       </div>}
       <div className={getGridStyleThumbs()}>
         <ImageWall

@@ -5,8 +5,8 @@
     overflow-x: hidden;
     font-size: small;
     background-color: var(--COLOR2);
-    border-radius: 10px;
-    box-shadow: 0px 0px 2px 0px black;
+    border-radius: 0px 0px 10px 10px;
+    box-shadow: 0px 0px 0px 0px black;
     display:flex;
     flex-wrap:wrap;
     overscroll-behavior: none;
@@ -47,13 +47,17 @@
 
 .tagEntry.blob {
     border-radius: 5px;
+    border-width: 1px;
+    border-style: solid;
     place-self: center;
-    padding: 8px 1px 8px 1px;
+    padding: 8px 3px 8px 3px;
     flex-grow: 1;
     flex-shrink: 2;
     text-align: center;
+    transition: border-color 0.3s;
     animation-name: tagBlobIntro;
     animation-duration: 0.5s;
+
 }
 
 .tagEntry.blob.removed {
@@ -64,11 +68,54 @@
 }
 
 .tagEntry.blob:hover {
-    filter:brightness(150%)
+    border-color: white !important;
 }
 
 .tagEntry.blob:active {
     animation-name: tagBlobClick;
     animation-duration: 0.5s;
 }
+
+.tabSelectors {
+    display:flex;
+    flex-wrap: nowrap;
+    overflow: auto;
+    margin-top:1em;
+}
+.tabSelectors::-webkit-scrollbar {
+    display: none;
+}
+
+.tabButton {
+    flex-grow: 1;
+    background-color: var(--COLOR2);
+    text-align: center;
+    padding: 0.5em;
+    padding-top:0.25em;
+    padding-bottom:0px;
+    border: solid;
+    border-width: 0px;
+    border-top-width: 2px;
+    border-radius: 5px 5px 0px 0px;
+    border-color:var(--COLOR2);
+    cursor: pointer;
+    user-select: none;
+    min-width: auto;
+    transition: border-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    white-space: nowrap;
+}
+.tabButton:hover {
+    border-color:blueviolet;
+}
+
+.emptyList {
+    height: 2em;
+    width: 100%;
+    background-color: var(--COLOR2);
+    border-radius: 0px 0px 5px 5px;
+}
+
 

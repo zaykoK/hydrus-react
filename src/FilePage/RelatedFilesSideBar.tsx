@@ -50,7 +50,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
         for (let element of spaces) {
             //If no tags in namespace, don't add to the list
             //@ts-ignore
-            let tags = returnTagsFromNamespace(dataTags, element) || []
+            let tags = returnTagsFromNamespace(dataTags.get(getAllTagsServiceKey()), element) || []
             // Split subgroups and sort
             const SplitSymbol = '/'
             for (let groupTag of tags) {

@@ -209,7 +209,7 @@ function ResultComponent(props: ResultComponentProps) {
     return <div onMouseLeave={(e) => { setScrollable(false); }} onMouseEnter={(e) => { }} onClick={(e) => { e.stopPropagation(); setScrollable(true); console.log('marking ' + props.result.cover) }} className={getComponentStyle(thumblist.length)}>
         <div className={getWrapperComponentStyle(thumblist.length, scrollable)}>{thumblist}</div>
         <div className='ResultComponentCover'>
-            {(thumblist.length > 2) ? <div className='ResultComponentTopBar'>{getTopText()}</div> : <></>}
+            {(thumblist.length > 2) ? <div className='ResultComponentTopBar'>{getTopText()}</div> : null}
             {cover}
             <div className="ResultComponentCountWidget">{getResultCount()}</div>
         </div>

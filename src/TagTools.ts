@@ -13,6 +13,7 @@ export function getTagButtonStyle(style: string): React.CSSProperties {
   if (style === '') { style = 'unnamedspaced' }
   const cssStyleCommon = {
     background: (TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other']),
+    borderColor: TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other'],
     color: (TagColor.buttonTextColors[style] !== undefined ? TagColor.buttonTextColors[style] : 'white')
   }
   if (style === undefined) { return cssStyleCommon }
@@ -26,6 +27,7 @@ export function getTagButtonStyle(style: string): React.CSSProperties {
     return {
       ...cssStyleCommon,
       background: TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other'],
+      borderColor: TagColor.colors[style] !== undefined ? TagColor.colors[style] : TagColor.colors['other'],
       boxShadow: '0px 0px 7px 0px black',
       //border: 'solid',
       //borderColor: 'black'

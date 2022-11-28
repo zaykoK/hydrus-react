@@ -111,19 +111,73 @@ export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: 
     }
 }
 
+function mergeTagMaps(current: Map<string, Array<string>>, second: Map<string, Array<string>>) {
+    second.forEach((value, key) => {
+        let currentValue = current.get(key)
+        if (currentValue === undefined) {
+            current.set(key, value)
+        }
+        else {
+            currentValue.push(...value)
+            //current.set(key, currentValue.concat(value))
+        }
+    })
+}
 
-export function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Array<TagTools.Tuple> {
-    //console.time('metajoin')
-    let merged = []
-    for (let element of responses) {
-        let tags = API.getTagsFromMetadata(element, 'ImportedTags')
-        merged.push(tags)
+export function loadServiceData():API.ResponseGetService|null {
+    let sessionData = sessionStorage.getItem('hydrus-services')
+    
+    if (sessionData === null) {
+        console.warn('No service data in memory, try refreshing.')
+        return null
     }
-    let map: Map<string, number> = TagTools.tagArrayToMap(merged.flat())
-    merged = TagTools.transformIntoTuple(map)
-    merged.sort((a, b) => TagTools.compareNamespaces(a, b))
-    //console.timeEnd('metajoin')
-    return merged
+    let servicesData:API.ResponseGetService = JSON.parse(sessionData)
+    return servicesData
+}
+
+export function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Map<string, Array<TagTools.Tuple>> {
+    let merged: Map<string, Array<string>> = new Map()
+
+    let servicesData = loadServiceData()
+    if (servicesData === null) {return new Map()}
+
+    // TODO
+    // This thing is slow, ~250ms on my pc with 5000 result limit
+    // Was way slower initially with merge using [...array,secondArray].flat() => ~10 seconds
+    // Find a way to make it faster
+    // Changed to push which seems to made it take only round ~50ms now with same data set
+    // Last thing that is slow the actual getTagsFromMetadata which now is 90% of time spent
+    // It was actually because I was parsing JSON with services 5000 times
+    // Now it's a nice ~5ms
+
+    //console.time('merge')
+    for (let element of responses) {
+        let tags = API.getTagsFromMetadata(element, 'ImportedTags',servicesData)
+        mergeTagMaps(merged, tags)
+    }
+    //console.timeEnd('merge')
+
+    //console.time('secondChrist')
+    let final: Map<string, Array<TagTools.Tuple>> = new Map()
+    merged.forEach((value, key) => {
+        let tagMap: Map<string, number> = TagTools.tagArrayToMap(value)
+        let tuple = TagTools.transformIntoTuple(tagMap)
+        tuple.sort((a, b) => TagTools.compareNamespaces(a, b))
+        final.set(key, tuple)
+    })
+    //console.timeEnd('secondChrist')
+    return final
+}
+
+export function getAllTagsServiceKey():string {
+    let services:API.ResponseGetService = JSON.parse( sessionStorage.getItem('hydrus-services') || '')
+    let allKnownTags = services.all_known_tags[0].service_key
+
+    return allKnownTags
+}
+
+export function getTagsFromService(serviceKey:string) {
+
 }
 
 

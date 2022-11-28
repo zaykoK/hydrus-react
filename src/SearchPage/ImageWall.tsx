@@ -88,13 +88,13 @@ export function ImageWall(props: ImageWallProps) {
     <div className='imageWall' >
       {(props.empty) ? 
       <div className='emptyStyle'>No results</div> 
-      : <><WrapperList
+      : <WrapperList
           key={sm}
           thumbs={thumbs}
           type={props.type}
           loadingProgress={props.loadingProgress}
           loaded={props.loaded}
-        /></>}
+        />}
     </div>
   );
 }

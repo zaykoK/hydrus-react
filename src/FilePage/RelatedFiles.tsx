@@ -7,6 +7,7 @@ import "./RelatedFiles.css"
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import * as TagTools from '../TagTools'
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { getAllTagsServiceKey, loadServiceData } from '../SearchPage/SearchPageHelpers';
 
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
@@ -65,8 +66,8 @@ export function RelatedFiles(props: RelatedFilesProps) {
             let tempArray = []
 
             for (let entry of responses) {
-                let tags = API.getTagsFromMetadata(entry,'ImportedTags')
-                let filter = TagTools.tagArrayToMap(tags || [])
+                let tags = API.getTagsFromMetadata(entry,'ImportedTags',loadServiceData())
+                let filter = TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || [])
                 //This gives all tags for grouping namespace, ideally only 1 result should exist
                 let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
                 tempArray.push({ hash: entry.hash, page: filterTags, modifiedDate: entry.time_modified })

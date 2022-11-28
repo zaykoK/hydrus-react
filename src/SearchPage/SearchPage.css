@@ -68,9 +68,11 @@
     width: 15vw;
     box-sizing: content-box;
     height: 92vh;
+    margin-left: 5px;
 }
 
 .gridStyleList.mobile {
+    margin-left: 0px;
     position: fixed;
     overflow-y: scroll;
     bottom: 0px;
@@ -85,6 +87,7 @@
     transition: transform 0.2s ease-in-out;
     transform: translateY(120%);
     will-change: transform;
+    
 
 }
 
