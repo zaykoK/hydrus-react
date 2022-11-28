@@ -412,6 +412,5 @@ export function getTagsFromMetadata(metadata:MetadataResponse,key:string,service
   for (let element of servicesData.local_tags) {
     tagsByService.set(element.service_key,metadata.tags[element.service_key].display_tags[0] || [])
   }
-  //console.log(tags)
   return tagsByService
 }

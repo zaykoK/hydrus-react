@@ -229,7 +229,6 @@ export function SearchPage(props: SearchPageProps) {
       if (hashA > hashB) { return 1 }
       return 0
     }
-
     let responsesSorted = responsesCopy.sort((a, b) => compareResponsesByHash(a, b))
 
     //let resultMap: Map<string, Result> = new Map<string, Result>()
@@ -297,7 +296,6 @@ export function SearchPage(props: SearchPageProps) {
         // That might hold things like flags as to how display a given group, I'm mostly seeing it as a way to for example decide by user whether they want a given group to display as single results or have entries for every subgroup
       }
     }
-    //console.log(resultGroupMap)
     let returnHashes: Array<string> = []
     let searchArray: Array<ResultGroup> = []
 
@@ -398,7 +396,7 @@ export function SearchPage(props: SearchPageProps) {
     }
 
     let responses: Array<API.MetadataResponse> = []
-    let fileTags: Map<string, Array<TagTools.Tuple>> = new Map()
+    let tempFileTags: Map<string, Array<TagTools.Tuple>> = new Map()
 
     let responseSize = 0
     let responseSizeReadable = ''
@@ -451,7 +449,7 @@ export function SearchPage(props: SearchPageProps) {
 
       //console.time('GroupImages')
 
-      fileTags = createListOfUniqueTags(responses)
+      tempFileTags = createListOfUniqueTags(responses)
       let h = hashes
       if (params.type === 'comic') {
         h = groupImages(responses, hashes, getComicNamespace())
@@ -466,7 +464,7 @@ export function SearchPage(props: SearchPageProps) {
       sessionStorage.setItem('hashes-search', JSON.stringify(h))
       setLoaded(true)
     }
-    setFileTags(fileTags)
+    setFileTags(tempFileTags)
     //console.timeEnd('meta')
   }
 

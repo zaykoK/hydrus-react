@@ -115,10 +115,14 @@ function mergeTagMaps(current: Map<string, Array<string>>, second: Map<string, A
     second.forEach((value, key) => {
         let currentValue = current.get(key)
         if (currentValue === undefined) {
-            current.set(key, value)
+            //console.log(value)
+            //console.log(value.slice(0))
+            current.set(key, value.slice(0))
         }
         else {
-            currentValue.push(...value)
+            //console.log(currentValue)
+            currentValue.push(...value.slice())
+            //console.log(currentValue)
             //current.set(key, currentValue.concat(value))
         }
     })
