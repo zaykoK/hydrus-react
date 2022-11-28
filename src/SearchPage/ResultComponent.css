@@ -71,7 +71,6 @@
 
 .ResultComponentWrapper.bigger {
     grid-template-columns: 1fr 1fr;
-    grid-template-columns: subgrid;
     grid-template-rows: subgrid;
     grid-auto-rows: var(--CELL_SIZE);
     gap:4px;
