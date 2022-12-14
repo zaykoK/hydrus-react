@@ -8,11 +8,10 @@ import * as TagTools from './TagTools'
 //Add tag as OR to another one
 
 function displayTagString(tag: TagTools.Tuple, full = false): string {
-    if (tag.namespace === '') { return tag.value }
-
     //User toggle whether to show just the tag value => "naruto" or namespace and value => "character:naruto"
     //Eventually move this into props so it doesn't have to access this value on every tag render
-    if (full || sessionStorage.getItem('show-tag-namespace') === 'true') {
+    if (full) {
+        if (tag.namespace === '') { return tag.value }
         return `${tag.namespace}:${tag.value}`
     }
     return tag.value
@@ -30,6 +29,7 @@ interface TagListButtonProps {
     navigate: NavigateFunction;
     type: string;
     visibleCount: boolean;
+    visibleNamespace: boolean;
 }
 
 export function TagListButton(props: TagListButtonProps) {
@@ -39,6 +39,6 @@ export function TagListButton(props: TagListButtonProps) {
         onContextMenu={(e) => { e.preventDefault(); addTag("-" + displayTagString(props.tag, true), props.navigate, props.type) }}
         key={displayTagString(props.tag)}
         style={TagTools.getTagButtonStyle(props.tag.namespace)} >
-        {displayTagString(props.tag) + displayTagCount(props.tag.count, props.visibleCount)}
+        {displayTagString(props.tag,props.visibleNamespace) + displayTagCount(props.tag.count, props.visibleCount)}
     </p>
 }

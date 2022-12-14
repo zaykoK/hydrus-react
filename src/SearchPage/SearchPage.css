@@ -1,15 +1,22 @@
+@keyframes fullscreenWrapperIntro {
+    0% {backdrop-filter: blur(0px);background-color: transparent;}
+    100% {backdrop-filter: blur(15px);background-color: #00000052;}
+}
+
 .fullscreenWrapper {
     position: fixed;
     left: 0px;
     top: 0px;
     width: 100vw;
     height: 100vh;
-    background-color: #000000f2;
+    background-color: #00000052;
     z-index: 10;
     overflow-x: hidden;
     overflow-y: hidden;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(15px);
     overscroll-behavior: none;
+    animation-name: fullscreenWrapperIntro;
+    animation-duration: 0.5s;
 }
 
 .prevent-scroll {
@@ -30,11 +37,14 @@
     font-size: x-large;
     height: 2em;
 }
+:root {
+    --SIDEBARISIZE: 15vw;
+}
 
 .contentStyle {
     display: grid;
     height: fit-content;
-    grid-template-columns: 15vw auto;
+    grid-template-columns: var(--SIDEBARISIZE) auto;
     margin: 5px 0px 0px 0px;
 }
 
@@ -65,7 +75,7 @@
     grid-column: 1;
     grid-row: 1;
     position:fixed;
-    width: 15vw;
+    width: var(--SIDEBARISIZE);
     box-sizing: content-box;
     height: 92vh;
     margin-left: 5px;

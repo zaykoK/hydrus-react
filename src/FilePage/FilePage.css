@@ -125,7 +125,8 @@
 
 .backIconWrapper {
     position: fixed;
-    top: 0px;
+    top: auto;
+    bottom:0px;
     left: 0px;
     margin-top:3px;
     margin-left:3px;

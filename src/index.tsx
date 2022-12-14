@@ -9,6 +9,7 @@ import * as API from './hydrus-backend'
 
 import './index.css'
 import { useEffect, useState } from 'react';
+import { assignColorVariables } from './tagColors';
 
 function App() {
   const [token, setToken] = useState<boolean>(false)

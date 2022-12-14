@@ -61,6 +61,8 @@
 }
 
 .topBar.filePageTopBar.mobile {
+    top:auto;
+    bottom:0px;
     opacity: 0;
     transition: opacity 0.5s linear;
 }

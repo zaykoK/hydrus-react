@@ -168,6 +168,7 @@ export function FilePage(props: FilePageProps) {
   function getTopBarStyle():string {
     let style = generateClassName('topBar filePageTopBar')
     if (topBarVisible) {style += ' visible'}
+    if (isMobile()) style += ' mobile'
     return style
   }
 

@@ -3,6 +3,7 @@
     font-size: 1em;
     margin: 1px;
     writing-mode: vertical-lr;
+    writing-mode:horizontal-tb;
     cursor:w-resize;
 }
 
@@ -18,13 +19,15 @@
 
 .relatedThumbnails {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     white-space: nowrap;
-    gap: 0px;
-    flex-direction: column;
+    gap: 5px;
+    flex-direction: row;
     overflow-x: auto;
-    width: 100%;
-    overflow: hidden;
+    width: auto;
+    overflow-y: auto;
+    height: inherit;
+    justify-content: center;
 }
 
 .relatedThumbnails.mobile {
@@ -36,19 +39,17 @@
 .relatedStyleThumbsWrapper {
     overflow-x: hidden;
     overflow-y: auto;
-    height: 100%;
-    max-width: 0px;
-    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    width: auto;
     transition: max-width 0.3s,max-height 0.3s ease-out;
+    scrollbar-width: none;
 }
 
 .relatedStyleThumbsWrapper::-webkit-scrollbar {
     display:none;
 }
 
-.relatedStyleThumbsWrapper.expanded {
-    max-width: 180px;
-}
 
 .relatedStyleThumbsWrapper.mobile {
     overflow-x: scroll;

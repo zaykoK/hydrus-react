@@ -23,8 +23,9 @@
 */
 
 @keyframes thumbnailIntro {
-    0% {filter:brightness(900%);}
-    50% {filter:brightness(900%);}
+    0% {filter:brightness(0%) invert(1);}
+    50% {filter:brightness(0%) invert(1);}
+    51% {filter:brightness(0%) invert(0);}
     99% {filter:brightness(100%);}
     100% {filter:none;}
 }
@@ -37,17 +38,21 @@
 .thumbnailWrapper {
     position: relative;
     margin: 5px;
-    background: var(--COLOR2);
+    /* background: var(--COLOR2); */
     border-radius: 0.5em;
     overflow: hidden;
-    box-shadow: 0px 0px 5px 0px black;
+    box-shadow: 0px 0px 0px 0px grey;
     height: 11vw;
     width: 11vw;
     max-height: 100%;
     max-width: 100%;
     transition: all 1s;
-    animation-name: thumbnailIntro;
+   /*  animation-name: thumbnailIntro; */
     animation-duration: 0.7s;
+}
+
+.thumbnailWrapper.mobile .thumbnail {
+    object-fit: cover;
 }
 
 .thumbnailWrapper.xsmall {
@@ -81,8 +86,7 @@
     min-width: 3vw;
     min-height: 3vw;
     width: auto;
-    height: auto;
-    aspect-ratio: 1/1;
+    height: 150px;
     margin:0px;
     box-shadow: none;
 }

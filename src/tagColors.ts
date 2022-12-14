@@ -1,7 +1,14 @@
 //To add new tag color add 'namespace': 'css accepted color format'
 
 type ColorsList = {
-  [namespace:string]:string;
+  [namespace: string]: string;
+}
+
+export function assignColorVariables() {
+  for (let [key,value] of Object.entries(colors)) {
+    //console.log(`${key}:${value}`)
+    document.documentElement.style.setProperty(`--color-${key}`, value)
+  }
 }
 
 export const colors = {
@@ -10,12 +17,12 @@ export const colors = {
   "person": '#008000',
   "creator": '#aa0000',
   'rating': '#fafafa',
-  'medium' : '#707223',
+  'medium': '#707223',
   'page': '#2674ac',
   'chapter': '#4c2e34',
   'volume': '#b9b435',
   'title': '#2c29bc',
-  'group-title' : '#4bfb78',
+  'group-title': '#4bfb78',
   'doujin-title': '#8a2e77',
   'pixiv-title': '#7ae017',
   'system': '#996515',
@@ -29,5 +36,5 @@ export const colors = {
 } as ColorsList
 
 export const buttonTextColors = {
-  'rating' : '#252526',
+  'rating': '#252526',
 } as ColorsList

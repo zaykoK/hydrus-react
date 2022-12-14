@@ -31,6 +31,10 @@ function returnTagsFromNamespace(tags: Array<string>, namespace: string) {
     return joined
 }
 
+// TODO !
+// Create group tabs
+
+
 function RelatedFilesList(props: RelatedFilesListProps) {
     const [relatedList, setRelatedList] = useState<Array<JSX.Element>>([])
 

@@ -1,3 +1,4 @@
+import { memo, useState } from "react";
 import { NavigateFunction, useParams } from "react-router-dom"
 import { generateSearchURL } from "../SearchPage/SearchPageHelpers";
 import { readParams } from "../SearchPage/URLParametersHelpers";
@@ -21,6 +22,7 @@ function returnFilePageURL(hash: string, urlParameters: string | undefined, type
 
 function ThumbContent(props: ThumbContentProps) {
     let { parm } = useParams<string>()
+    const [loaded,setLoaded] = useState<boolean>(false)
 
 
     function determineThumbNavigation(replace: boolean) {
@@ -39,6 +41,9 @@ function ThumbContent(props: ThumbContentProps) {
                     style += " inactiveThumbnail"
                 }
         }
+        if (loaded) {
+            style += ' loaded'
+        }
         return style
     }
 
@@ -46,8 +51,11 @@ function ThumbContent(props: ThumbContentProps) {
         className={getThumbStyle(props.type)}
         onContextMenu={(e) => e.preventDefault()}
         onClick={() => { determineThumbNavigation(props.replace) }}
+        onLoad={() => { setLoaded(true) }}
         loading='lazy'
         src={props.thumbnail}
         alt={props.hash} />
 }
+
+export const MemoThumbContent = memo(ThumbContent)
 export default ThumbContent

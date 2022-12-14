@@ -1,11 +1,11 @@
 .WrapperList {
-    --CELL_SIZE: 100px;
+    --CELL_SIZE: 215px;
     --CELL_SIZE_MOBILE: 85px;
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 15px;
     border-radius: 15px;
-    gap:4px;
+    gap:10px;
     grid-auto-flow: row dense;
     justify-content: center;
 }
@@ -17,6 +17,7 @@
     padding: 0px;
     padding-top: 15px;
     padding-bottom: 25px;
+    gap:5px;
 }
 
 .WrapperList.comic {

@@ -3,10 +3,13 @@
     padding: 5px;
     position: fixed;
     right: 0px;
-    top: 0px;
-    height: 99vh;
-    max-width: 27vh;
-    overflow: auto;
+    bottom: 0px;
+    left: 0px;
+    margin:auto;
+    height: auto;
+    width: fit-content;
+    max-width: 65vw;
+    overflow-y: auto;
     box-shadow: 0 0 5px 0 black;
     font-size: 1em;
     z-index: 30;
@@ -15,7 +18,9 @@
     will-change: transform;
     scrollbar-width: none;
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
+    border-radius: 5px 5px 0px 0px;
+    max-height: 80vh;
 }
 
 .relatedStyle::-webkit-scrollbar {
@@ -23,7 +28,7 @@
 }
 
 .relatedStyle.hidden {
-    transform: translateX(105%);
+    transform: translateY(105%);
     transition: transform 0.3s ease-in-out;
 }
 

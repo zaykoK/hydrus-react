@@ -11,6 +11,11 @@ Modularize stuff
 
 Add JSDoc comments
 
+TRANSCODE stuff
+add a block so files bigger than X won't load when transcode already exist
+This is to prevent situations where original is super big (I have images which have ~80MB full res PNG that don't look that different in smaller encodes) and takes long time/load of transfer to load
+
+
 
 Add search/result strictness - Add a toggle which will determine if result are supposed to be showing groups in which given file tag exist or strictly only files with given tag.
 

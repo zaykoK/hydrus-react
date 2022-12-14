@@ -10,6 +10,7 @@
     display:flex;
     flex-wrap:wrap;
     overscroll-behavior: none;
+    scrollbar-width: none;
 }
 .tagList::-webkit-scrollbar {
     display: none;
@@ -54,7 +55,6 @@
     flex-grow: 1;
     flex-shrink: 2;
     text-align: center;
-    transition: border-color 0.3s;
     animation-name: tagBlobIntro;
     animation-duration: 0.5s;
 
@@ -81,6 +81,7 @@
     flex-wrap: nowrap;
     overflow: auto;
     margin-top:1em;
+    scrollbar-width: none;
 }
 .tabSelectors::-webkit-scrollbar {
     display: none;

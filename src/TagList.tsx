@@ -1,6 +1,6 @@
 import * as TagTools from './TagTools'
 import { useEffect, useState } from 'react';
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import * as API from './hydrus-backend'
 
@@ -60,7 +60,24 @@ export function TagListTabs(props: TagListTabsProps) {
     const [services, setServices] = useState(getTagServices())
     const [selected, setSelected] = useState("616c6c206b6e6f776e2074616773")
 
+    // Move this to settings later
     const hiddenServices = ['Good Tags','zTranslations']
+
+    const [tagLists, setTagLists] = useState<Array<JSX.Element>>([])
+
+    function getSelectedId(selected:string):number {
+        let id = 0
+        for (let entry of services) {
+            if (!hiddenServices.includes(entry.name)) {
+                if (selected === entry.service_key) {
+                    return id
+                }
+                id += 1
+            }
+        }
+        return id
+    }
+
 
     function createTabButtonsList() {
         let final = []
@@ -75,25 +92,28 @@ export function TagListTabs(props: TagListTabsProps) {
         return final
     }
 
+    useEffect(() => {
+        createTagLists()
+    },[props.tags])
+
     function createTagLists() {
+        console.log('ceating lists')
         let lists = []
         for (let entry of services) {
             if (!hiddenServices.includes(entry.name)) {
                 let elementTags = props.tags.get(entry.service_key)
-                lists.push((selected === entry.service_key) ? (elementTags?.length !== 0) ? 
-                <TagList
+                lists.push((elementTags?.length !== 0) ? <TagList
                     key={"tagList" + entry.service_key}
                     searchBar={props.searchBar}
-                    tags={props.tags.get(entry.service_key) || []}
+                    tags={elementTags || []}
                     visibleCount={true} type={props.type}
                     blacklist={props.blacklist} />
-                     : <div className="emptyList" />
-                 : null)
+                     : <div className="emptyList" />)
             }
 
         }
-
-        return lists
+        setTagLists(lists)
+        //return lists
     }
 
     return <>
@@ -104,7 +124,7 @@ export function TagListTabs(props: TagListTabsProps) {
             <p>Add Tag(+)</p>
         </div> */}
         <div key="tagListTabContent" className='tagContentSection'>
-            {createTagLists()}
+            {tagLists[getSelectedId(selected)]}
         </div>
     </>
 }
@@ -136,6 +156,8 @@ export function TagList(props: TagListProps) {
         let tagList = []
         let currentNamespace = ''
 
+        let visibleNamespace = (sessionStorage.getItem('show-tag-namespace') === 'true')
+
         for (let element in tuples) {
             //At this point all the list should be sorted by namespaces meaning I can have a current namespace value
 
@@ -145,13 +167,16 @@ export function TagList(props: TagListProps) {
                     key={tuples[element].namespace + ':' + tuples[element].value}
                     tag={tuples[element]} navigate={navigate}
                     type={props.type}
-                    visibleCount={props.visibleCount} />)
+                    visibleCount={props.visibleCount}
+                    visibleNamespace={visibleNamespace} />)
             }
         }
         return tagList;
     }
     useEffect(() => {
+        console.time('TagListCreation')
         setTags(createTagList(props.tags, props.blacklist || []))
+        console.timeEnd('TagListCreation')
     }, [props])
 
     return (tags.length > 0) ? <div className={getTagListStyle()}>{tags}</div> : null

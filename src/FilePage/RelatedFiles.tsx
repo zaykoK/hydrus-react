@@ -154,31 +154,31 @@ export function RelatedFiles(props: RelatedFilesProps) {
             }
             setThumbs(temp)
         }
-        if (isMobile() && !isLandscapeMode()) {
+/*         if (isMobile() && !isLandscapeMode()) {
             setScrollOffset((currentIndex * thumbHeight))
         }
         else {
             setScrollOffset((currentIndex * thumbHeight))
-        }
+        } */
 
     }, [relatedHashes, props.currentHash])
 
-    useEffect(() => {
-        if (expanded === false) { return }
-        //This scrolls the div with every image change
-        //const el = document.querySelector('.relatedStyleThumbsWrapper')
-        const el = document.querySelector('#' + props.space)
-        //Scroll vertically
-        if (isMobile() && !isLandscapeMode()) {
-            el?.scrollTo({ left: scrollOffset, top: 0, behavior: 'smooth' })
-        }
-        //Scroll horizontally
-        else {
-            el?.scrollTo({ left: 0, top: scrollOffset, behavior: 'smooth' })
-        }
+    // useEffect(() => {
+    //     if (expanded === false) { return }
+    //     //This scrolls the div with every image change
+    //     //const el = document.querySelector('.relatedStyleThumbsWrapper')
+    //     const el = document.querySelector('#' + props.space)
+    //     //Scroll vertically
+    //     if (isMobile() && !isLandscapeMode()) {
+    //         el?.scrollTo({ left: scrollOffset, top: 0, behavior: 'smooth' })
+    //     }
+    //     //Scroll horizontally
+    //     else {
+    //         el?.scrollTo({ left: 0, top: scrollOffset, behavior: 'smooth' })
+    //     }
 
 
-    }, [thumbs, scrollOffset])
+    // }, [thumbs, scrollOffset])
 
     function getRelatedTextStyle(landscape: boolean): string {
         let style = 'relatedTextStyle'

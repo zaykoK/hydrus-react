@@ -95,6 +95,7 @@
     transform: scaleY(0);
     transform-origin: top;
     overscroll-behavior: none;
+    scrollbar-width: none;
 }
 
 .HelpTagsListOverlay.mobile {

@@ -12,8 +12,9 @@ import { getComicNamespace, getGroupNamespace } from '../StorageUtils';
 import TagLink from './TagLink';
 import { createListOfUniqueTags, getAllTagsServiceKey, loadServiceData } from '../SearchPage/SearchPageHelpers';
 import ResultComicCard from './ResultComicCard';
-import ThumbContent from './ThumbContent';
+import { MemoThumbContent as ThumbContent } from './ThumbContent';
 import { TagList } from '../TagList';
+import { useState } from 'react';
 
 // @ts-check
 
@@ -48,7 +49,7 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
   if (args.metadata != null) {
     //const LIMIT = 200
 
-    let tags = API.getTagsFromMetadata(args.metadata,'ImportedTags',loadServiceData())
+    let tags = API.getTagsFromMetadata(args.metadata, 'ImportedTags', loadServiceData())
 
     let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || []))
     let tagArrays = []
@@ -96,7 +97,7 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
 export function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
   if (metadata != null) {
 
-    let tags = API.getTagsFromMetadata(metadata,'',loadServiceData())
+    let tags = API.getTagsFromMetadata(metadata, '', loadServiceData())
     let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || []))
     let t = tagsSorted.filter((element) => element["namespace"] === space)
     if (t[0] === undefined) {
@@ -114,9 +115,11 @@ const thumbnailTopTags: Array<string> = ['creator', 'person', 'series', 'charact
 const thumbnailBottomTags: Array<string> = []
 
 function ImageThumbnail(props: ImageThumbnailProps) {
-  const [thumbnail, setThumbnail] = React.useState(API.api_get_file_thumbnail_address(props.hash));
-  const [metadata, setMetadata] = React.useState<API.MetadataResponse>();
-  const [metadataGroup, setMetadataGroup] = React.useState<Array<TagTools.Tuple>>([])
+  const [thumbnail, setThumbnail] = useState(API.api_get_file_thumbnail_address(props.hash));
+  const [metadata, setMetadata] = useState<API.MetadataResponse>();
+  const [metadataGroup, setMetadataGroup] = useState<Array<TagTools.Tuple>>([])
+
+  const [loading, setLoading] = useState<boolean>(true)
 
   function getWrapperStyle(type: string): string {
     let style = "thumbnailWrapper"
@@ -181,7 +184,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
         },
         deleted: {}
       },
-      tags:{}
+      tags: {}
     }
     if (props.metadata !== undefined && props.metadata.length > 0) {
       //Find index of hash
@@ -200,7 +203,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     //Load rest of metadata for the hash
     if (group === true) {
       //Get a group-title or doujin-title namespace for the hash
-      let tags = API.getTagsFromMetadata(meta,'',loadServiceData())
+      let tags = API.getTagsFromMetadata(meta, '', loadServiceData())
 
       let tagsSorted = TagTools.transformIntoTuple(TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || []))
       let t: Array<TagTools.Tuple> = tagsSorted.filter((element) => element["namespace"] === getComicNamespace())
@@ -244,7 +247,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
     return <ResultComicCard metadata={metadata} navigate={props.navigate} type={props.type} replace={props.replace} thumbnail={thumbnail || ''} hash={props.hash} metadataGroup={metadataGroup} />
   }
 
-  let type = props.type.replace('related ','')
+  let type = props.type.replace('related ', '')
 
   return (
     <div className={getWrapperStyle(props.type)}

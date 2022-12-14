@@ -7,7 +7,16 @@
     overflow: auto;
     grid-row:span 1;
     grid-column: span 1;
-    border-radius: 0px;
+    border-radius: 5px;
+    scrollbar-width: none;
+    background-color: var(--COLOR2);
+}
+.ResultComponent.active {
+    background-color: grey;
+}
+.ResultComponent.mobile.active {
+    background-color: grey;
+    box-shadow: 0px 0px 10px 3px pink;
 }
 
 .ResultComponentWrapper {
@@ -21,6 +30,7 @@
     overflow: hidden;
     pointer-events: auto;
     gap:4px;
+    scrollbar-width: none;
 }
 .ResultComponentWrapper.bigger.scrollable {
     overflow: auto;
@@ -39,129 +49,34 @@
     height: var(--CELL_SIZE_MOBILE);
 }
 
-.ResultComponent.duo {
-    background-color: var(--COLOR2);
-    width: calc(4px + var(--CELL_SIZE)*2);
-    height: calc(var(--CELL_SIZE)*1);
-    border-radius: 10px;
-    box-sizing: border-box;
-    grid-row: span 1;
-    grid-column: span 2;
-    box-shadow: 0px 0px 5px 0px black;
-}
-.ResultComponentWrapper.duo {
-    grid-template-columns: 1fr 1fr;
-    pointer-events: auto;
-}
-
-.ResultComponent.duo.mobile {
-    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
-    height: var(--CELL_SIZE_MOBILE);
-}
-
 .ResultComponent.bigger {
-    background-color: var(--COLOR2);
-    height: calc(4px + var(--CELL_SIZE)*2);
-    width: calc(4px + var(--CELL_SIZE)*2);
+
+    height: calc(var(--CELL_SIZE));
+    width: calc(var(--CELL_SIZE));
     border-radius: 10px;
-    box-shadow: 0px 0px 7px 0px black;
-    grid-row: span 2;
-    grid-column: span 2;
+    box-shadow: 0px 0px 0px 0px black;
+    grid-row: span 1;
+    grid-column: span 1;
 }
 
 .ResultComponentWrapper.bigger {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: subgrid;
-    grid-auto-rows: var(--CELL_SIZE);
-    gap:4px;
+    grid-auto-rows: calc(var(--CELL_SIZE)/2);
+    gap:0px;
     pointer-events: none;
 }
 
-.ResultComponent.bigger.portrait {
-    height: calc(8px + var(--CELL_SIZE)*3);
-    width: calc(4px + var(--CELL_SIZE)*2);
-    grid-row:span 3;
-    grid-column: span 2;
-}
-
-.ResultComponent.bigger.portrait.mobile {
-    height: calc(8px + var(--CELL_SIZE_MOBILE)*3);
-    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
-    grid-row:span 3;
-    grid-column: span 2;
-}
-
-.ResultComponent.bigger.square {
-    height: calc(4px + var(--CELL_SIZE)*2);
-    width: calc(4px + var(--CELL_SIZE)*2);
-    grid-row:span 2;
-    grid-column: span 2;
-}
-
-.ResultComponent.bigger.widescreen {
-    height: calc(4px + var(--CELL_SIZE)*2);
-    width: calc(8px + var(--CELL_SIZE)*3);
-    grid-row:span 2;
-    grid-column: span 3;
-}
-.ResultComponent.bigger.widescreen.mobile {
-    height: calc(4px + var(--CELL_SIZE_MOBILE)*2);
-    width: calc(8px + var(--CELL_SIZE_MOBILE)*3);
-    grid-row:span 2;
-    grid-column: span 3;
-}
-
-.ResultComponentWrapper.bigger.widescreen {
-    grid-template-columns: 1fr 1fr 1fr;
-}
-
 .ResultComponent.bigger.mobile {
-    height: calc(4px + var(--CELL_SIZE_MOBILE)*2);
-    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
+    height: calc(var(--CELL_SIZE_MOBILE));
+    width: calc(var(--CELL_SIZE_MOBILE));
 }
 
 .ResultComponentWrapper.bigger.mobile {
     grid-auto-rows: var(--CELL_SIZE_MOBILE);
+    grid-template-rows: subgrid;
+    grid-auto-rows: calc(var(--CELL_SIZE_MOBILE)/2);
     gap:0px;
-}
-
-.ResultComponentWrapper.bigger.threes {
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-auto-rows: calc(var(--CELL_SIZE) *2/3);
-}
-
-.ResultComponentWrapper.bigger.threes.widescreen {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-
-    grid-auto-rows: calc(var(--CELL_SIZE) *2/3);
-}
-
-.ResultComponentWrapper.bigger.threes.mobile {
-    grid-auto-rows: calc(var(--CELL_SIZE_MOBILE) *2/3);
-}
-
-.ResultComponent.bigger.comic {
-    grid-row: span 3;
-    grid-column: span 2;
-    height: calc(8px + var(--CELL_SIZE)*3);
-    width: calc(4px + var(--CELL_SIZE)*2);
-}
-
-.ResultComponent.bigger.comic.mobile {
-    grid-row: span 3;
-    grid-column: span 2;
-    height: calc(8px + var(--CELL_SIZE_MOBILE)*3);
-    width: calc(4px + var(--CELL_SIZE_MOBILE)*2);
-}
-
-.ResultComponentWrapper.bigger.comic {
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: calc(var(--CELL_SIZE));
-}
-
-.ResultComponentWrapper.bigger.comic.mobile {
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: calc(var(--CELL_SIZE_MOBILE));
 }
 
 .ResultComponent .ResultComponentCover {
@@ -169,13 +84,21 @@
     transition: transform 0.2s ease-out;
 }
 
-.ResultComponent:hover .ResultComponentCover {
+.ResultComponent:hover .ResultComponentTopBar {
+    transform: translateY(0%);
+}
+.ResultComponent:hover .ResultComponentTopBar.mobile {
+    transform: translateY(-175%);
+}
+
+/* .ResultComponent:hover .ResultComponentCover {
     transform: translateY(-110%);
     transition: transform 0.12s ease-out;
-}
+} */
 
 .ResultComponentCover {
     position: absolute;
+    transition: transform 0.12s ease-out;
     top:0px;
     bottom:0px;
     left:0px;
@@ -183,12 +106,21 @@
     z-index: 1;
     height: inherit;
     width: inherit;
-    pointer-events: none;
+    pointer-events: all;
+    border-radius: 15px;
+}
+.ResultComponentCover.mobile {
+    pointer-events: all;
+}
+.ResultDetailsInfo .thumbnailWrapper {
+    animation-name: none;
 }
 
 .ResultComponentTopBar {
-    background-color: rgba(0, 0, 0, 0.74);
-    font-size: smaller;
+    transform: translateY(-110%);
+    transition: transform 0.12s ease-out;
+    background-color: rgba(0, 0, 0, 0.76);
+    font-size: medium;
     position: absolute;
     top:0px;
     left:0px;
@@ -200,7 +132,11 @@
     pointer-events: none;
 }
 
-.ResultComponentCountWidget{
+.ResultComponentCover.hidden {
+    transform: translateY(-110%);
+}
+
+.ResultComponentCountWidget {
     background-color: rgba(0, 0, 0, 0.74);
     position:absolute;
     z-index: 2;
@@ -209,5 +145,101 @@
     border-radius: 5px;
     padding-left:1em;
     padding-right: 1em;
+}
+
+.ResultComponentCountWidget.mobile{ 
+    font-size: x-small;
+}
+
+.ResultComponent:hover .ResultComponentExpandButton {
+    opacity: 1;
+}
+
+.ResultComponentExpandButton {
+    opacity:0;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    padding:0em 0.3em 0em 0.3em;
+    margin:0.3em;
+    background-color: black;
+    border-radius: 15px;
+    z-index:2;
+    cursor: pointer;
+    user-select: none;
+}
+.ResultComponentExpandButton:hover {
+    background-color: grey;
+}
+.ResultComponentExpandButton.active {
+    background-color: grey;
+}
+
+.ResultDetails {
+    padding:0em;
+    background-color: var(--COLOR2);
+    border-radius: 5px;
+    box-shadow: 0px 0px 7px 0px black;
+    grid-column:1/-1;
+    display:block;
+    max-height: 90vh;
+    grid-template-columns: 24% auto;
+    gap: 5px;
+    overflow: auto;
+}
+.ResultDetails span {
+    padding: 1em;
+}
+.ResultDetails.mobile {
+    max-height: 75vh;
+}
+.ResultDetailsInfo {
+    background-color: var(--COLOR2);
+    padding:1em;
+}
+.ResultDetailsThumbnails {
+    background-color: var(--COLOR1);
+    border-radius: 5px;
+    overflow: auto;
+    display:grid;
+    grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
+    padding: 0px;
+    padding-top:10px;
+    padding-bottom:10px;
+    border-radius: 15px;
+    gap:10px;
+    grid-auto-flow: row dense;
+    justify-content: center;
+}
+
+.ResultDetailsThumbnails.mobile {
+    overflow-y:hidden;
+    overflow-x: auto;
+    grid-template-columns: repeat(auto-fill, calc(var(--CELL_SIZE_MOBILE)*2));
+    grid-auto-flow: row;
+    gap:5px;
+    justify-content:start;
+}
+.ResultDetailsThumbnails.mobile.horizontal {
+    grid-template-columns: repeat(auto-fill, calc(var(--CELL_SIZE_MOBILE)*2));
+    grid-auto-flow: column;
+    grid-template-rows: 1fr 1fr 1fr;
+}
+
+.ResultDetailsThumbnails .thumbnailWrapper {
+    min-width: var(--CELL_SIZE);
+    min-height: var(--CELL_SIZE);
+    height: auto;
+    width:auto;
+    background-color: var(--COLOR3);
+    border-radius:5px;
+}
+
+.ResultDetailsThumbnails.mobile .thumbnailWrapper {
+    min-width: calc(var(--CELL_SIZE_MOBILE)*2);
+    min-height: calc(var(--CELL_SIZE_MOBILE)*2);
+}
+.ResultDetailsThumbnails.mobile .thumbnail {
+    object-fit: contain;
 }
 
