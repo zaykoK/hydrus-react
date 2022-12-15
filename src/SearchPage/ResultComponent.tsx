@@ -199,7 +199,7 @@ function ResultComponent(props: ResultComponentProps) {
             {cover}
             <div className={getResultCountStyle()}>{getResultCount()}</div>
         </div>}
-        {(!isMobile()) ?<div className={getExpandButtonStyle(isShowingDetails)}
+        {(!isMobile() && thumblist.length > 1) ?<div className={getExpandButtonStyle(isShowingDetails)}
             onClick={(e) => {
                 e.stopPropagation()
                 toggleDetails()
