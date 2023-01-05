@@ -68,7 +68,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 38
+  const API_TARGET = 39
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
