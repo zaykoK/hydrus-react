@@ -43,6 +43,7 @@ video::-webkit-media-controls-fullscreen-button {
 }
 
 .styleFitHeight.mobile {
+  background-color: transparent;
   padding: 0px;
   height: inherit;
   width: auto;
