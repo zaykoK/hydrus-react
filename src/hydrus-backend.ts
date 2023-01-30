@@ -68,7 +68,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 40
+  const API_TARGET = 41
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -389,8 +389,8 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
       'only_return_basic_information': props.only_return_basic_information,
       'detailed_url_information': props.detailed_url_information,
       'include_notes': props.include_notes,
-      'hide_service_keys_tags':JSON.stringify(false), /* This should be removed some time soon after hydrus removes this */
-      'hide_service_names_tags':JSON.stringify(true),
+      //'hide_service_keys_tags':JSON.stringify(false), /* This should be removed some time soon after hydrus removes this */
+      //'hide_service_names_tags':JSON.stringify(true),
     }
   })
 }
@@ -413,4 +413,42 @@ export function getTagsFromMetadata(metadata:MetadataResponse,key:string,service
     tagsByService.set(element.service_key,metadata.tags[element.service_key].display_tags[0] || [])
   }
   return tagsByService
+}
+
+/* RELATIONS RELATED FUNCTIONS */
+interface FileRelationshipProps {
+  file_id?:number;
+  file_ids?:number[];
+  hash?:string;
+  hashes?:string[];
+  abortController?:AbortController;
+}
+
+export type FileRelationshipResponse = {
+  [key:string]:{
+    is_king:boolean|null;
+    king:string;
+    '0':string[]; //Potential duplicates
+    '1':string[]; //False positives
+    '3':string[]; //alternates
+    '8':string[]; //duplicates
+  }
+}
+
+export async function api_get_file_relationships(props:FileRelationshipProps) {
+  if (props.file_id === undefined && props.file_ids === undefined && props.hash === undefined && props.hashes === undefined) {return}
+  return axios.get(server_address + '/manage_file_relationships/get_file_relationships', {
+    signal: props.abortController?.signal,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+    },
+    params: {
+      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"), //This might be bad for performance, need to check this on some functions (thumbnails especiialy)
+      "file_id": props.file_id,
+      "file_ids": JSON.stringify(props.file_ids),
+      "hash": props.hash,
+      "hashes": JSON.stringify(props.hashes)
+    }
+  })
 }
