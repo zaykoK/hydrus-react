@@ -68,7 +68,7 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 41
+  const API_TARGET = 42
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
@@ -451,4 +451,33 @@ export async function api_get_file_relationships(props:FileRelationshipProps) {
       "hashes": JSON.stringify(props.hashes)
     }
   })
+}
+
+// Wrapper functions
+
+interface getAllTagsProps {
+  namespace:string;
+  abortController:AbortController;
+}
+type APITagResponse = {
+  value:string;
+  count:number;
+}
+
+export async function getAllTags(props:getAllTagsProps) {
+  let response = await api_add_tags_search_tags({
+    search: `${props.namespace}:*`,
+    abortController: props.abortController
+  })
+  //console.log(response)
+  let tagArray:Array<APITagResponse> = response.data.tags
+  //console.log(tagArray)
+  let finalArray:Array<APITagResponse> = []
+  tagArray.map((element:APITagResponse,count:number) => {
+    if (element.value.includes(props.namespace)) {
+      finalArray.push(element)
+    }
+  })
+  console.log(finalArray)
+  return finalArray
 }
