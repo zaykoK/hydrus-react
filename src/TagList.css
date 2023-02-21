@@ -1,6 +1,6 @@
 .tagList {
     padding: 5px;
-    max-height: 94vh;
+    max-height: 55vh;
     overflow-y: auto;
     overflow-x: hidden;
     font-size: small;

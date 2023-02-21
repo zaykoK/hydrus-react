@@ -42,7 +42,7 @@
 }
 
 .contentStyle {
-    display: grid;
+    display: block;
     height: fit-content;
     grid-template-columns: var(--SIDEBARISIZE) auto;
     margin: 5px 0px 0px 0px;
@@ -75,10 +75,24 @@
     grid-column: 1;
     grid-row: 1;
     position:fixed;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin:auto;
     width: var(--SIDEBARISIZE);
     box-sizing: content-box;
-    height: 92vh;
-    margin-left: 5px;
+    height: auto;
+    max-height:60vh;
+    width: auto;
+    max-width: 90vw;
+    z-index:5;
+    transform:translateY(120%);
+    transition: transform 0.2s ease-in-out;
+}
+
+.gridStyleList.active {
+    transform: translateY(0%);;
+    transition: transform 0.2s ease-in-out;
 }
 
 .gridStyleList.mobile {

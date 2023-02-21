@@ -77,7 +77,7 @@ export function TagSearchBar(props: SearchTagsProps) {
       <GroupButton icon={IconHamburger} clickAction={() => { props.setNavigationExpanded(true) }} />
       <GroupButton icon={IconGroup} activeValue={getGroupingToggle()} clickAction={props.groupAction} />
       {/*<DropdownSorting clickFunction={props.sortTypeChange} options={API.enumToArray(API.FileSortType)} />*/}
-      {(isMobile()) && <GroupButton icon={IconInfo} clickAction={props.infoAction} />}
+      <GroupButton icon={IconInfo} clickAction={props.infoAction} />
     </div>
     <TagInput tags={tags} type={props.type} infoAction={props.infoAction} />
   </div>;
