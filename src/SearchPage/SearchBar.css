@@ -32,7 +32,6 @@
     height: var(--searchBarHeight);
     margin: 0px;
     min-width: 40%;
-    max-width: 94vw;
     border-radius: 5px;
     overflow: auto hidden;
     flex-grow: 1;

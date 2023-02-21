@@ -14,10 +14,10 @@
     gap: 15px;
     height: var(--topBarHeight);
     background: var(--COLOR1);
-    padding: 3px 0px 3px 6px;
+    padding: 3px 6px 3px 6px;
     box-shadow: 0 0 7px 0 black;
     z-index: 5;
-    width: 100vw;
+    width: calc(100% - 12px);
     transition: transform 0.3s linear;
     transform:translateY(0%);
 }
