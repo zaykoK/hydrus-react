@@ -70,7 +70,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
                 let filter = TagTools.tagArrayToMap(tags.get(getAllTagsServiceKey()) || [])
                 //This gives all tags for grouping namespace, ideally only 1 result should exist
                 let filterTags = TagTools.transformIntoTuple(filter).filter((element) => element["namespace"] === 'page')
-                tempArray.push({ hash: entry.hash, page: filterTags, modifiedDate: entry.time_modified })
+                tempArray.push({ hash: entry.hash, page: filterTags, modifiedDate: entry.time_modified_details['local'] })
 
             }
 

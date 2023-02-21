@@ -325,6 +325,7 @@ export async function api_get_file_thumbnail(props: APIGetFileThumbnailProps) {
 }
 
 export type MetadataResponse = {
+  time_modified_details: {[key:string]: number};
   duration: number | null;
   ext: string;
   file_id: number;

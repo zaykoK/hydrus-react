@@ -170,6 +170,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       width: 0,
       size: 0,
       time_modified: 0,
+      time_modified_details: {},
       is_inbox: false,
       is_local: false,
       is_trashed: false,

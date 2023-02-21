@@ -322,6 +322,8 @@ export function SearchPage(props: SearchPageProps) {
     resultGroupMap.forEach((entry) => {
       // Return each group hash representant (cover)
       // Sort internal lists (somehow)
+      entry.entries = entry.entries.sort((a, b) => a.time_modified_details['local'] - b.time_modified_details['local'])
+      entry.cover = entry.entries[0].hash
 
       returnHashes.push(entry.cover)
       searchArray.push(entry)
@@ -540,9 +542,9 @@ export function SearchPage(props: SearchPageProps) {
 
   function getGridStyleList() {
     let style = 'gridStyleList'
+    if (sideBarVisible) { style += ' active' }
     if (isMobile()) {
       style += ' mobile'
-      if (sideBarVisible) { style += ' active' }
     }
     return style
   }

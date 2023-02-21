@@ -54,7 +54,7 @@ function ResultComponent(props: ResultComponentProps) {
         }
         else {
             let entries = props.result.entries
-            let sortedEntries = entries.sort((a, b) => a.time_modified - b.time_modified)
+            let sortedEntries = entries.sort((a, b) => a.time_modified_details['local'] - b.time_modified_details['local'])
             props.result.cover = sortedEntries[0].hash
             for (let entry of sortedEntries) {
                 let thumb = <ImageThumbnail
