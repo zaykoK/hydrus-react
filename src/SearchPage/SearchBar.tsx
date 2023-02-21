@@ -86,6 +86,7 @@ function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction:
                 search: search,
                 abortController: abortController.current
             }).catch((reason) => { return })
+            //let rsp2 = API.getAllTags({namespace:'creator',abortController:abortController.current})
             /// Process the results
             if (response) {
                 let tags: Array<TagLookupResult> = response.data.tags
@@ -111,13 +112,14 @@ function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction:
         <form className="searchForm" onSubmit={submitTag}>
             <input
                 onFocus={() => { setHelpTagsVisible(true); props.infoAction(false) }}
+                onBlur={() => { setHelpTagsVisible(false); }}
                 className="searchInput"
                 type="text"
                 value={tag}
                 placeholder="Search tags, -tag excludes, tag1 OR tag2 for alternative"
                 onChange={(e) => searchTag(e.target.value)} />
         </form>
-        {(tag) ? <div className='emptyButton' onClick={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}>X</div> : null}
+        {(tag && helpTagsVisible) ? <div className='emptyButton' onClick={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}>X</div> : null}
         <div className={getHelpTagsListStyle(helpTagsVisible)}>
             <TagList tags={helpTags} visibleCount={true} type={'image'} searchBar={true} />
         </div>

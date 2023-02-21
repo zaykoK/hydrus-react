@@ -230,7 +230,10 @@ function ResultDetails(props: ResultDetailsProps) {
         return style
     }
     return <div className={getResultDetailsStyle()}>
-        <span>{props.result.title}</span>
+        <div className='ResultDetailsInfo'>
+            <span>{props.result.title}</span>
+        </div>
+        
 {/*         <div className='ResultDetailsInfo'>
             
             {props.cover}
