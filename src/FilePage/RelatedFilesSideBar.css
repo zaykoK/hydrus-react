@@ -35,7 +35,7 @@
 .relatedStyle.mobile {
     z-index: 1;
     font-size: small;
-    bottom: 0px;
+    bottom: 3.6em;
     right: auto;
     top: auto;
     left: auto;
@@ -60,7 +60,7 @@
 }
 
 .relatedStyle.mobile.hidden {
-    transform: translateY(120%);
+    transform: translateY(150%);
     transition: transform 0.3s ease-in-out;
 }
 

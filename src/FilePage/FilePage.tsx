@@ -126,6 +126,17 @@ export function FilePage(props: FilePageProps) {
     //let responseTags = API.getTagsFromMetadata(data,'ImportedTags')
     //let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags.get(getAllTagsServiceKey()) || []))
     //tagTuples = tagTuples.sort((a, b) => TagTools.compareNamespaces(a, b))
+    /*
+    let resp = await API.api_get_file_relationships({hash:props.hash})
+    let relationship:API.FileRelationshipResponse
+    if (resp !== undefined) {
+      relationship = resp.data.file_relationships
+      for (let [key,value] of Object.entries(relationship)) {
+        console.log(value)
+      }
+    }
+    */
+
     setMetaData(response.data.metadata[0])
     // @ts-ignore
     setTags(tags)
@@ -169,6 +180,8 @@ export function FilePage(props: FilePageProps) {
     let style = generateClassName('topBar filePageTopBar')
     if (topBarVisible) {style += ' visible'}
     if (isMobile()) style += ' mobile'
+    if (isSidebarExpanded()) style += ' expanded'
+    if (relatedVisible) style += ' expanded related'
     return style
   }
 
