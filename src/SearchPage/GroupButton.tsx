@@ -1,4 +1,5 @@
 import IconGroup from '../assets/group.svg'
+import Blank from '../assets/blank.svg'
 
 import './GroupButton.css'
 
@@ -15,11 +16,10 @@ function returnGroupButtonStyle(inactive?: boolean) {
 }
 
 export function GroupButton(props: GroupButtonsProps) {
-
   return <img
     alt='group button'
     className={returnGroupButtonStyle(props.activeValue)}
-    src={props.icon || IconGroup}
+    src={props.icon || Blank}
     onClick={() => { props.clickAction() }} />
 }
 
