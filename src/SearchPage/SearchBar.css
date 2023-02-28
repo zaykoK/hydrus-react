@@ -98,9 +98,9 @@
 }
 
 .HelpTagsListOverlay.mobile {
-    top: 4.4em;
+    top: 6.3em;
     max-width: 100%;
-    height: calc(100vh - 4.4em);
+    height: calc(100vh - 6.3em);
     padding-bottom: 25em;
     padding-left:0px;
     padding-right:0px;
