@@ -30,12 +30,12 @@
 
 .topBarPadding.mobile {
     font-size: x-large;
-    height: 4em;
+    height: 6em;
 }
 
 .topBarPadding.mobile.landscape {
     font-size: x-large;
-    height: 2em;
+    height: 4em;
 }
 :root {
     --SIDEBARISIZE: 15vw;
