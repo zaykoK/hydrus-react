@@ -1,6 +1,5 @@
 import ReactDOM from 'react-dom/client';
 import { SearchPage } from './SearchPage/SearchPage';
-import { FilePage } from './FilePage/FilePage';
 import { SettingsPage } from './SettingsPage/SettingsPage';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Navigate } from 'react-router-dom'
