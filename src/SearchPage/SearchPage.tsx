@@ -240,7 +240,7 @@ export function SearchPage(props: SearchPageProps) {
       unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element], type: 'single' })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
-      let tags = API.getTagsFromMetadata(element, 'ImportedTags',loadServiceData()).get(getAllTagsServiceKey())
+      let tags = API.getTagsFromMetadata(element, 'ImportedTags', loadServiceData()).get(getAllTagsServiceKey())
 
       if (tags) {
         //For each entry in metadataResponses 
@@ -319,11 +319,23 @@ export function SearchPage(props: SearchPageProps) {
 
     // This whole thing basically sorts the internals of the results
     // TODO - Rewrite for new format
+    //console.log(resultGroupMap)
     resultGroupMap.forEach((entry) => {
       // Return each group hash representant (cover)
       // Sort internal lists (somehow)
-      entry.entries = entry.entries.sort((a, b) => a.time_modified_details['local'] - b.time_modified_details['local'])
-      entry.cover = entry.entries[0].hash
+      /* if (entry.entries.length === 0) {
+        //console.log(entry)
+        for (let [subgroupId,subgroup] of entry.subgroups) {
+          entry.entries = entry.entries.concat(subgroup.entries)
+        }
+      } */
+      //console.log(entry.entries)
+      if (entry.entries.length !== 0) {
+        entry.entries = entry.entries.sort((a, b) => a.time_modified_details['local'] - b.time_modified_details['local'])
+        //console.log(entry.entries)
+        entry.cover = entry.entries[0].hash
+      }
+
 
       returnHashes.push(entry.cover)
       searchArray.push(entry)
@@ -604,14 +616,14 @@ export function SearchPage(props: SearchPageProps) {
     <div className={getContentStyle()}>
       {(params.type !== 'comic') && <div className={getGridStyleList()}>
         {(fileTags !== undefined && loaded) && <>
-          <TagListTabs 
-            key="tagListTabs" 
-            blacklist={tagBlacklist.current} 
-            type={params.type} 
-            tags={fileTags} 
+          <TagListTabs
+            key="tagListTabs"
+            blacklist={tagBlacklist.current}
+            type={params.type}
+            tags={fileTags}
             visibleCount={true}
             displayTagCount={true} />
-            </>}
+        </>}
       </div>}
       <div className={getGridStyleThumbs()}>
         <ImageWall
