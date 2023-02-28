@@ -95,7 +95,7 @@ export function FileMetaData(props: FileMetaDataProps) {
 
     return <div className={getMetadataCardStyle()}>
         {(props.transcode !== undefined) ? <p key={hash + props.transcode}>Transcoded</p> : <p key={hash + props.transcode}>Original</p>}
-        <p key={hash + 'date'}  >Date: {timeConverter(date)}</p>
+        <p key={hash + 'date'}  >Date: {timeConverter(date)} ({date})</p>
         <p key={hash + 'res'}  >Resolution: {imageSize[0]}x{imageSize[1]}</p>
         <p key={hash + 'size'}  >Size: {formatBytes(size)}</p>
         <p key={hash + 'contenttype'}  >Content-type : {mime}</p>
