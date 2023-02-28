@@ -27,8 +27,8 @@
 }
 
 .topBar.mobile {
-    padding: 3px 6px 3px 6px;
-    padding-top: calc(env(safe-area-inset-top) + 3px);
+    padding: 2em 6px 3px 6px;
+    /* padding-top: calc(env(safe-area-inset-top) + 3px); */
     font-size: x-large;
     flex-direction: column;
     height: auto;
