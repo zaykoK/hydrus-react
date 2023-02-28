@@ -46,6 +46,7 @@
 .ResultComponent.mobile {
     width: var(--CELL_SIZE_MOBILE);
     height: var(--CELL_SIZE_MOBILE);
+    overflow:hidden;
 }
 
 .ResultComponent.bigger {
