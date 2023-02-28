@@ -48,6 +48,7 @@
 
 .topBar.filePageTopBar {
     justify-content: center;
+    padding-top:3px;
     flex-flow: row;
     gap: 5px;
     box-shadow: 0 0 0px 0 black;
