@@ -164,7 +164,7 @@ function ResultComponent(props: ResultComponentProps) {
         else return '+'
     }
 
-    function getExpandButtonStyle(details:boolean):string {
+    function getExpandButtonStyle(details: boolean): string {
         let style = 'ResultComponentExpandButton'
         if (details) style += ' active'
         return style
@@ -179,14 +179,14 @@ function ResultComponent(props: ResultComponentProps) {
         className={getComponentStyle(thumblist.length)}
         /*         onMouseLeave={(e) => { setIsShowingDetails(false) }}
                 onMouseEnter={(e) => { setIsShowingDetails(true) }} */
-/*         onClick={(e) => {
-            if (isMobile()) {
-            }
-            else {
-                e.stopPropagation();
-                // console.log('marking ' + props.result.cover)
-            }
-        }}  */
+        /*         onClick={(e) => {
+                    if (isMobile()) {
+                    }
+                    else {
+                        e.stopPropagation();
+                        // console.log('marking ' + props.result.cover)
+                    }
+                }}  */
         onContextMenu={(e) => {
             if (isMobile()) {
                 e.preventDefault()
@@ -195,17 +195,17 @@ function ResultComponent(props: ResultComponentProps) {
         }}>
         {/* {(!isMobile()) ? <div className={getWrapperComponentStyle(thumblist.length, scrollable)}>{thumblist}</div> : null} */}
         {<div className={getCoverStyle()}>
-            <div className={getCoverTopbarStyle()}>{getTopText()}</div>
+            {(isMobile()) ? null : <div className={getCoverTopbarStyle()}>{getTopText()}</div>}
             {cover}
             <div className={getResultCountStyle()}>{getResultCount()}</div>
         </div>}
-        {(!isMobile() && thumblist.length > 1) ?<div className={getExpandButtonStyle(isShowingDetails)}
+        {(!isMobile() && thumblist.length > 1) ? <div className={getExpandButtonStyle(isShowingDetails)}
             onClick={(e) => {
                 e.stopPropagation()
                 toggleDetails()
             }} >
             {(showExpandButtonText(isShowingDetails))}
-        </div>:null}
+        </div> : null}
     </div>
         {(isShowingDetails) ? <ResultDetails result={props.result} navigate={props.navigate} cover={cover} thumblist={thumblist} /> : null}
     </Fragment>
@@ -218,12 +218,12 @@ interface ResultDetailsProps {
 }
 
 function ResultDetails(props: ResultDetailsProps) {
-    function getResultDetailsStyle():string {
+    function getResultDetailsStyle(): string {
         let style = 'ResultDetails'
         if (isMobile()) style += ' mobile'
         return style
     }
-    function getResultDetailsThumbnailsStyle(count:number):string {
+    function getResultDetailsThumbnailsStyle(count: number): string {
         let style = 'ResultDetailsThumbnails'
         if (isMobile()) style += ' mobile'
         if (count > 9) style += ' horizontal'
@@ -233,12 +233,12 @@ function ResultDetails(props: ResultDetailsProps) {
         <div className='ResultDetailsInfo'>
             <span>{props.result.title}</span>
         </div>
-        
-{/*         <div className='ResultDetailsInfo'>
+
+        {/*         <div className='ResultDetailsInfo'>
             
             {props.cover}
         </div> */}
-    <div className={getResultDetailsThumbnailsStyle(props.thumblist.length)}>
+        <div className={getResultDetailsThumbnailsStyle(props.thumblist.length)}>
             {props.thumblist}
         </div>
 
