@@ -112,7 +112,7 @@ function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction:
         <form className="searchForm" onSubmit={submitTag}>
             <input
                 onFocus={() => { setHelpTagsVisible(true); props.infoAction(false) }}
-                onBlur={() => { setHelpTagsVisible(false); }}
+                onBlur={() => { setTimeout(() => setHelpTagsVisible(false),150)  }}
                 className="searchInput"
                 type="text"
                 value={tag}
