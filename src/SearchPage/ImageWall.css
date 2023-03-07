@@ -1,6 +1,7 @@
 .WrapperList {
     --CELL_SIZE: 215px;
     --CELL_SIZE_MOBILE: 85px;
+    --CELL_SIZE_MOBILE: calc(100vw/3);
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 15px;
@@ -17,7 +18,7 @@
     padding: 0px;
     padding-top: 15px;
     padding-bottom: 25px;
-    gap:5px;
+    gap:0px;
 }
 
 .WrapperList.comic {
@@ -82,4 +83,15 @@
     width: 100%;
     grid-row: span 4;
     grid-column: 1/-1;
+}
+
+.ResultCounter {
+    position:fixed;
+    padding:0.5em 0.5em 0.5em 0.5em;
+    bottom:1em;
+    right:1em;
+    background-color: var(--COLOR2);
+    border-radius: 10px;
+    z-index:5;
+
 }

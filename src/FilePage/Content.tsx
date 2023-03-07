@@ -33,7 +33,7 @@ type transcodedFileServiceOptions = {
 function Content(props: ContentProps) {
     const navigate = useNavigate()
     const { parm } = useParams()
-    const [doubleClick, setDoubleClick] = React.useState<doubleClick>({step:0.5})
+    const [doubleClick, setDoubleClick] = React.useState<doubleClick>({ step: 0.5 })
 
     const [style, changeStyle] = React.useState(getStartingStyle())
     const [src, setSrc] = React.useState(API.api_get_file_thumbnail_address(props.hash))
@@ -91,14 +91,16 @@ function Content(props: ContentProps) {
                 //Search given file service for the query
                 let response = await API.api_get_files_search_files({ tags: searchTag, file_service_name: transcodedFileServiceOptions.fileServiceName, file_service_key: transcodedFileServiceOptions.fileServiceKey, return_hashes: true })
                 //Extract hash
-                let transcodeHash = response.data.hashes[0]
-                //If more than 1 result found throw an error, it's not critical but it suggest that the setup might be compromised
-                if (response.data.hashes.length > 1) { console.warn('There is more than one file trascode assigned to hash, this is wrong and might create problems.') }
-                //If transcode exists for the file use it
-                if (transcodeHash) { img.src = API.api_get_file_address(transcodeHash) || ''; props.setTranscodedHash(transcodeHash) }
-                else { //Just load the file normally
-                    img.src = API.api_get_file_address(props.hash) || ''
-                    props.setTranscodedHash()
+                if (response && response.data.hashes) {
+                    let transcodeHash: string = response?.data.hashes[0]
+                    //If more than 1 result found throw an error, it's not critical but it suggest that the setup might be compromised
+                    if (response.data.hashes.length > 1) { console.warn('There is more than one file trascode assigned to hash, this is wrong and might create problems.') }
+                    //If transcode exists for the file use it
+                    if (transcodeHash) { img.src = API.api_get_file_address(transcodeHash) || ''; props.setTranscodedHash(transcodeHash) }
+                    else { //Just load the file normally
+                        img.src = API.api_get_file_address(props.hash) || ''
+                        props.setTranscodedHash()
+                    }
                 }
             }
             else { //Just load the file normally
@@ -165,12 +167,12 @@ function Content(props: ContentProps) {
         onPanning={(e) => {
             if (e.state.scale === 1) {
                 //This line locks vertical movement of image when scale == 1
-                e.setTransform(e.state.positionX,0,e.state.scale,0,'linear')
-                if (e.state.positionX === 100) { 
-                    PreviousImage(props.hash, navigate, parm) 
+                e.setTransform(e.state.positionX, 0, e.state.scale, 0, 'linear')
+                if (e.state.positionX === 100) {
+                    PreviousImage(props.hash, navigate, parm)
                 }
-                if (e.state.positionX === -100) { 
-                    NextImage(props.hash, navigate, parm) 
+                if (e.state.positionX === -100) {
+                    NextImage(props.hash, navigate, parm)
                 }
             }
         }} >

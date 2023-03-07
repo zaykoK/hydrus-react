@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import * as API from '../hydrus-backend'
 import * as TagTools from '../TagTools'
 import { TagListTabs } from '../TagList'
+import { ResultGroup } from './ResultGroup'
 
 import { getBlacklistedNamespaces, getComicNamespace, getGroupingToggle, getGroupNamespace, getSortType, setSortType } from '../StorageUtils'
 import { setPageTitle } from '../misc'
@@ -16,6 +17,8 @@ import { addTag, createListOfUniqueTags, getAllTagsServiceKey, loadServiceData }
 
 import { FilePage } from '../FilePage/FilePage'
 import { readParams } from './URLParametersHelpers'
+import { APIResponseMetadata, MetadataResponse } from '../MetadataResponse'
+import { CacheAxiosResponse } from 'axios-cache-interceptor'
 
 interface SearchPageProps {
   type: string;
@@ -32,17 +35,10 @@ type ParamsType = {
 type SearchResults = {
   results: Array<ResultGroup>;
   groupedResults: Array<ResultGroup>;
-  metadataResponses: Array<API.MetadataResponse>;
+  metadataResponses: Array<MetadataResponse>;
   hashes?: Array<string>;
 }
 
-export type ResultGroup = {
-  cover: string; // This is a hash for cover image of the group
-  title: string; // title of the group - should allow for for easy searching for the rest of the group with adding * after it
-  subgroups: Map<string, ResultGroup>; // Subgroups if any
-  entries: Array<API.MetadataResponse>; // This will be probably empty for groups that also have subgroups as those files should belong to the subgroups entries
-  type: string; // What type the group is, used for proper formatting and tag display ex. image,comic,photoset etc.
-}
 
 export function changePage() {
 
@@ -94,8 +90,8 @@ export function SearchPage(props: SearchPageProps) {
     setGroupFiles(!groupFiles)
   }
 
-  function groupImages(responses: Array<API.MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
-    function processTieredGroup(groupString: string, metadata: API.MetadataResponse, resultGroupMap: Map<string, ResultGroup>, type: string = 'group') {
+  function groupImages(responses: Array<MetadataResponse>, hashes: Array<string>, groupNamespace: string = 'group-title') {
+    function processTieredGroup(groupString: string, metadata: MetadataResponse, resultGroupMap: Map<string, ResultGroup>, type: string = 'group') {
       const SplitSymbol = '/'
       /* EXPLANATATION
         Idea is that groups can get subgroups
@@ -119,7 +115,7 @@ export function SearchPage(props: SearchPageProps) {
       }
     }
     // This essentialy overwrites already existing group
-    function appendToSubGroup(stack: Array<string>, metadata: API.MetadataResponse, currentResultGroup: ResultGroup): ResultGroup {
+    function appendToSubGroup(stack: Array<string>, metadata: MetadataResponse, currentResultGroup: ResultGroup): ResultGroup {
       // If there are any more subgroups
       if (stack.length > 0) {
         // If subgroups exists give me back current group object with modified subgroup
@@ -167,14 +163,14 @@ export function SearchPage(props: SearchPageProps) {
 
     }
 
-    function createSubGroup(groups: Array<string>, metadata: API.MetadataResponse, type: string): ResultGroup {
+    function createSubGroup(groups: Array<string>, metadata: MetadataResponse, type: string): ResultGroup {
       let subgroups: Map<string, ResultGroup> = new Map<string, ResultGroup>()
       if (groups.length > 0) {
         //console.log("Doing group:" + groups)
         //console.log("It's length is : "+ groups.length)
         //console.log("It's subgroup slice is: " + groups.slice(1))
 
-        let entries: Array<API.MetadataResponse>
+        let entries: Array<MetadataResponse>
         if (groups.length === 1) {
           entries = [metadata]
         }
@@ -217,7 +213,7 @@ export function SearchPage(props: SearchPageProps) {
     hashesCopy.map((value, index, array) => { hashMap.set(value, index) })
 
     /* This function compares order of hashes */
-    function compareResponsesByHash(a: API.MetadataResponse, b: API.MetadataResponse): number {
+    function compareResponsesByHash(a: MetadataResponse, b: MetadataResponse): number {
       let hashA = hashMap.get(a.hash)
       let hashB = hashMap.get(b.hash)
       //If for some reason one of the hashes doesn't exist consider equal
@@ -384,7 +380,10 @@ export function SearchPage(props: SearchPageProps) {
     //console.log('actually searching')
     //console.log(sortType.current)
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current, abortController: AbortControllerSearch.current });
-    let responseHashes: Array<string> = response.data.hashes
+    console.log(response)
+    let responseHashes: Array<string> = response?.data.hashes || []
+
+    //searchArtists(AbortControllerSearch.current)
     //console.log(responseHashes)
     if (responseHashes.length === 0) {
       setEmptySearch(true)
@@ -398,6 +397,27 @@ export function SearchPage(props: SearchPageProps) {
     grabMetaData(responseHashes)
   }
 
+  async function getArtistThumb(artistList:Array<{value:string,count:number}>) {
+    let entries = []
+    for (let entry of artistList) {
+      let search = await API.api_get_files_search_files({
+        tags: [[entry.value],['system:limit=1']],
+        return_hashes: true
+      })
+      entries.push(search?.data.hashes)
+    }
+  }
+
+  async function searchArtists(abortController:AbortController) {
+    let response = await API.api_add_tags_search_tags({
+      search: 'creator:*',
+      abortController: abortController
+    })
+    let creators:Array<{value:string,count:number}> = response.data.tags
+    creators = creators.filter((entry) => {return entry.value.includes('creator:')})
+    creators.sort((a,b) => { return b.count - a.count; })
+  }
+
   async function grabMetaData(hashes: Array<string>) {
     //console.time('meta')
     //Might require higher than default 'large_client_header_buffers' in nginx configuration if using ssl proxy
@@ -409,7 +429,7 @@ export function SearchPage(props: SearchPageProps) {
       STEP = parseInt(loadSize)
     }
 
-    let responses: Array<API.MetadataResponse> = []
+    let responses: Array<MetadataResponse> = []
     let tempFileTags: Map<string, Array<TagTools.Tuple>> = new Map()
 
     let responseSize = 0
@@ -420,7 +440,7 @@ export function SearchPage(props: SearchPageProps) {
       //Load the session storage metadata if exist
       //console.time('localforage')
       //let cacheHashes: Array<string> = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
-      //let cacheResponses: Array<API.MetadataResponse> = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
+      //let cacheResponses: Array<MetadataResponse> = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
       //let cacheResults: SearchResults = JSON.parse(await localforage.getItem('search-results-cache') as string)
       //console.log(cacheResults)
       //console.timeEnd('localforage')
@@ -440,8 +460,9 @@ export function SearchPage(props: SearchPageProps) {
       //else {
       let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
       for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-        let response = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
-        if (response) { responses.push(response.data.metadata); responseSize += JSON.stringify(response).length }
+        let response:CacheAxiosResponse<APIResponseMetadata>|undefined = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
+        console.log(response)
+        if (response) { responses.push(...response.data.metadata); responseSize += JSON.stringify(response).length }
         if (responseSize > 512) { //KB
           responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
         }
@@ -453,7 +474,6 @@ export function SearchPage(props: SearchPageProps) {
         }
         setLoadingProgress(i + '/' + hashes.length + '\n(' + responseSizeReadable + ')')
       }
-      responses = responses.flat()
       //Save results for later
       //localforage.setItem('search-metadata-cache-hashes', JSON.stringify(hashes))
       //localforage.setItem('search-metadata-cache-responses', JSON.stringify(responses))

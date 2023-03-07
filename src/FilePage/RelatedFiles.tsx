@@ -8,6 +8,7 @@ import { isLandscapeMode, isMobile } from '../styleUtils';
 import * as TagTools from '../TagTools'
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { getAllTagsServiceKey, loadServiceData } from '../SearchPage/SearchPageHelpers';
+import { MetadataResponse } from '../MetadataResponse';
 
 interface RelatedFilesProps {
     tags: Array<string> | undefined; //Nested array only for searching
@@ -51,18 +52,18 @@ export function RelatedFiles(props: RelatedFilesProps) {
             }
             //Get file hashes
             let response = await API.api_get_files_search_files({ tags: tagArrayToNestedArray(list), return_hashes: true, return_file_ids: false, abortController: AbortControllerSearch.current }).catch((reason) => { return })
-            if (!response) { return }
-            let hashes = response.data.hashes.slice()
-            let responses: Array<API.MetadataResponse> = []
+            if (!response) {return}
+            let hashes = response?.data.hashes?.slice() || []
+            let responses: Array<MetadataResponse> = []
 
             //Sort hashes in order of first pages by order of page, then all the other files by order of import date
             const STEP = 100
             for (let i = 0; i < Math.min(i + STEP, hashes.length); i += STEP) {
                 let metaDataResponse = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current }).catch((reason) => { return })
-                if (metaDataResponse) { responses.push(metaDataResponse.data.metadata) }
+                if (metaDataResponse) { responses.push(...metaDataResponse.data.metadata) }
             }
 
-            responses = responses.flat()
+            //responses = responses.flat()
             let tempArray = []
 
             for (let entry of responses) {

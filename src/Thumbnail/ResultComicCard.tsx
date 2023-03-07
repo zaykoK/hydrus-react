@@ -9,9 +9,10 @@ import { getComicNamespace } from "../StorageUtils";
 import ThumbContent from "./ThumbContent";
 
 import './ResultComicCard.css'
+import { MetadataResponse } from "../MetadataResponse";
 
 interface ResultComicCardProps {
-    metadata: API.MetadataResponse | undefined;
+    metadata: MetadataResponse | undefined;
     navigate: NavigateFunction;
     type: string;
     replace: boolean;

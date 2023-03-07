@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { isMobile } from "../styleUtils";
-import { ResultGroup } from "./SearchPage";
+import { ResultGroup } from "./ResultGroup";
 import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
 
 import './ResultComponent.css'
@@ -35,7 +35,7 @@ function ResultComponent(props: ResultComponentProps) {
                     hash={subgroup.cover}
                     replace={false}
                     metadata={subgroup.entries}
-                    size={1}
+                    size={4}
                     hideWidgetCount={true}
                 />
                 tempThumbs.push(thumb)
@@ -65,7 +65,7 @@ function ResultComponent(props: ResultComponentProps) {
                     hash={entry.hash}
                     replace={false}
                     metadata={[entry]}
-                    size={1}
+                    size={4}
                     hideWidgetCount={false}
                 />
                 tempThumbs.push(thumb)
@@ -159,17 +159,6 @@ function ResultComponent(props: ResultComponentProps) {
         return style
     }
 
-    function showExpandButtonText(details: boolean): string {
-        if (details) return '-'
-        else return '+'
-    }
-
-    function getExpandButtonStyle(details: boolean): string {
-        let style = 'ResultComponentExpandButton'
-        if (details) style += ' active'
-        return style
-    }
-
     function toggleDetails() {
         if (isShowingDetails) setIsShowingDetails(false)
         else setIsShowingDetails(true)
@@ -197,15 +186,13 @@ function ResultComponent(props: ResultComponentProps) {
         {<div className={getCoverStyle()}>
             {(isMobile()) ? null : <div className={getCoverTopbarStyle()}>{getTopText()}</div>}
             {cover}
-            <div className={getResultCountStyle()}>{getResultCount()}</div>
+            <div className={getResultCountStyle()} onClick={(e) => {
+                if (!isMobile()) {
+                    e.stopPropagation()
+                    toggleDetails()
+                }
+            }} >{getResultCount()}</div>
         </div>}
-        {(!isMobile() && thumblist.length > 1) ? <div className={getExpandButtonStyle(isShowingDetails)}
-            onClick={(e) => {
-                e.stopPropagation()
-                toggleDetails()
-            }} >
-            {(showExpandButtonText(isShowingDetails))}
-        </div> : null}
     </div>
         {(isShowingDetails) ? <ResultDetails result={props.result} navigate={props.navigate} cover={cover} thumblist={thumblist} /> : null}
     </Fragment>

@@ -15,6 +15,7 @@ import ResultComicCard from './ResultComicCard';
 import { MemoThumbContent as ThumbContent } from './ThumbContent';
 import { TagList } from '../TagList';
 import { useState } from 'react';
+import { MetadataResponse } from '../MetadataResponse';
 
 // @ts-check
 
@@ -24,7 +25,7 @@ interface ImageThumbnailProps {
   loadMeta: boolean;
   replace: boolean;
   type: string;
-  metadata?: Array<API.MetadataResponse>;
+  metadata?: Array<MetadataResponse>;
   size?: number;
   navigate: NavigateFunction;
   hideWidgetCount?: boolean;
@@ -32,7 +33,7 @@ interface ImageThumbnailProps {
 
 const EMPTYSTRING = ''
 
-export function createTagPreview(args: { metadata: API.MetadataResponse | undefined, spaces: Array<string>, type: string, hash: string, navigate: NavigateFunction }) {
+export function createTagPreview(args: { metadata: MetadataResponse | undefined, spaces: Array<string>, type: string, hash: string, navigate: NavigateFunction }) {
   if (args.metadata !== undefined) {
     return createTagList({
       metadata: args.metadata, spaces: args.spaces,
@@ -45,7 +46,7 @@ export function createTagPreview(args: { metadata: API.MetadataResponse | undefi
 }
 
 
-export function createTagList(args: { metadata: API.MetadataResponse, spaces: Array<string>, type: string, hash: string, navigate: NavigateFunction }) {
+export function createTagList(args: { metadata: MetadataResponse, spaces: Array<string>, type: string, hash: string, navigate: NavigateFunction }) {
   if (args.metadata != null) {
     //const LIMIT = 200
 
@@ -94,7 +95,7 @@ export function createTagList(args: { metadata: API.MetadataResponse, spaces: Ar
   return ''
 }
 
-export function getComicTitle(metadata: API.MetadataResponse | undefined, space: string, spaceless: boolean): string {
+export function getComicTitle(metadata: MetadataResponse | undefined, space: string, spaceless: boolean): string {
   if (metadata != null) {
 
     let tags = API.getTagsFromMetadata(metadata, '', loadServiceData())
@@ -116,7 +117,7 @@ const thumbnailBottomTags: Array<string> = []
 
 function ImageThumbnail(props: ImageThumbnailProps) {
   const [thumbnail, setThumbnail] = useState(API.api_get_file_thumbnail_address(props.hash));
-  const [metadata, setMetadata] = useState<API.MetadataResponse>();
+  const [metadata, setMetadata] = useState<MetadataResponse>();
   const [metadataGroup, setMetadataGroup] = useState<Array<TagTools.Tuple>>([])
 
   const [loading, setLoading] = useState<boolean>(true)
@@ -160,7 +161,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
 
 
   async function GrabMetadata(hash: string, group: boolean, tag: string) {
-    let meta: API.MetadataResponse = {
+    let meta: MetadataResponse = {
       duration: null,
       ext: '',
       file_id: 0,
@@ -210,20 +211,23 @@ function ImageThumbnail(props: ImageThumbnailProps) {
       let t: Array<TagTools.Tuple> = tagsSorted.filter((element) => element["namespace"] === getComicNamespace())
       //Load hashes for all the tags in that namespace
       let namespaceHashes = await API.api_get_files_search_files({ tags: [[t[0].namespace + ':' + t[0].value]], return_hashes: true })
-      //console.log(namespaceHashes)
+      if (namespaceHashes) {
+        //console.log(namespaceHashes)
 
-      let namespaceMetadata = await API.api_get_file_metadata({ hashes: namespaceHashes.data.hashes })
-      //console.log(namespaceMetadata?.data.metadata)
+        let namespaceMetadata = await API.api_get_file_metadata({ hashes: namespaceHashes.data.hashes })
+        if (namespaceMetadata) { // Should never fail
+          //console.log(namespaceMetadata?.data.metadata)
 
-      ///UNFINISHED///
-      ///Process the tags loaded
-      ///Commented for now
-      let uniqueTags = createListOfUniqueTags(namespaceMetadata?.data.metadata)
-      //console.log(uniqueTags)
-      setMetadataGroup(uniqueTags.get(getAllTagsServiceKey()) || [])
+          ///UNFINISHED///
+          ///Process the tags loaded
+          ///Commented for now
+          let uniqueTags = createListOfUniqueTags(namespaceMetadata?.data.metadata)
+          //console.log(uniqueTags)
+          setMetadataGroup(uniqueTags.get(getAllTagsServiceKey()) || [])
 
-      // 
-
+          // 
+        }
+      }
       ///Should eventually get all tags from related files, process them count and eventually send further so they can be displayed in some manner
       ///What i want is some sort of "most common in given group" tag displayed, so if most files have "character:naruto" - that gets the first spot, then the second most visible etc.
       ///This is ofc filtered by given namespace

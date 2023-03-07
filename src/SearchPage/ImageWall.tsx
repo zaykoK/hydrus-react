@@ -3,10 +3,11 @@ import { MemoThumbnail as ImageThumbnail } from '../Thumbnail/ImageThumbnail';
 
 import './ImageWall.css'
 
-import { ResultGroup } from './SearchPage';
+import { ResultGroup } from './ResultGroup';
 import { MemoWrapperList as WrapperList } from './WrapperList';
 import { useNavigate } from 'react-router-dom';
 import ResultComponent from './ResultComponent';
+import { Fragment } from 'react';
 
 interface ImageWallProps {
   grouping: boolean;
@@ -88,13 +89,23 @@ export function ImageWall(props: ImageWallProps) {
     <div className='imageWall' >
       {(props.empty) ? 
       <div className='emptyStyle'>No results</div> 
-      : <WrapperList
+      : <Fragment>
+        <WrapperList
           key={sm}
           thumbs={thumbs}
           type={props.type}
           loadingProgress={props.loadingProgress}
           loaded={props.loaded}
-        />}
+        />
+        <ResultCounter count={props.results.length} />
+        </Fragment>}
     </div>
   );
+}
+interface ResultCounterProps {
+  count:number;
+}
+
+function ResultCounter(props:ResultCounterProps) {
+  return <div className='ResultCounter'>{props.count}</div>
 }

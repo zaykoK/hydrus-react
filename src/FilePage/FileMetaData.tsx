@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MetadataResponse } from "../hydrus-backend";
+import { MetadataResponse } from "../MetadataResponse";
 import { isLandscapeMode, isMobile } from "../styleUtils";
 import './FileMetaData.css'
 import * as API from '../hydrus-backend'
@@ -63,13 +63,15 @@ export function FileMetaData(props: FileMetaDataProps) {
         async function loadTranscodedInfo() {
             if (props.transcode) {
                 let response = await API.api_get_file_metadata({ hash: props.transcode, only_return_basic_information: true })
-                setImageSize([response?.data.metadata[0].width, response?.data.metadata[0].height])
-                setMime(response?.data.metadata[0].mime)
-                setSize(response?.data.metadata[0].size)
-                setURLs(props.metadata.known_urls)
-                setInbox(props.metadata.is_inbox)
-                setDate(props.metadata.time_modified)
-                setHash(props.metadata.hash)
+                if (response) {
+                    setImageSize([response?.data.metadata[0].width, response?.data.metadata[0].height])
+                    setMime(response?.data.metadata[0].mime)
+                    setSize(response?.data.metadata[0].size)
+                    setURLs(props.metadata.known_urls)
+                    setInbox(props.metadata.is_inbox)
+                    setDate(props.metadata.time_modified)
+                    setHash(props.metadata.hash)
+                }
             }
             else {
                 setImageSize([props.metadata.width, props.metadata.height])

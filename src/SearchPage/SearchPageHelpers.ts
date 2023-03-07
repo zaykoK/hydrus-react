@@ -1,6 +1,7 @@
 import { NavigateFunction } from "react-router-dom"
 import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools';
+import { MetadataResponse } from "../MetadataResponse";
 
 /** Generates a URLSearchParams from tag array and page number */
 export function generateSearchURL(tags: Array<Array<string>> | undefined, page: number, hash: string, type: string): URLSearchParams {
@@ -139,7 +140,7 @@ export function loadServiceData():API.ResponseGetService|null {
     return servicesData
 }
 
-export function createListOfUniqueTags(responses: Array<API.MetadataResponse>): Map<string, Array<TagTools.Tuple>> {
+export function createListOfUniqueTags(responses: Array<MetadataResponse>): Map<string, Array<TagTools.Tuple>> {
     let merged: Map<string, Array<string>> = new Map()
 
     let servicesData = loadServiceData()

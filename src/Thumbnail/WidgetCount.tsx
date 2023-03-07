@@ -13,7 +13,9 @@ function WidgetCount(props: WidgetCountProps) {
     async function getFileCount(tag: string) {
         if (tag === '' || tagCount !== 0) { return }
         let response = await API.api_get_files_search_files({ tags: [[tag]], return_hashes: true })
-        setTagCount(response.data.hashes.length)
+        if (response && response.data.hashes) {
+            setTagCount(response.data.hashes.length)
+        }
     }
 
     useEffect(() => {
@@ -25,8 +27,8 @@ function WidgetCount(props: WidgetCountProps) {
     else {
         return <>{(tagCount !== 0) && <div key={'widgetCount-' + tagCount} className="widgetCount">{tagCount}</div>}</>
     }
-    
 
-    
+
+
 }
 export default WidgetCount

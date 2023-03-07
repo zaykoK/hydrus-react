@@ -1,6 +1,7 @@
 
 import Axios from 'axios';
-import { setupCache } from 'axios-cache-interceptor'
+import { AxiosCacheInstance, CacheAxiosResponse, setupCache } from 'axios-cache-interceptor'
+import { APIResponseMetadata, APIResponseSearch, MetadataResponse } from './MetadataResponse';
 
 const axios = setupCache(Axios)
 
@@ -226,7 +227,7 @@ export function enumToArray(enumerator: { [s: number]: string }): Array<string> 
   return Object.keys(enumerator).filter((key) => !isNaN(Number(enumerator[key])))
 }
 
-export async function api_get_files_search_files(props: APISearchFilesProps) {
+export async function api_get_files_search_files(props: APISearchFilesProps):Promise<CacheAxiosResponse<APIResponseSearch>|undefined> {
   let sentTags: Array<Array<string> | string> = []
   if (localStorage.getItem('hydrus-max-results') !== null) {
     sentTags = props.tags.slice()
@@ -324,40 +325,6 @@ export async function api_get_file_thumbnail(props: APIGetFileThumbnailProps) {
   })
 }
 
-export type MetadataResponse = {
-  time_modified_details: {[key:string]: number};
-  duration: number | null;
-  ext: string;
-  file_id: number;
-  has_audio: boolean;
-  hash: string;
-  height: number;
-  width: number;
-  size: number;
-  time_modified: number;
-  is_inbox: boolean;
-  is_local: boolean;
-  is_trashed: boolean;
-  known_urls: Array<string>;
-  mime: string;
-  num_frames: number;
-  num_words: number;
-  file_services: {
-    current: {
-      key: string;
-      time_imported: number;
-    }
-    deleted: {}
-  }
-  tags: {[key:string]: {
-    display_tags:{[key:number]:Array<string>};
-    name:string;
-    storage_tags:{[key:number]:Array<string>};
-    type:number;
-    type_pretty:string;
-  }}
-}
-
 interface APIGetFileMetadataProps {
   file_id?: number;
   file_ids?: Array<number>;
@@ -371,13 +338,13 @@ interface APIGetFileMetadataProps {
   abortController?: AbortController;
 }
 
-export async function api_get_file_metadata(props: APIGetFileMetadataProps) {
+export async function api_get_file_metadata(props: APIGetFileMetadataProps):Promise<CacheAxiosResponse<APIResponseMetadata>|undefined> {
   if (!props.file_id && !props.file_ids && !props.hash && !props.hashes) { return }
   return axios.get(server_address + '/get_files/file_metadata', {
     signal: props.abortController?.signal,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
     },
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),

@@ -31,8 +31,11 @@
 }
 
 @keyframes coverIntro {
-    0% {transform:translateY(-150%);}
-    100% {transform:translateY(0%);}
+    0% {filter:brightness(0%) invert(1);}
+    50% {filter:brightness(0%) invert(1);}
+    51% {filter:brightness(0%) invert(0);}
+    99% {filter:brightness(100%);}
+    100% {filter:none;};
 }
 
 .thumbnailWrapper {
@@ -135,7 +138,7 @@
 }
 
 .thumbnailWrapper.mobile {
-    border-radius: 0.5em;
+    border-radius: 0em;
 }
 
 .thumbnailWrapper:hover .widgetCount {

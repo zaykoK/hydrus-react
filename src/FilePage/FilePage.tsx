@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import * as TagTools from '../TagTools'
 import { TagListTabs } from '../TagList'
 import * as API from '../hydrus-backend';
+import { MetadataResponse } from '../MetadataResponse';
 
 import IconRelated from '../assets/related.svg'
 import IconLeft from '../assets/arrow-left.svg'
@@ -42,7 +43,7 @@ export function FilePage(props: FilePageProps) {
   }
   const fileHash = props.hash;
   const { parm } = useParams();
-  const [metadata, setMetaData] = React.useState<API.MetadataResponse>()
+  const [metadata, setMetaData] = React.useState<MetadataResponse>()
   const [tags, setTags] = React.useState<Map<string,Array<TagTools.Tuple>>>(new Map())
 
   const [relatedDatacart, setRelatedDatacart] = React.useState<relatedDataCartType>({ hash: '', tags: new Map() })
@@ -121,7 +122,7 @@ export function FilePage(props: FilePageProps) {
 
     let response = await API.api_get_file_metadata({ hash: fileHash, abortController: abortControllerMetadata.current }).catch((reason) => { return })
     if (!response) { return }
-    let data: API.MetadataResponse = response.data.metadata[0]
+    let data: MetadataResponse = response.data.metadata[0]
     let tags = createListOfUniqueTags([data])
     //let responseTags = API.getTagsFromMetadata(data,'ImportedTags')
     //let tagTuples = TagTools.transformIntoTuple(TagTools.tagArrayToMap(responseTags.get(getAllTagsServiceKey()) || []))
