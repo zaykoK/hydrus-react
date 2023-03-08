@@ -1,14 +1,22 @@
 .WrapperList {
     --CELL_SIZE: 215px;
-    --CELL_SIZE_MOBILE: 85px;
-    --CELL_SIZE_MOBILE: calc(100vw/3);
+    --CELL_SIZE_MOBILE: 120px;
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 15px;
     border-radius: 15px;
-    gap:10px;
+    gap: 10px;
     grid-auto-flow: row dense;
     justify-content: center;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* Devices smaller than this get 3 images in row */
+@media (max-width: 425px) {
+    .WrapperList {
+        --CELL_SIZE_MOBILE: calc(100vw/3);
+    }
 }
 
 .WrapperList.mobile {
@@ -18,11 +26,11 @@
     padding: 0px;
     padding-top: 15px;
     padding-bottom: 25px;
-    gap:0px;
+    gap: 0px;
 }
 
 .WrapperList.comic {
-    display:flex;
+    display: flex;
     flex-wrap: wrap;
     padding: 0px;
     height: auto;
@@ -86,12 +94,12 @@
 }
 
 .ResultCounter {
-    position:fixed;
-    padding:0.5em 0.5em 0.5em 0.5em;
-    bottom:1em;
-    right:1em;
+    position: fixed;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    bottom: 1em;
+    right: 1em;
     background-color: var(--COLOR2);
     border-radius: 10px;
-    z-index:5;
+    z-index: 5;
 
 }

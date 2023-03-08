@@ -177,6 +177,8 @@
 }
 .ResultDetails.mobile {
     max-height: 75vh;
+    padding-left:0px;
+    padding-right:0px;
 }
 .ResultDetailsInfo {
     background-color: var(--COLOR2);
@@ -201,13 +203,13 @@
     overflow-x: auto;
     grid-template-columns: repeat(auto-fill, calc(var(--CELL_SIZE_MOBILE)));
     grid-auto-flow: row;
-    gap:5px;
+    gap:0px;
     justify-content:start;
 }
 .ResultDetailsThumbnails.mobile.horizontal {
     grid-template-columns: repeat(auto-fill, calc(var(--CELL_SIZE_MOBILE)));
     grid-auto-flow: column;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
 }
 
 .ResultDetailsThumbnails .thumbnailWrapper {
@@ -224,8 +226,9 @@
     min-height: auto;
     width: calc(var(--CELL_SIZE_MOBILE));
     height: calc(var(--CELL_SIZE_MOBILE));
+    border-radius: 0px;
 }
 .ResultDetailsThumbnails.mobile .thumbnail {
-    object-fit: contain;
+    object-fit: cover;
 }
 
