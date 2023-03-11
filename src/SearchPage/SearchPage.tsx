@@ -232,11 +232,16 @@ export function SearchPage(props: SearchPageProps) {
 
     let resultGroupMap: Map<string, ResultGroup> = new Map<string, ResultGroup>()
 
+    //Load everything that can be loaded from sessionStorage before it goes into the loop
+    const comicNamespace = getComicNamespace()
+    const serviceData = loadServiceData()
+    const allTagsServiceKey = getAllTagsServiceKey()
+
     for (let element of responsesSorted) {
       unsortedArray.push({ cover: element.hash, title: element.hash, subgroups: new Map<string, ResultGroup>(), entries: [element], type: 'single' })
       //TODO move tag grabbing (response.service_to_...[etc]) into own function to make code easier to read
 
-      let tags = API.getTagsFromMetadata(element, 'ImportedTags', loadServiceData()).get(getAllTagsServiceKey())
+      let tags = API.getTagsFromMetadata(element, 'ImportedTags', serviceData).get(allTagsServiceKey)
 
       if (tags) {
         //For each entry in metadataResponses 
@@ -254,7 +259,7 @@ export function SearchPage(props: SearchPageProps) {
         // This gives all tags for grouping namespace, ideally only 1 result should exist
         let foundGroupTags = tagTuples.filter((element) => element["namespace"] === groupNamespace)
         // Same just for comic tags
-        let foundComicTags = tagTuples.filter((element) => element["namespace"] === getComicNamespace())
+        let foundComicTags = tagTuples.filter((element) => element["namespace"] === comicNamespace)
 
         // I can do cool stuff like this now
         // This groups all images by their creator tag
@@ -380,7 +385,6 @@ export function SearchPage(props: SearchPageProps) {
     //console.log('actually searching')
     //console.log(sortType.current)
     let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current, abortController: AbortControllerSearch.current });
-    console.log(response)
     let responseHashes: Array<string> = response?.data.hashes || []
 
     //searchArtists(AbortControllerSearch.current)
@@ -461,7 +465,6 @@ export function SearchPage(props: SearchPageProps) {
       let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
       for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
         let response:CacheAxiosResponse<APIResponseMetadata>|undefined = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
-        console.log(response)
         if (response) { responses.push(...response.data.metadata); responseSize += JSON.stringify(response).length }
         if (responseSize > 512) { //KB
           responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
