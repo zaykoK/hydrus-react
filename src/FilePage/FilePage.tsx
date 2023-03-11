@@ -227,8 +227,8 @@ export function FilePage(props: FilePageProps) {
 
   function getButtonSidebarToggleStyle(active: boolean): string {
     let style = 'topBarButton'
-    if (active) {
-      style += ' active'
+    if (!active) {
+      style += ' inactive'
     }
     return style
   }
