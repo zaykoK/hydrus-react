@@ -5,7 +5,6 @@
     margin-right: auto;
     margin-bottom: auto;
     text-align: right;
-    font-size: large;
     gap: 15px;
     display: grid;
     grid-auto-flow: row;
@@ -28,7 +27,7 @@
     border: none;
     border-radius: 5px;
     text-align: center;
-    font-size: large;
+    font-size: unset;
 }
 
 .settingsBar.mobile {
@@ -46,9 +45,9 @@
 .searchBarSt {
     background: #ffffff;
     box-shadow: 0 0 0px 0 black;
-    display: flex;
-    flex-flow: rows;
-    height: 65px;
+    display: grid;
+    grid-template-rows: 2em auto;
+    min-height: 65px;
     margin: 4px;
     min-width: 40%;
     max-width: 95vw;
@@ -57,31 +56,48 @@
     flex-grow: 1;
 }
 
+.searchBarSt .tagDisplayStyle {
+    grid-row:2;
+    flex-wrap:wrap;
+}
+
+.searchBarSt .tagButton {
+    min-height: 2em;
+    flex-grow: unset;
+    cursor:pointer;
+    transition: transform 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.searchBarSt .tagButton:hover {
+    transform: scale(1.1);
+}
+
 .formStyle {
     height: inherit;
     flex-grow: 0;
     border-radius: 5px;
     min-width: 200px;
     width: -webkit-fill-available;
+    grid-row:1;
 }
 
 .labelStyle {
     display: block;
-    height: inherit;
+    height: 100%;
     width: inherit;
 }
 
 .inputStyle {
     display: block;
     height: inherit;
-    width: 99%;
+    width: 100%;
     border: none;
     border-radius: 5px;
     text-align: left;
-    font-size: small;
-    padding: 0px 0px 0px 3px;
     margin: 0px;
     outline: none;
+    box-sizing: border-box;
+
 }
 
 .transcodeEnabledButton {
@@ -112,5 +128,19 @@
     color:white;
     cursor: pointer;
     text-decoration: none;
+}
+
+.permissionBlob {
+    background-color:darkgreen;
+    border-radius: 5px;
+    padding:5px;
+}
+
+.permissionWrapper {
+    display:flex;
+    background-color: var(--COLOR1);
+    gap:5px;
+    padding: 5px;
+    border-radius: 5px;
 }
 
