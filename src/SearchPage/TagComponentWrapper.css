@@ -1,0 +1,86 @@
+
+.TagComponentsWrapper {
+    padding-top:4em;
+    --TAGCOMPONENTSIZE: 200px;
+    display:none;
+    grid-template-columns: repeat(auto-fill,var(--TAGCOMPONENTSIZE));
+    grid-template-rows:repeat(250px);
+    gap:2px;
+    margin-left:auto;
+    margin-right:auto;
+    justify-content: center;
+
+}
+.TagComponentsWrapper.active{
+    display:grid;
+}
+
+.TagComponentList {
+    position: relative;
+    min-height: 3em;
+    overflow: hidden;
+}
+.TagComponentList:hover {
+    filter:brightness(110%);
+
+}
+.TagComponentListWrapper {
+    overflow: auto;
+    will-change: transform;
+    max-height: 500px;
+    transition:max-height 1.4s cubic-bezier(0.215, 0.610, 0.355, 1);
+    background-color: var(--COLOR3);
+}
+.TagComponentListWrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.TagComponentListLabel {
+    display: flex;
+    gap:1em;
+    margin:0px;
+    padding:0.5em;
+    position: absolute;
+    top:0px;
+    cursor:pointer;
+    z-index: 3;
+    width: 100%;
+
+    background-color: var(--COLOR2);
+    box-sizing: border-box;
+}
+
+.TagComponentListLabel p{
+    margin:auto 0px auto 0px;
+    text-transform: capitalize;
+}
+
+.TagComponentList .TagComponentListFilterInput {
+    border-radius: 5px;
+    outline: none;
+    border: var(--COLOR1);
+    border-width: 1px;
+    border-style: solid;
+    height: 2em;
+    background-color: var(--COLOR3);
+    color:white;
+    padding-left:1em;
+}
+.TagComponentList .topBarButton {
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+}
+
+.TagComponentListWrapper.large {
+    max-height: 100vh;
+}
+.TagComponentList.large {
+    position:fixed;
+    top:0px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    z-index: 5;
+    overscroll-behavior: none;
+}

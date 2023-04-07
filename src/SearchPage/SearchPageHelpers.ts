@@ -1,7 +1,7 @@
 import { NavigateFunction } from "react-router-dom"
 import * as API from '../hydrus-backend';
 import * as TagTools from '../TagTools';
-import { MetadataResponse } from "../MetadataResponse";
+import { APIResponseGetService, MetadataResponse } from "../MetadataResponse";
 
 /** Generates a URLSearchParams from tag array and page number */
 export function generateSearchURL(tags: Array<Array<string>> | undefined, page: number, hash: string, type: string): URLSearchParams {
@@ -56,9 +56,39 @@ export function navigateTo(parameters: URLSearchParams, navigate: NavigateFuncti
     }
 }
 
+export function getRecentTags() {
+    let tags = sessionStorage.getItem('recent-tags')
+    if (tags === null) {
+        return []
+    }
+    let returned:Array<string> = JSON.parse(tags)
+    return returned
+}
+
+function saveRecentTags(tags:Array<string>) {
+    sessionStorage.setItem('recent-tags',JSON.stringify(tags))
+}
+
+function pushToRecentTags(tag:string,tags?:Array<string>) {
+    let recentTags:Array<string> = []
+    if (tags) {
+        recentTags = tags;
+    }
+    else {
+        recentTags = getRecentTags()
+    }
+    recentTags.push(tag)
+
+    saveRecentTags(recentTags)
+
+
+}
+
 
 export function addTag(tag: Array<string> | string, navigate: NavigateFunction, type: string): void {
     let tags: Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+
+    let recentTags: Array<string> = getRecentTags()
 
     let currentHash = sessionStorage.getItem('currently-displayed-hash') || ''
 
@@ -78,6 +108,11 @@ export function addTag(tag: Array<string> | string, navigate: NavigateFunction, 
 
         //TODO process certain unique tags that user shouldn't be able to add
         newTags.push(tag);
+
+        for (let entry of tag) {
+            pushToRecentTags(entry,recentTags)
+        }
+
 
         let par = generateSearchURL(newTags, 1, currentHash, type)
         navigateTo(par, navigate, type)
@@ -129,14 +164,14 @@ function mergeTagMaps(current: Map<string, Array<string>>, second: Map<string, A
     })
 }
 
-export function loadServiceData():API.ResponseGetService|null {
+export function loadServiceData():APIResponseGetService|null {
     let sessionData = sessionStorage.getItem('hydrus-services')
     
     if (sessionData === null) {
         console.warn('No service data in memory, try refreshing.')
         return null
     }
-    let servicesData:API.ResponseGetService = JSON.parse(sessionData)
+    let servicesData:APIResponseGetService = JSON.parse(sessionData)
     return servicesData
 }
 
@@ -175,7 +210,7 @@ export function createListOfUniqueTags(responses: Array<MetadataResponse>): Map<
 }
 
 export function getAllTagsServiceKey():string {
-    let services:API.ResponseGetService = JSON.parse( sessionStorage.getItem('hydrus-services') || '')
+    let services:APIResponseGetService = JSON.parse( sessionStorage.getItem('hydrus-services') || '')
     let allKnownTags = services.all_known_tags[0].service_key
 
     return allKnownTags

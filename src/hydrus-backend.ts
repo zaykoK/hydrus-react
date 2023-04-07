@@ -1,13 +1,15 @@
 
-import Axios from 'axios';
+import Axios, { AxiosError, AxiosResponse } from 'axios';
+//@ts-ignore
 import { AxiosCacheInstance, CacheAxiosResponse, setupCache } from 'axios-cache-interceptor'
-import { APIResponseMetadata, APIResponseSearch, MetadataResponse } from './MetadataResponse';
+import { APIResponseGetService, APIResponseMetadata, APIResponseSearch, MetadataResponse } from './MetadataResponse';
 
 const axios = setupCache(Axios)
 
 // This is a "fixed" function that won't stop api calls after aborting one
 // This will probably get fixed in the future
 // I didn't look into what it actually does, so it might be selling your soul to chinese goverment
+//@ts-ignore
 axios.interceptors.request.use((config) => {
   if (!config.cache) {
     return config;
@@ -69,13 +71,13 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 42
+  const API_TARGET = 43
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
     }
   })
-    .then(function (response) {
+    .then(function (response:AxiosResponse) {
       // handle success
       sessionStorage.setItem("hydrus-client-version", response.data.hydrus_version);
       sessionStorage.setItem("hydrus-api-version", response.data.version);
@@ -101,38 +103,18 @@ export function api_version() {
     });
 }
 
-export type TagRepositoryTuple = {
-  name:string;
-  service_key:string;
-  type:number;
-  type_pretty:string;
-}
-
-export type ResponseGetService = {
-  all_known_files:Array<TagRepositoryTuple>;
-  all_known_tags:Array<TagRepositoryTuple>;
-  all_local_files:Array<TagRepositoryTuple>;
-  all_local_media:Array<TagRepositoryTuple>;
-  file_repositories:Array<TagRepositoryTuple>;
-  local_files:Array<TagRepositoryTuple>;
-  local_tags:Array<TagRepositoryTuple>;
-  local_updates:Array<TagRepositoryTuple>;
-  tag_repositories:Array<TagRepositoryTuple>;
-  trash:Array<TagRepositoryTuple>;
-}
-
 export async function api_get_services() {
   axios.get(server_address + '/get_services', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
     }
   })
-    .then(function (response) {
-      let data:ResponseGetService = response.data
+    .then(function (response:AxiosResponse) {
+      let data:APIResponseGetService = response.data
       let stringified = JSON.stringify(data)
       sessionStorage.setItem('hydrus-services', stringified)
     })
-    .catch(function (error) {
+    .catch(function (error:AxiosError) {
       // handle error
       console.error(error);
     })
@@ -179,7 +161,7 @@ export async function api_get_clean_tags(search: string) {
 }
 
 interface APISearchFilesProps {
-  tags: Array<Array<string>>;
+  tags: Array<Array<string>|string>|Array<string>;
   file_service_name?: string;
   file_service_key?: string;
   tag_service_name?: string;
@@ -229,9 +211,17 @@ export function enumToArray(enumerator: { [s: number]: string }): Array<string> 
 
 export async function api_get_files_search_files(props: APISearchFilesProps):Promise<CacheAxiosResponse<APIResponseSearch>|undefined> {
   let sentTags: Array<Array<string> | string> = []
+
   if (localStorage.getItem('hydrus-max-results') !== null) {
+    let hasLimit = false
     sentTags = props.tags.slice()
-    if (Array.isArray(sentTags[0]) || sentTags.length === 0) { sentTags.push('system:limit=' + localStorage.getItem('hydrus-max-results')) }
+    for (let element of sentTags.flat()) {
+      if (element.includes('system:limit=')) {
+        hasLimit = true;
+        break;
+      }
+    }
+    if (!hasLimit && (Array.isArray(sentTags[0]) || sentTags.length === 0)) { sentTags.push('system:limit=' + localStorage.getItem('hydrus-max-results')) }
 
   }
   else {
@@ -294,8 +284,8 @@ export function api_get_file_address(hash: string | undefined) {
 export function api_get_file_thumbnail_address(hash: string | undefined) {
   if (!hash) { return }
   let server = localStorage.getItem('hydrus-server-address')
-
   let sessionKey = sessionStorage.getItem('hydrus-session-key')
+
   if (!sessionKey) { sessionKey = '' }
 
   let params = new URLSearchParams({
@@ -365,7 +355,7 @@ export async function api_get_file_metadata(props: APIGetFileMetadataProps):Prom
 /*** This return a tag array from metadata object
  * 
  */
-export function getTagsFromMetadata(metadata:MetadataResponse,key:string,servicesData:ResponseGetService|null):Map<string,Array<string>> {
+export function getTagsFromMetadata(metadata:MetadataResponse,key:string,servicesData:APIResponseGetService|null):Map<string,Array<string>> {
   // Load services data
   let tagsByService:Map<string,Array<string>> = new Map()
 
@@ -427,25 +417,24 @@ interface getAllTagsProps {
   namespace:string;
   abortController:AbortController;
 }
-type APITagResponse = {
+export type APITagResponse = {
   value:string;
   count:number;
 }
 
 export async function getAllTags(props:getAllTagsProps) {
+  //Do the search
   let response = await api_add_tags_search_tags({
     search: `${props.namespace}:*`,
     abortController: props.abortController
   })
-  //console.log(response)
   let tagArray:Array<APITagResponse> = response.data.tags
-  //console.log(tagArray)
   let finalArray:Array<APITagResponse> = []
+  //Get rid of duplicates and cases where searched namespace of tag is sibling of of something else ex. creator:naruto > series:naruto
   tagArray.map((element:APITagResponse,count:number) => {
     if (element.value.includes(props.namespace)) {
       finalArray.push(element)
     }
   })
-  console.log(finalArray)
   return finalArray
 }

@@ -1,0 +1,61 @@
+
+.TagComponent {
+    background-color:var(--COLOR2);
+    position: relative;
+    overflow: hidden;
+    max-width: var(--TAGCOMPONENTSIZE);
+    max-height: calc(var(--TAGCOMPONENTSIZE)/2);
+    width:var(--TAGCOMPONENTSIZE);
+    height: calc(var(--TAGCOMPONENTSIZE)/2);
+}
+
+.TagComponent.square {
+    max-width: var(--TAGCOMPONENTSIZE);
+    max-height: var(--TAGCOMPONENTSIZE);
+    width:var(--TAGCOMPONENTSIZE);
+    height: var(--TAGCOMPONENTSIZE);
+}
+.TagComponent.page {
+    max-width: var(--TAGCOMPONENTSIZE);
+    max-height: calc(var(--TAGCOMPONENTSIZE)*1.4142);
+    width:var(--TAGCOMPONENTSIZE);
+    height: calc(var(--TAGCOMPONENTSIZE)*1.4142);
+}
+
+.TagComponent:hover img {
+    filter:none;
+}
+.TagComponentTitle {
+    position: absolute;
+    top:0.5em;
+    left:0.5em;
+    margin:0px;
+    padding:0px;
+    font-weight: 900;
+    z-index: 2;
+    font-size: 1.5em;
+    filter:drop-shadow(0px 0px 5px black);
+    pointer-events: none;
+    text-transform: capitalize;
+}
+.TagComponent img {
+    object-fit: cover;
+    filter:contrast(70%) grayscale(70%);
+    transition: filter 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.TagComponent .thumbnailWrapper {
+    border-radius: 0px;
+}
+
+.TagComponentCount {
+    position: absolute;
+    bottom:0.5em;
+    right:0.5em;
+    margin:0px;
+    padding:0px;
+    font-weight: 900;
+    z-index: 2;
+    font-size: 1.5em;
+    filter:drop-shadow(0px 0px 5px black);
+    pointer-events: none;
+}

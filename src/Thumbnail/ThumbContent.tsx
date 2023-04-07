@@ -35,6 +35,7 @@ function ThumbContent(props: ThumbContentProps) {
         switch (type) {
             case 'comic':
                 style += " thumbnailComic"
+                break
             default: //case 'image':
                 style += " thumbnailImage"
                 if (props.currentImage !== undefined && props.currentImage === false) {

@@ -7,6 +7,10 @@
 .contentWrapper.mobile {
   height:inherit;
 }
+/* 
+.contentWrapper .react-transform-component {
+  transition: transform 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+} */
 
 .contentWrapper.mobile.landscape {
   position: relative;

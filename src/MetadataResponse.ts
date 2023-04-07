@@ -44,3 +44,24 @@ type MetadataTag = {
   type: number;
   type_pretty: string;
 }
+
+
+export type TagRepositoryTuple = {
+  name:string;
+  service_key:string;
+  type:number;
+  type_pretty:string;
+}
+
+export type APIResponseGetService = {
+  all_known_files:Array<TagRepositoryTuple>;
+  all_known_tags:Array<TagRepositoryTuple>;
+  all_local_files:Array<TagRepositoryTuple>;
+  all_local_media:Array<TagRepositoryTuple>;
+  file_repositories:Array<TagRepositoryTuple>;
+  local_files:Array<TagRepositoryTuple>;
+  local_tags:Array<TagRepositoryTuple>;
+  local_updates:Array<TagRepositoryTuple>;
+  tag_repositories:Array<TagRepositoryTuple>;
+  trash:Array<TagRepositoryTuple>;
+}

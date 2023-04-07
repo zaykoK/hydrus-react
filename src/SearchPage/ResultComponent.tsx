@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { NavigateFunction } from "react-router-dom";
 import { isMobile } from "../styleUtils";
 import { ResultGroup } from "./ResultGroup";
@@ -19,70 +19,85 @@ function ResultComponent(props: ResultComponentProps) {
     const [cover, setCover] = useState<JSX.Element | null>(null)
     const [isShowingDetails, setIsShowingDetails] = useState<boolean>(false)
 
+    function processSubgroups(result: ResultGroup) {
+        let tempThumbs: Array<JSX.Element> = []
+        // Sort subgroups in alphabetical order
+        let sortedList = [...result.subgroups.values()].sort((a, b) => a.title.localeCompare(b.title))
+        // Set a group cover to a first subgroup cover
+        result.cover = sortedList[0].cover
+
+        for (let subgroup of sortedList) {
+            let thumb = <ImageThumbnail
+                navigate={props.navigate}
+                loadMeta={true}
+                type={props.type}
+                key={subgroup.cover}
+                hash={subgroup.cover}
+                replace={false}
+                metadata={subgroup.entries}
+                size={4}
+                hideWidgetCount={true}
+            />
+            tempThumbs.push(thumb)
+        }
+        setCover(<ImageThumbnail
+            navigate={props.navigate}
+            loadMeta={true}
+            type={props.type}
+            key={result.cover}
+            hash={result.cover}
+            replace={false}
+            metadata={result.entries}
+            size={4}
+            hideWidgetCount={false}
+        />)
+        return tempThumbs
+    }
+
+    function processFlat(result: ResultGroup) {
+        let tempThumbs: Array<JSX.Element> = []
+        let entries = result.entries
+        let sortedEntries = entries.sort((a, b) => a.time_modified_details['local'] - b.time_modified_details['local'])
+        result.cover = sortedEntries[0].hash
+        for (let entry of sortedEntries) {
+            let thumb = <ImageThumbnail
+                navigate={props.navigate}
+                loadMeta={true}
+                type={props.type}
+                key={entry.hash + result.title}
+                hash={entry.hash}
+                replace={false}
+                metadata={[entry]}
+                size={4}
+                hideWidgetCount={false}
+            />
+            tempThumbs.push(thumb)
+            setCover(<ImageThumbnail
+                navigate={props.navigate}
+                loadMeta={true}
+                type={props.type}
+                key={result.cover + result.title}
+                hash={result.cover}
+                replace={false}
+                metadata={result.entries}
+                size={4}
+                hideWidgetCount={false}
+            />)
+        }
+        return tempThumbs
+    }
+
     useEffect(() => {
         let tempThumbs: Array<JSX.Element> = []
         // If subgroups exist display subgroups
         let tLength = props.result.subgroups.size
         if (tLength > 0) {
-            let sortedList = [...props.result.subgroups.values()].sort((a, b) => a.title.localeCompare(b.title))
-            props.result.cover = sortedList[0].cover
-            for (let subgroup of sortedList) {
-                let thumb = <ImageThumbnail
-                    navigate={props.navigate}
-                    loadMeta={true}
-                    type={props.type}
-                    key={subgroup.cover}
-                    hash={subgroup.cover}
-                    replace={false}
-                    metadata={subgroup.entries}
-                    size={4}
-                    hideWidgetCount={true}
-                />
-                tempThumbs.push(thumb)
-            }
-            setCover(<ImageThumbnail
-                navigate={props.navigate}
-                loadMeta={true}
-                type={props.type}
-                key={props.result.cover}
-                hash={props.result.cover}
-                replace={false}
-                metadata={props.result.entries}
-                size={4}
-                hideWidgetCount={false}
-            />)
+            tempThumbs = processSubgroups(props.result)
         }
         else {
-            let entries = props.result.entries
-            let sortedEntries = entries.sort((a, b) => a.time_modified_details['local'] - b.time_modified_details['local'])
-            props.result.cover = sortedEntries[0].hash
-            for (let entry of sortedEntries) {
-                let thumb = <ImageThumbnail
-                    navigate={props.navigate}
-                    loadMeta={true}
-                    type={props.type}
-                    key={entry.hash + props.result.title}
-                    hash={entry.hash}
-                    replace={false}
-                    metadata={[entry]}
-                    size={4}
-                    hideWidgetCount={false}
-                />
-                tempThumbs.push(thumb)
-                setCover(<ImageThumbnail
-                    navigate={props.navigate}
-                    loadMeta={true}
-                    type={props.type}
-                    key={props.result.cover + props.result.title}
-                    hash={props.result.cover}
-                    replace={false}
-                    metadata={props.result.entries}
-                    size={4}
-                    hideWidgetCount={false}
-                />)
-                // Change to random cover picture, WIP
-                //setInterval(() => {setCover(tempThumbs[Math.floor(Math.random() * tempThumbs.length)])},3500)
-            }
+            tempThumbs = processFlat(props.result)
+            // Change to random cover picture, WIP
+            //setInterval(() => {setCover(tempThumbs[Math.floor(Math.random() * tempThumbs.length)])},3500)
         }
         setThumblist(tempThumbs)
 
@@ -231,6 +246,7 @@ function ResultDetails(props: ResultDetailsProps) {
 
     </div>
 }
+
 
 
 export default ResultComponent

@@ -67,7 +67,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
                     id={'relatedElements' + element}
                     currentHash={dataHash}
                     key={element + groupTag}
-                    tags={[splitted[0]+'*']}
+                    tags={[splitted[0]+'/*']}
                     space={element}
                     initiallyExpanded={shouldBeExpanded}
                     landscape={props.landscape}

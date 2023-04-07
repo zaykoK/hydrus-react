@@ -141,7 +141,7 @@
     overflow-x: hidden;
     font-size: small;
     border-radius: 0px 0px 5px 5px;
-    box-shadow: 0px 5px 10px 0px black;
+    /* box-shadow: 0px 5px 10px 0px black; */
     display: flex;
     flex-wrap: wrap;
     width: auto;
@@ -154,3 +154,29 @@
     background-color: var(--COLOR1);
 }
 
+.recommendedTags {
+    background-color: var(--COLOR1);
+    border-radius: 5px;
+    padding:0.5em;
+}
+
+.recommendedTags p {
+    margin: 0.2em;
+    text-align: left;
+}
+
+.recommendedTags .tagListSearchBar {
+    box-shadow: none;
+    background-color:unset;
+}
+
+
+.recommendedTags .tagEntry.blob {
+    flex-grow:0;
+    flex-shrink:0;
+}
+
+.recommendedTagsContainer {
+    display:flex;
+    gap:1em;
+}

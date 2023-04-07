@@ -5,9 +5,10 @@ import * as API from '../hydrus-backend'
 import { useRef, useState } from "react";
 import * as TagTools from '../TagTools'
 import { useNavigate } from "react-router-dom";
-import { addTag } from "./SearchPageHelpers";
+import { addTag, getRecentTags } from "./SearchPageHelpers";
 
 import './SearchBar.css'
+import { tagArrayToMap, transformIntoTuple } from "../TagTools";
 
 type TagLookupResult = {
     value: string;
@@ -20,9 +21,23 @@ function TagLookupResultToTuple(tags: Array<TagLookupResult>, currentSearch: str
     let filteredTags: Array<TagTools.Tuple> = []
     let currentNamespace = currentSearch.split(':', 2)
     for (let tag of tags) {
-        let splitted = tag.value.split(':', 2)
+
+        // TODO 
+        // Move this into a separate function for tag value parsing or something
+        let [first, ...rest ] = tag.value.split(':')
+        let splitted:Array<string> = []
+        splitted[0] = first
+        if (rest.length > 0) {
+            splitted[1] = rest.join(':')
+        }
+
+        // END
         if (splitted.length > 1) {
-            if ((!blacklist.includes(splitted[0])) || (splitted[0] === currentNamespace[0])) {
+            const isNotBlacklisted = !blacklist.includes(splitted[0])
+            const isSameNamespaceAsSearched = splitted[0] === currentNamespace[0]
+            const isNotSearchingForNamespacedTag = currentNamespace.length === 1
+
+            if (isSameNamespaceAsSearched || (isNotSearchingForNamespacedTag && isNotBlacklisted)) {
                 filteredTags.push({
                     namespace: splitted[0],
                     value: splitted[1],
@@ -31,23 +46,39 @@ function TagLookupResultToTuple(tags: Array<TagLookupResult>, currentSearch: str
             }
         }
         else {
-            filteredTags.push({
-                namespace: '',
-                value: splitted[0],
-                count: tag.count
-            })
+            // If there is a namespace in search but tag doesn't have one, skip it
+            //console.log(!currentNamespace[1])
+            const isNotSearchingForNamespacedTag = currentNamespace.length === 1
+            if (isNotSearchingForNamespacedTag) {
+                filteredTags.push({
+                    namespace: '',
+                    value: splitted[0],
+                    count: tag.count
+                })
+            }
         }
     }
     return filteredTags
 }
 
-function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction: Function }) {
+interface TagInputProps {
+    tags: Array<Array<string>>
+    type: string
+    infoAction: Function
+}
+
+
+function TagInput(props: TagInputProps) {
     const [helpTags, setHelpTags] = useState<Array<TagTools.Tuple>>([])
     const [helpTagsVisible, setHelpTagsVisible] = useState<boolean>(false)
     // Probably I could use useRef for tag so it doesn't re-render everything every letter, but then a lot of other stuff will break
     const [tag, setTag] = useState('')
     const abortController = useRef<AbortController | undefined>()
     const navigate = useNavigate()
+
+    // More or less the properly working idea
+    // Reverse "necessary" for easy updating of ordering when tag gets searched again
+    const recentTags = transformIntoTuple(tagArrayToMap(getRecentTags().reverse()))
 
     function submitTag(event: React.FormEvent) {
         event.preventDefault(); //necessary to not reload page after submit
@@ -80,10 +111,13 @@ function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction:
 
         //Don't search anything if less than 3 letters are written, this really improves performance as you don't wait for potentially dozens of thousands of results, that just 1 or 2 letters will give, this does create a bit of an issue for two or less letter words like "pi" or "character:l" (from death note)
         //Also clear search if less than 3 letters are typed in
-        if (search.length < 2 && JSON.stringify(helpTags) !== JSON.stringify([])) { setHelpTags([]) }
+        if (search.length < 2 && helpTags.length !== 0) { setHelpTags([]) }
         if (search.length > 1) {
+            let sentSearch = search
+            const lastCharacterIsColon = sentSearch.slice(-1) === ':'
+            if (lastCharacterIsColon) { sentSearch += '*'}
             let response = await API.api_add_tags_search_tags({
-                search: search,
+                search: sentSearch,
                 abortController: abortController.current
             }).catch((reason) => { return })
             //let rsp2 = API.getAllTags({namespace:'creator',abortController:abortController.current})
@@ -104,15 +138,16 @@ function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction:
     }
 
     function getSearchBarStyle() {
-        if (isMobile()) { return "searchBar mobile" }
-        return "searchBar"
+        let style = "searchBar"
+        if (isMobile()) { style += " mobile" }
+        return style
     }
     return <div className={getSearchBarStyle()}>
         <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type} />
         <form className="searchForm" onSubmit={submitTag}>
             <input
                 onFocus={() => { setHelpTagsVisible(true); props.infoAction(false) }}
-                onBlur={() => { setTimeout(() => setHelpTagsVisible(false),150)  }}
+                onBlur={() => { setTimeout(() => setHelpTagsVisible(false), 150) }}
                 className="searchInput"
                 type="text"
                 value={tag}
@@ -121,7 +156,21 @@ function TagInput(props: { tags: Array<Array<string>>, type: string, infoAction:
         </form>
         {(tag && helpTagsVisible) ? <div className='emptyButton' onClick={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}>X</div> : null}
         <div className={getHelpTagsListStyle(helpTagsVisible)}>
-            <TagList tags={helpTags} visibleCount={true} type={'image'} searchBar={true} />
+            {(helpTags.length === 0) ? <div className="recommendedTagsContainer">
+                <div className='recommendedTags'>
+                    <p>Rating</p>
+                    <TagList keyPrefix="recRating" tags={[{ namespace: 'rating', value: 'safe', count: 0 }, { namespace: 'rating', value: 'questionable', count: 0 }, { namespace: 'rating', value: 'explicit', count: 0 },]} visibleCount={false} type={'image'} searchBar={true} />
+                </div>
+                <div className='recommendedTags'>
+                    <p>Medium</p>
+                    <TagList keyPrefix="recMedium" tags={[{ namespace: 'medium', value: '2d', count: 0 }, { namespace: 'medium', value: '3d', count: 0 }, { namespace: 'medium', value: 'photo', count: 0 }]} visibleCount={false} type={'image'} searchBar={true} />
+                </div>
+                {(recentTags.length === 0) ? null : <div className='recommendedTags'>
+                    <p>Recent</p>
+                    <TagList keyPrefix="recRecent" tags={recentTags} visibleCount={false} type={'image'} searchBar={true} />
+                </div>}
+            </div> : null}
+            <TagList keyPrefix="recHelp" tags={helpTags} visibleCount={true} type={'image'} searchBar={true} />
         </div>
     </div>
 }

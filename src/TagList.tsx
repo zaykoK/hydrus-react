@@ -8,9 +8,10 @@ import './TagList.css'
 import { isMobile } from './styleUtils';
 
 import { TagListButton } from './TagListButton';
+import { APIResponseGetService, TagRepositoryTuple } from './MetadataResponse';
 
 interface TabButtonProps {
-    service: API.TagRepositoryTuple;
+    service: TagRepositoryTuple;
     selectFunction: Function;
     count?: number;
 }
@@ -37,10 +38,10 @@ function TabButton(props: TabButtonProps) {
     return <div onClick={() => { props.selectFunction(props.service.service_key) }} className='tabButton'>{buttonText()}</div>
 }
 
-function getTagServices(): Array<API.TagRepositoryTuple> {
+function getTagServices(): Array<TagRepositoryTuple> {
     // This function grabs tag services in order = all tags, local tags
-    let sessionServices: API.ResponseGetService = JSON.parse(sessionStorage.getItem('hydrus-services') || '')
-    let services: Array<API.TagRepositoryTuple> = []
+    let sessionServices: APIResponseGetService = JSON.parse(sessionStorage.getItem('hydrus-services') || '')
+    let services: Array<TagRepositoryTuple> = []
     services.push(sessionServices.all_known_tags[0])
     services = services.concat(sessionServices.local_tags)
     return services
@@ -97,7 +98,7 @@ export function TagListTabs(props: TagListTabsProps) {
     },[props.tags])
 
     function createTagLists() {
-        console.log('ceating lists')
+        //console.log('ceating lists')
         let lists = []
         for (let entry of services) {
             if (!hiddenServices.includes(entry.name)) {
@@ -137,6 +138,7 @@ interface TagListProps {
     blacklist?: Array<string>; // tag namespaces to skip
     type: string;
     searchBar?: boolean;
+    keyPrefix?: string;
 }
 
 export function TagList(props: TagListProps) {
@@ -153,10 +155,12 @@ export function TagList(props: TagListProps) {
     }
 
     function createTagList(tuples: Array<TagTools.Tuple>, blacklist: Array<string>) {
-        let tagList = []
+        let tagList:Array<JSX.Element> = []
         let currentNamespace = ''
 
         let visibleNamespace = (sessionStorage.getItem('show-tag-namespace') === 'true')
+
+
 
         for (let element in tuples) {
             //At this point all the list should be sorted by namespaces meaning I can have a current namespace value
@@ -164,7 +168,7 @@ export function TagList(props: TagListProps) {
             //Don't display tags in certain namespaces like titles,page etc on overall list
             if (!blacklist.includes(tuples[element].namespace)) {
                 tagList.push(<TagListButton
-                    key={tuples[element].namespace + ':' + tuples[element].value}
+                    key={props.keyPrefix + tuples[element].namespace + ':' + tuples[element].value}
                     tag={tuples[element]} navigate={navigate}
                     type={props.type}
                     visibleCount={props.visibleCount}
@@ -174,9 +178,9 @@ export function TagList(props: TagListProps) {
         return tagList;
     }
     useEffect(() => {
-        console.time('TagListCreation')
+        //console.time('TagListCreation')
         setTags(createTagList(props.tags, props.blacklist || []))
-        console.timeEnd('TagListCreation')
+        //console.timeEnd('TagListCreation')
     }, [props])
 
     return (tags.length > 0) ? <div className={getTagListStyle()}>{tags}</div> : null

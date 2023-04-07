@@ -18,7 +18,9 @@ import { addTag, createListOfUniqueTags, getAllTagsServiceKey, loadServiceData }
 import { FilePage } from '../FilePage/FilePage'
 import { readParams } from './URLParametersHelpers'
 import { APIResponseMetadata, MetadataResponse } from '../MetadataResponse'
+//@ts-ignore
 import { CacheAxiosResponse } from 'axios-cache-interceptor'
+import { TagComponentsWrapper } from './TagComponentWrapper'
 
 interface SearchPageProps {
   type: string;
@@ -648,6 +650,11 @@ export function SearchPage(props: SearchPageProps) {
             displayTagCount={true} />
         </>}
       </div>}
+      <TagComponentsWrapper namespace={'creator'} />
+      <TagComponentsWrapper namespace={'series'} />
+      <TagComponentsWrapper namespace={'character'} size={0} />
+      <TagComponentsWrapper namespace={'medium'} size={0} />
+      <TagComponentsWrapper namespace={'doujin-title'} size={1} sortOrder={1} />
       <div className={getGridStyleThumbs()}>
         <ImageWall
           key={searchResults.groupedResults.toString()}
