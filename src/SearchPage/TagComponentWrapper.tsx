@@ -70,7 +70,7 @@ export function TagComponentsWrapper(props: TagComponentsWrapperProps) {
             )
         }
         setElements(tagElements)
-        setDisplayedElements(tagElements.slice(0, 30))
+        //setDisplayedElements(tagElements.slice(0, 30))
     }
 
     useEffect(() => {
