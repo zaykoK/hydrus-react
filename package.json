@@ -10,6 +10,7 @@
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
     "@types/react-infinite-scroller": "^1.2.3",
+    "@vitejs/plugin-react": "^3.1.0",
     "axios": "^0.26.1",
     "axios-cache-interceptor": "^0.10.3",
     "localforage": "^1.10.0",
@@ -20,7 +21,6 @@
     "react-swipeable": "^7.0.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.3",
-    "@vitejs/plugin-react": "^3.1.0",
     "vite": "^4.2.1",
     "vite-plugin-svgr": "^2.4.0",
     "vite-tsconfig-paths": "^4.0.8"
