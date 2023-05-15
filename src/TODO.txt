@@ -27,3 +27,35 @@ Possible Grouping styles:
 - Single-ordered - single image that has an (obvious or not) ordering of it
 - Ordered imageset - image set that requires ordering to make sense from it
 - 
+
+
+Element Selection
+
+Tag Editing
+--Simple Tag Addition/Removal
+--Adding page order to selected files
+
+
+
+SCENARIOS
+
+1.Select multiple elements and group them.
+If one of the elements already exists in given namespace group, automatically assume rest should join.
+If not follow this scheme for default naming [<creator>||<person> (if no creator tag)] <Earliest Date for given files> (Year Month) <recommended title> (Can be taken from other title namespaces)
+
+2.Remove tag from all files
+Search all files with given tag.
+Remove that tag from them.
+
+3.Rename tag
+Search all files with tag.
+Remove it.
+Add new one.
+
+4.Rename namespace
+Do a tag search * in namespace.
+Go over every single entry with this rename tag function. something like 
+let searched = entry => 'clothing:dress'
+let newOne = searched.replace('clothing:','clothes:')
+renameTag(searched,newOne)
+
