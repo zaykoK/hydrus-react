@@ -6,56 +6,13 @@ import { APIResponseGetService, APIResponseMetadata, APIResponseSearch, Metadata
 
 const axios = setupCache(Axios)
 
-// This is a "fixed" function that won't stop api calls after aborting one
-// This will probably get fixed in the future
-// I didn't look into what it actually does, so it might be selling your soul to chinese goverment
-//@ts-ignore
-axios.interceptors.request.use((config) => {
-  if (!config.cache) {
-    return config;
-  }
-
-  async function reject() {
-    const key = config.id ?? axios.generateKey(config);
-
-    const storage = await axios.storage.get(key, config);
-
-    // Request cancelled but response is already cached
-    if (storage.state === 'cached' || storage.state === 'stale') {
-      return;
-    }
-
-    await axios.storage.remove(key, config);
-  }
-
-  if (config.signal) {
-    // Already cancelled request
-    if (config.signal.aborted) {
-      config.cache = false;
-      return config;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    config.signal.addEventListener('abort', reject);
-  }
-
-  // NOTE: Cancel token is DEPRECATED but are here for backward compatibility
-  // you can remove this block if you don't use cancel token.
-  // https://axios-http.com/docs/cancellation
-  if (config.cancelToken) {
-    // Already cancelled request
-    if (Axios.isCancel(config.cancelToken.reason)) {
-      config.cache = false;
-      return config;
-    }
-
-    void config.cancelToken.promise.then(reject);
-  }
-
-  return config;
-});
+// Hydrus API version target
+const API_TARGET = 44
+// Flag for custom changed build of hydrus with additional settings for api calls
+const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api')||'false');
 
 const server_address = localStorage.getItem('hydrus-server-address');
+const session_key = sessionStorage.getItem('hydrus-session-key');
 
 export function api_version_clear() {
   sessionStorage.removeItem('hydrus-api-version');
@@ -71,13 +28,12 @@ export function api_verify_access_key() {
 }
 
 export function api_version() {
-  const API_TARGET = 43
   axios.get(server_address + '/api_version', {
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
     }
   })
-    .then(function (response:AxiosResponse) {
+    .then(function (response: AxiosResponse) {
       // handle success
       sessionStorage.setItem("hydrus-client-version", response.data.hydrus_version);
       sessionStorage.setItem("hydrus-api-version", response.data.version);
@@ -109,12 +65,12 @@ export async function api_get_services() {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
     }
   })
-    .then(function (response:AxiosResponse) {
-      let data:APIResponseGetService = response.data
+    .then(function (response: AxiosResponse) {
+      let data: APIResponseGetService = response.data
       let stringified = JSON.stringify(data)
       sessionStorage.setItem('hydrus-services', stringified)
     })
-    .catch(function (error:AxiosError) {
+    .catch(function (error: AxiosError) {
       // handle error
       console.error(error);
     })
@@ -161,7 +117,7 @@ export async function api_get_clean_tags(search: string) {
 }
 
 interface APISearchFilesProps {
-  tags: Array<Array<string>|string>|Array<string>;
+  tags: Array<Array<string> | string> | Array<string>;
   file_service_name?: string;
   file_service_key?: string;
   tag_service_name?: string;
@@ -170,7 +126,7 @@ interface APISearchFilesProps {
   file_sort_asc?: boolean,
   return_file_ids?: boolean,
   return_hashes: boolean,
-  abortController?:AbortController
+  abortController?: AbortController
 }
 
 export enum ServiceStatusNumber {
@@ -209,7 +165,7 @@ export function enumToArray(enumerator: { [s: number]: string }): Array<string> 
   return Object.keys(enumerator).filter((key) => !isNaN(Number(enumerator[key])))
 }
 
-export async function api_get_files_search_files(props: APISearchFilesProps):Promise<CacheAxiosResponse<APIResponseSearch>|undefined> {
+export async function api_get_files_search_files(props: APISearchFilesProps): Promise<CacheAxiosResponse<APIResponseSearch> | undefined> {
   let sentTags: Array<Array<string> | string> = []
 
   if (localStorage.getItem('hydrus-max-results') !== null) {
@@ -230,7 +186,7 @@ export async function api_get_files_search_files(props: APISearchFilesProps):Pro
   }
 
   return axios.get(server_address + '/get_files/search_files', {
-    signal:props.abortController?.signal,
+    signal: props.abortController?.signal,
     params: {
       "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
       "tags": JSON.stringify(sentTags),
@@ -268,9 +224,9 @@ export async function api_get_file(props: APIGetFileProps) {
 //Instead of downloading blob give img or video api file adress
 export function api_get_file_address(hash: string | undefined) {
   if (!hash) { return }
-  let server = localStorage.getItem('hydrus-server-address')
+  let server = server_address
 
-  let sessionKey = sessionStorage.getItem('hydrus-session-key')
+  let sessionKey = session_key
   if (!sessionKey) { sessionKey = '' }
 
   let params = new URLSearchParams({
@@ -283,8 +239,8 @@ export function api_get_file_address(hash: string | undefined) {
 //Instead of downloading blob give img or video api file adress
 export function api_get_file_thumbnail_address(hash: string | undefined) {
   if (!hash) { return }
-  let server = localStorage.getItem('hydrus-server-address')
-  let sessionKey = sessionStorage.getItem('hydrus-session-key')
+  let server = server_address
+  let sessionKey = session_key
 
   if (!sessionKey) { sessionKey = '' }
 
@@ -293,26 +249,6 @@ export function api_get_file_thumbnail_address(hash: string | undefined) {
     "hash": hash
   })
   return server + '/get_files/thumbnail?' + params
-}
-
-interface APIGetFileThumbnailProps {
-  file_id?: number;
-  hash?: string;
-}
-
-export async function api_get_file_thumbnail(props: APIGetFileThumbnailProps) {
-  return axios.get(server_address + '/get_files/thumbnail', {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
-    },
-    params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
-      "file_id": props.file_id,
-      "hash": props.hash
-    },
-    responseType: 'blob'
-  })
 }
 
 interface APIGetFileMetadataProps {
@@ -326,75 +262,111 @@ interface APIGetFileMetadataProps {
   detailed_url_information?: boolean;
   include_notes?: boolean;
   abortController?: AbortController;
+  tags?: Array<string>;
+  only_file_tags?: boolean;
+  tag_services?: Array<string>;
 }
 
-export async function api_get_file_metadata(props: APIGetFileMetadataProps):Promise<CacheAxiosResponse<APIResponseMetadata>|undefined> {
+type MetadataParams = {
+  "Hydrus-Client-API-Session-Key": string|null;
+  "file_id"?: number|undefined;
+  "file_ids"?: string|undefined;
+  "hash"?: string|undefined;
+  "hashes"?: string|undefined;
+  'create_new_file_ids'?: boolean|undefined;
+  'only_return_identifiers'?: boolean|undefined;
+  'only_return_basic_information'?: boolean|undefined;
+  'detailed_url_information'?: boolean|undefined;
+  'include_notes'?: boolean|undefined;
+  'tags'?: string|undefined;
+  'only_file_tags'?: boolean|undefined;
+  'service_name'?: string|undefined;
+}
+
+
+
+export async function api_get_file_metadata(props: APIGetFileMetadataProps): Promise<CacheAxiosResponse<APIResponseMetadata> | undefined> {
   if (!props.file_id && !props.file_ids && !props.hash && !props.hashes) { return }
+
+  let params:MetadataParams = {
+    "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
+    "file_id": props.file_id,
+    "file_ids": JSON.stringify(props.file_ids),
+    "hash": props.hash,
+    "hashes": JSON.stringify(props.hashes),
+    'create_new_file_ids': props.create_new_file_ids,
+    'only_return_identifiers': props.only_return_identifiers,
+    'only_return_basic_information': props.only_return_basic_information,
+    'detailed_url_information': props.detailed_url_information,
+    'include_notes': props.include_notes,
+    //'hide_service_keys_tags':JSON.stringify(false), /* This should be removed some time soon after hydrus removes this */
+    //'hide_service_names_tags':JSON.stringify(true),
+  }
+  // What happens here is if flag is true, add extended parameters to the api call
+  // This should leave normal calls unchanged
+  if (HYDRUS_API_EXTEND) {
+    params = {
+      ...params,
+      'tags': JSON.stringify(props.tags),
+      'only_file_tags': props.only_file_tags,
+      "service_name": JSON.stringify(props.tag_services)
+    }
+  }
+
+
+
   return axios.get(server_address + '/get_files/file_metadata', {
     signal: props.abortController?.signal,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
     },
-    params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
-      "file_id": props.file_id,
-      "file_ids": JSON.stringify(props.file_ids),
-      "hash": props.hash,
-      "hashes": JSON.stringify(props.hashes),
-      'create_new_file_ids': props.create_new_file_ids,
-      'only_return_identifiers': props.only_return_identifiers,
-      'only_return_basic_information': props.only_return_basic_information,
-      'detailed_url_information': props.detailed_url_information,
-      'include_notes': props.include_notes,
-      //'hide_service_keys_tags':JSON.stringify(false), /* This should be removed some time soon after hydrus removes this */
-      //'hide_service_names_tags':JSON.stringify(true),
-    }
+    params: params
   })
 }
 /*** This return a tag array from metadata object
  * 
  */
-export function getTagsFromMetadata(metadata:MetadataResponse,key:string,servicesData:APIResponseGetService|null):Map<string,Array<string>> {
+export function getTagsFromMetadata(metadata: MetadataResponse, key: string, servicesData: APIResponseGetService | null): Map<string, Array<string>> {
   // Load services data
-  let tagsByService:Map<string,Array<string>> = new Map()
+  let tagsByService: Map<string, Array<string>> = new Map()
 
   let blacklist = localStorage.getItem('tag-services-blacklist')
 
   // For now I load every tag service tag
   // This should later be changed to only load enabled ones
-  if (servicesData === null) {return new Map()}
+  if (servicesData === null) { return new Map() }
 
-  tagsByService.set(servicesData.all_known_tags[0].service_key,metadata.tags[servicesData.all_known_tags[0].service_key].display_tags[0])
+  tagsByService.set(servicesData.all_known_tags[0].service_key, metadata.tags[servicesData.all_known_tags[0].service_key]?.display_tags[0] || [])
 
   for (let element of servicesData.local_tags) {
-    tagsByService.set(element.service_key,metadata.tags[element.service_key].display_tags[0] || [])
+    tagsByService.set(element.service_key, metadata.tags[element.service_key]?.display_tags[0] || [])
   }
   return tagsByService
 }
 
 /* RELATIONS RELATED FUNCTIONS */
 interface FileRelationshipProps {
-  file_id?:number;
-  file_ids?:number[];
-  hash?:string;
-  hashes?:string[];
-  abortController?:AbortController;
+  file_id?: number;
+  file_ids?: number[];
+  hash?: string;
+  hashes?: string[];
+  abortController?: AbortController;
 }
 
 export type FileRelationshipResponse = {
-  [key:string]:{
-    is_king:boolean|null;
-    king:string;
-    '0':string[]; //Potential duplicates
-    '1':string[]; //False positives
-    '3':string[]; //alternates
-    '8':string[]; //duplicates
+  [key: string]: {
+    is_king: boolean | null;
+    king: string;
+    '0': string[]; //Potential duplicates
+    '1': string[]; //False positives
+    '3': string[]; //alternates
+    '8': string[]; //duplicates
   }
 }
 
-export async function api_get_file_relationships(props:FileRelationshipProps) {
-  if (props.file_id === undefined && props.file_ids === undefined && props.hash === undefined && props.hashes === undefined) {return}
+export async function api_get_file_relationships(props: FileRelationshipProps) {
+  if (props.file_id === undefined && props.file_ids === undefined && props.hash === undefined && props.hashes === undefined) { return }
   return axios.get(server_address + '/manage_file_relationships/get_file_relationships', {
     signal: props.abortController?.signal,
     headers: {
@@ -414,24 +386,24 @@ export async function api_get_file_relationships(props:FileRelationshipProps) {
 // Wrapper functions
 
 interface getAllTagsProps {
-  namespace:string;
-  abortController:AbortController;
+  namespace: string;
+  abortController: AbortController;
 }
 export type APITagResponse = {
-  value:string;
-  count:number;
+  value: string;
+  count: number;
 }
 
-export async function getAllTags(props:getAllTagsProps) {
+export async function getAllTags(props: getAllTagsProps) {
   //Do the search
   let response = await api_add_tags_search_tags({
     search: `${props.namespace}:*`,
     abortController: props.abortController
   })
-  let tagArray:Array<APITagResponse> = response.data.tags
-  let finalArray:Array<APITagResponse> = []
+  let tagArray: Array<APITagResponse> = response.data.tags
+  let finalArray: Array<APITagResponse> = []
   //Get rid of duplicates and cases where searched namespace of tag is sibling of of something else ex. creator:naruto > series:naruto
-  tagArray.map((element:APITagResponse,count:number) => {
+  tagArray.map((element: APITagResponse, count: number) => {
     if (element.value.includes(props.namespace)) {
       finalArray.push(element)
     }
