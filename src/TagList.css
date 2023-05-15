@@ -12,6 +12,11 @@
     overscroll-behavior: none;
     scrollbar-width: none;
 }
+/* 5em(Text) + 2em(paddingTitle) + 4*0.6em  */
+.tagList:has(.TagContextMenuWrapper) {
+    min-height: calc(5em + 2*1em + 4*2em);
+}
+
 .tagList::-webkit-scrollbar {
     display: none;
 }
@@ -47,6 +52,7 @@
 
 
 .tagEntry.blob {
+    position: relative;
     border-radius: 5px;
     border-width: 1px;
     border-style: solid;
@@ -71,10 +77,10 @@
     border-color: white !important;
 }
 
-.tagEntry.blob:active {
+/* .tagEntry.blob:active {
     animation-name: tagBlobClick;
     animation-duration: 0.5s;
-}
+} */
 
 .tabSelectors {
     display:flex;
@@ -120,3 +126,43 @@
 }
 
 
+.gridStyleList:has(.TagContextMenuWrapper) .TagContextMenuWrapper {
+    position: fixed;
+    min-width: 15em;
+    min-height: 15em;
+    background-color: var(--COLOR2);
+    border-radius: 5px;
+    gap:5px;
+    z-index: 5;
+}
+.contentSideBar:has(.TagContextMenuWrapper) .TagContextMenuWrapper {
+    position: fixed;
+    min-width: 15em;
+    min-height: 15em;
+    background-color: var(--COLOR2);
+    border-radius: 5px;
+    gap:5px;
+    z-index: 5;
+}
+
+.TagContextMenuWrapper
+
+.TagContextMenuEntry {
+    background-color: inherit;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    padding:1em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.TagContextMenuEntry:hover {
+    background-color: var(--COLOR1);
+}
+
+.TagContextMenuTitle {
+    padding:1em;
+}
+
+.gridStyleList.active.mobile:has(.tagContentSection) .tagContentSection {
+    overflow-y:scroll;
+    max-height: 80vh;
+}

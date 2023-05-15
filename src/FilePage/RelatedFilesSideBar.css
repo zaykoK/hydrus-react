@@ -48,7 +48,7 @@
     flex-direction: column;
 }
 
-.relatedStyle.mobile.landscape {
+/* .relatedStyle.mobile.landscape {
     height: 100vh;
     width: auto;
     max-width: 50vw;
@@ -58,6 +58,9 @@
     left: auto;
     display:flex;
     flex-direction: row;
+} */
+.relatedStyle.mobile.landscape {
+    bottom: 0px;
 }
 
 .relatedStyle.mobile.hidden {
@@ -65,7 +68,7 @@
     transition: transform 0.3s ease-in-out;
 }
 
-.relatedStyle.mobile.landscape.hidden {
+/* .relatedStyle.mobile.landscape.hidden {
     transform: translateX(105%);
     transition: transform 0.3s ease-in-out;
-}
+} */

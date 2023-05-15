@@ -32,7 +32,7 @@ type transcodedFileServiceOptions = {
 
 function Content(props: ContentProps) {
     const navigate = useNavigate()
-    const { parm } = useParams()
+    const { currentURLParameters } = useParams()
     const [doubleClick, setDoubleClick] = React.useState<doubleClick>({ step: 0.5 })
 
     const [style, changeStyle] = React.useState(getStartingStyle())
@@ -50,14 +50,14 @@ function Content(props: ContentProps) {
 
     //TODO expose all key binds to options
     const handleKeyPress = (e: KeyboardEvent) => {
-        if ((e.ctrlKey && e.key === "ArrowLeft") || e.key === 'A') { e.preventDefault(); GoToFirstImage(navigate, parm); return }
-        if ((e.ctrlKey && e.key === "ArrowRight") || e.key === 'D') { e.preventDefault(); GoToLastImage(navigate, parm); return }
-        if (e.key === "d" || e.key === "ArrowRight") { NextImage(props.hash, navigate, parm) }
-        if (e.key === "a" || e.key === "ArrowLeft") { PreviousImage(props.hash, navigate, parm) }
-        if (e.key === "s" || e.key === "ArrowDown") { NextSearchImage(props.hash, navigate, parm) }
-        if (e.key === "w" || e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate, false, parm) }
-        if (e.key === "Home") { GoToFirstImage(navigate, parm) }
-        if (e.key === "End") { GoToLastImage(navigate, parm) }
+        if ((e.ctrlKey && e.key === "ArrowLeft") || e.key === 'A') { e.preventDefault(); GoToFirstImage(navigate, currentURLParameters); return }
+        if ((e.ctrlKey && e.key === "ArrowRight") || e.key === 'D') { e.preventDefault(); GoToLastImage(navigate, currentURLParameters); return }
+        if (e.key === "d" || e.key === "ArrowRight") { NextImage(props.hash, navigate, currentURLParameters) }
+        if (e.key === "a" || e.key === "ArrowLeft") { PreviousImage(props.hash, navigate, currentURLParameters) }
+        if (e.key === "s" || e.key === "ArrowDown") { NextSearchImage(props.hash, navigate, currentURLParameters) }
+        if (e.key === "w" || e.key === "ArrowUp") { PreviousSearchImage(props.hash, navigate, false, currentURLParameters) }
+        if (e.key === "Home") { GoToFirstImage(navigate, currentURLParameters) }
+        if (e.key === "End") { GoToLastImage(navigate, currentURLParameters) }
     }
 
     async function loadFullSizeOriginal() {
@@ -169,10 +169,10 @@ function Content(props: ContentProps) {
                 //This line locks vertical movement of image when scale == 1
                 e.setTransform(e.state.positionX, 0, e.state.scale, 0, 'linear')
                 if (e.state.positionX === 100) {
-                    PreviousImage(props.hash, navigate, parm)
+                    PreviousImage(props.hash, navigate, currentURLParameters)
                 }
                 if (e.state.positionX === -100) {
-                    NextImage(props.hash, navigate, parm)
+                    NextImage(props.hash, navigate, currentURLParameters)
                 }
             }
         }} >

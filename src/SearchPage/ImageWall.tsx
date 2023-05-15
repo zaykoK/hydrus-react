@@ -15,7 +15,6 @@ interface ImageWallProps {
   page: number;
   results: Array<ResultGroup>;
   addTag: Function;
-  changePage: Function;
   loadingProgress: string;
   loaded: boolean;
   empty: boolean;

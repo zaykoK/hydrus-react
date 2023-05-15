@@ -12,8 +12,7 @@ import { setPageTitle } from '../misc'
 
 import './SearchPage.css'
 import { isLandscapeMode, isMobile } from '../styleUtils'
-import localforage from 'localforage'
-import { addTag, createListOfUniqueTags, getAllTagsServiceKey, loadServiceData } from './SearchPageHelpers'
+import { addTag, createListOfUniqueTags, getAllTagsServiceKey, loadServiceData, responseSizeToString } from './SearchPageHelpers'
 
 import { FilePage } from '../FilePage/FilePage'
 import { readParams } from './URLParametersHelpers'
@@ -41,12 +40,6 @@ type SearchResults = {
   hashes?: Array<string>;
 }
 
-
-export function changePage() {
-
-}
-
-
 export function SearchPage(props: SearchPageProps) {
   //Search object
   const [searchResults, setSearchResults] = useState<SearchResults>({ results: [], groupedResults: [], metadataResponses: [] })
@@ -58,7 +51,7 @@ export function SearchPage(props: SearchPageProps) {
   //Current search parameters, tags(unused?) and current page of search results
   const [params, setParams] = useState<ParamsType>({ tags: [[]], page: 0, hash: '', type: props.type })
   //Field that accesses "actual" current URL parameters
-  const { parm } = useParams<string>()
+  const { currentURLParameters } = useParams<string>()
   //Whether page has finished loading or not (doesn't work that well now)
   const [loaded, setLoaded] = useState<boolean>(false)
   //Whether panel with tag info should show up (right now only mobile mode has this)
@@ -207,6 +200,16 @@ export function SearchPage(props: SearchPageProps) {
     //BASICALLY RESORT METADATA TO FIT RECEIVED HASHES ORDER
     let hashesCopy = hashes.slice()
     let responsesCopy = responses.slice()
+
+    /* console.log(hashes)
+    console.log(responses)
+
+    for (let i=0;i<hashes.length;i++) {
+      if (responses[i] === undefined) {console.log(`${hashes[i]} has undefined response at element ${i}`)}
+      if (hashes[i] !== responses[i].hash) {
+        console.log(`${hashes[i]} and corresponding ${responses[i]?.hash} don't match`)
+      }
+    } */
 
     //Approach #3
     //Custom Sort function
@@ -403,32 +406,12 @@ export function SearchPage(props: SearchPageProps) {
     grabMetaData(responseHashes)
   }
 
-  async function getArtistThumb(artistList:Array<{value:string,count:number}>) {
-    let entries = []
-    for (let entry of artistList) {
-      let search = await API.api_get_files_search_files({
-        tags: [[entry.value],['system:limit=1']],
-        return_hashes: true
-      })
-      entries.push(search?.data.hashes)
-    }
-  }
-
-  async function searchArtists(abortController:AbortController) {
-    let response = await API.api_add_tags_search_tags({
-      search: 'creator:*',
-      abortController: abortController
-    })
-    let creators:Array<{value:string,count:number}> = response.data.tags
-    creators = creators.filter((entry) => {return entry.value.includes('creator:')})
-    creators.sort((a,b) => { return b.count - a.count; })
-  }
-
   async function grabMetaData(hashes: Array<string>) {
     //console.time('meta')
     //Might require higher than default 'large_client_header_buffers' in nginx configuration if using ssl proxy
     //Otherwise you will get an error when getting metadata with this large request
     //Workaround - lower STEP variable to something like 50
+    //TODO - Just move Step count to a setting
     let STEP = 1000
     let loadSize = localStorage.getItem('metadata-load-size')
     if (loadSize !== null) {
@@ -438,69 +421,38 @@ export function SearchPage(props: SearchPageProps) {
     let responses: Array<MetadataResponse> = []
     let tempFileTags: Map<string, Array<TagTools.Tuple>> = new Map()
 
-    let responseSize = 0
-    let responseSizeReadable = ''
+    let responseSize: number = 0
 
     //If there are any results
     if (hashes.length > 0) {
-      //Load the session storage metadata if exist
-      //console.time('localforage')
-      //let cacheHashes: Array<string> = JSON.parse(await localforage.getItem('search-metadata-cache-hashes') as string)
-      //let cacheResponses: Array<MetadataResponse> = JSON.parse(await localforage.getItem('search-metadata-cache-responses') as string)
-      //let cacheResults: SearchResults = JSON.parse(await localforage.getItem('search-results-cache') as string)
-      //console.log(cacheResults)
-      //console.timeEnd('localforage')
+      //TEST SEGMENT
+      //let testResponse:CacheAxiosResponse<APIResponseMetadata>|undefined = await API.api_get_file_metadata({ tag_services:['all known tags'],only_file_tags:true,tags:['group-title:','doujin-title:','creator:'],hashes: [hashes[0]], abortController: AbortControllerSearch.current })
+      //console.log(testResponse?.data.metadata[0])
 
-      //If current hashes matches cached search result just use that
-      // if ((cacheResults !== null) && (JSON.stringify(cacheHashes) === JSON.stringify(hashes))) {
-      //   //console.log('loading cached results')
-      //   responses = cacheResults.metadataResponses
-      //   fileTags = createListOfUniqueTags(responses)
-      //   sessionStorage.setItem('hashes-search', JSON.stringify(cacheResults.hashes))
-      //   setLoaded(true)
-      //   setFileTags(fileTags)
-      //   setSearchResults(cacheResults)
-      //   return
-      //}
-      //Else load them from the server and then add do indexedDB
-      //else {
       let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
       for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-        let response:CacheAxiosResponse<APIResponseMetadata>|undefined = await API.api_get_file_metadata({ hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
-        if (response) { responses.push(...response.data.metadata); responseSize += JSON.stringify(response).length }
-        if (responseSize > 512) { //KB
-          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'kB'
+        let response: CacheAxiosResponse<APIResponseMetadata> | undefined = await API.api_get_file_metadata({ tag_services: ['all known tags'], only_file_tags: true, tags: ['group-title:', 'doujin-title:'], hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
+        if (response) {
+          responses.push(...response.data.metadata);
+          responseSize += JSON.stringify(response).length
         }
-        if (responseSize > 1024 * (512)) { //MB
-          responseSizeReadable = (responseSize * 2).toLocaleString().slice(0, -4) + 'MB'
-        }
-        if (responseSize < 512) {
-          responseSizeReadable = (responseSize * 2).toLocaleString() + 'B'
-        }
-        setLoadingProgress(i + '/' + hashes.length + '\n(' + responseSizeReadable + ')')
+
+        setLoadingProgress(`${i}/${hashes.length}\n(${responseSizeToString(responseSize)})`)
       }
-      //Save results for later
-      //localforage.setItem('search-metadata-cache-hashes', JSON.stringify(hashes))
-      //localforage.setItem('search-metadata-cache-responses', JSON.stringify(responses))
 
-      setLoadingProgress(hashes.length + '/' + hashes.length + ' (' + responseSizeReadable + ')')
-      //}
-
-      //console.time('GroupImages')
+      setLoadingProgress(`${hashes.length}/${hashes.length} (${responseSizeToString(responseSize)})`)
 
       tempFileTags = createListOfUniqueTags(responses)
-      let h = hashes
+      let groupedHashes:string[]
       if (params.type === 'comic') {
-        h = groupImages(responses, hashes, getComicNamespace())
+        groupedHashes = groupImages(responses, hashes, getComicNamespace())
       }
       else {
-        h = groupImages(responses, hashes, getGroupNamespace())
+        groupedHashes = groupImages(responses, hashes, getGroupNamespace())
       }
 
-      //console.timeEnd('GroupImages')
-
       //This exists for Previous/Next Image controls
-      sessionStorage.setItem('hashes-search', JSON.stringify(h))
+      sessionStorage.setItem('hashes-search', JSON.stringify(groupedHashes))
       setLoaded(true)
     }
     setFileTags(tempFileTags)
@@ -508,13 +460,14 @@ export function SearchPage(props: SearchPageProps) {
   }
 
   // Everytime user lands on search page, remove group-hashes item from sessionStorage
+  // OK, I have no idea if this is needed still
   useEffect(() => {
     sessionStorage.removeItem('group-hashes')
   }, [])
-
+  // Refreshes parameters whenever URL changes
   useEffect(() => {
     function refreshParams(): void {
-      let p = readParams(parm)
+      let parameters = readParams(currentURLParameters)
       /*  WARNING - this is not exactly correct way to do this
           There is a weird occurence when sometimes empty tag parameter gets added to the page url --> "&tags="
           When this happens on empty search compare doesn't work properly as it is comparing [] and [[]] objects
@@ -523,29 +476,24 @@ export function SearchPage(props: SearchPageProps) {
           seems that changing default search value somehow "fixed it", so I'm not bothering with trying to fix it more
       */
 
-      setPageTitle(p.tags, parseInt(p.page), p.type)
-      setParams({ tags: p.tags, page: parseInt(p.page), hash: p.hash, type: p.type })
+      setPageTitle(parameters.tags, parseInt(parameters.page), parameters.type)
+      setParams({ tags: parameters.tags, page: parseInt(parameters.page), hash: parameters.hash, type: parameters.type })
 
       let tagsForTestingPurpose = tags || [[]]
-      if (JSON.stringify(tagsForTestingPurpose) !== JSON.stringify(p.tags)) {
-        setTags(p.tags)
+      if (JSON.stringify(tagsForTestingPurpose) !== JSON.stringify(parameters.tags)) {
+        setTags(parameters.tags)
       }
 
-      sessionStorage.setItem('currently-displayed-hash', p.hash)
-      sessionStorage.setItem('current-search-tags', JSON.stringify(p.tags))
+      sessionStorage.setItem('currently-displayed-hash', parameters.hash)
+      sessionStorage.setItem('current-search-tags', JSON.stringify(parameters.tags))
     }
 
     refreshParams()
-  }, [parm])
+  }, [currentURLParameters])
 
   useEffect(() => {
     search()
   }, [tags, sortType, params.type])
-
-  useEffect(() => {
-    //Adding even slightiest timeout seem to actually make this work, weird
-    //setTimeout(() => window.scrollTo(0, restoreScroll()), 1)
-  }, [loaded])
 
   //This is used to block scrolling behind file page, it gets the html section and just blocks all scrolling from it
   useEffect(() => {
@@ -605,6 +553,11 @@ export function SearchPage(props: SearchPageProps) {
     return style
   }
 
+  //Assertions
+  const isDisplayingFile = params.hash !== ''
+  const isNotComic = params.type !== 'comic'
+  const thereAreFileTags = fileTags !== undefined
+
   /* Mobile Layout */
   if (isMobile()) {
     return <>
@@ -626,12 +579,11 @@ export function SearchPage(props: SearchPageProps) {
         type={params.type}
         page={params.page}
         results={(groupFiles) ? searchResults.groupedResults : searchResults.results}
-        changePage={changePage}
         loadingProgress={loadingProgress}
         loaded={loaded}
         empty={emptySearch}
       />
-      {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} type={params.type} /></div>}
+      {(isDisplayingFile) && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} type={params.type} /></div>}
     </>;
   }
   /* Desktop Layout */
@@ -639,8 +591,8 @@ export function SearchPage(props: SearchPageProps) {
     <div className={getTopBarPaddingStyle()} />
     {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
-      {(params.type !== 'comic') && <div className={getGridStyleList()}>
-        {(fileTags !== undefined && loaded) && <>
+      {(isNotComic) && <div className={getGridStyleList()}>
+        {(thereAreFileTags && loaded) && <>
           <TagListTabs
             key="tagListTabs"
             blacklist={tagBlacklist.current}
@@ -650,11 +602,11 @@ export function SearchPage(props: SearchPageProps) {
             displayTagCount={true} />
         </>}
       </div>}
-      <TagComponentsWrapper namespace={'creator'} />
+      {/* <TagComponentsWrapper namespace={'creator'} />
       <TagComponentsWrapper namespace={'series'} />
       <TagComponentsWrapper namespace={'character'} size={0} />
       <TagComponentsWrapper namespace={'medium'} size={0} />
-      <TagComponentsWrapper namespace={'doujin-title'} size={1} sortOrder={1} />
+      <TagComponentsWrapper namespace={'doujin-title'} size={1} sortOrder={1} /> */}
       <div className={getGridStyleThumbs()}>
         <ImageWall
           key={searchResults.groupedResults.toString()}
@@ -663,13 +615,12 @@ export function SearchPage(props: SearchPageProps) {
           type={params.type}
           page={params.page}
           results={(groupFiles) ? searchResults.groupedResults : searchResults.results}
-          changePage={changePage}
           loadingProgress={loadingProgress}
           loaded={loaded}
           empty={emptySearch}
         />
       </div>
     </div>
-    {(params.hash !== '') && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} type={params.type} /></div>}
+    {(isDisplayingFile) && <div className='fullscreenWrapper'> <FilePage setNavigationExpanded={props.setNavigationExpanded} hash={params.hash} type={params.type} /></div>}
   </>;
 }

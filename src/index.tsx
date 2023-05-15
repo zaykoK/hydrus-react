@@ -18,7 +18,7 @@ function App() {
   const [navigationExpanded, setNavigationExpanded] = useState(false)
 
   assignColorVariables()
-
+  
   async function sessionKeyRoutine() {
     //If no settings, automatically move to settings page
     if (localStorage.getItem('hydrus-api-key') === null ||
@@ -71,9 +71,9 @@ function App() {
       {((settings) &&
         <Routes>
           <Route key="route-main" path='/' element={<Navigate replace to={defaultURLParameters} />} />
-          <Route key="route-search" path='/search/:parm' element={<SearchPage type='image' setNavigationExpanded={setNavigationExpanded} />} />
+          <Route key="route-search" path='/search/:currentURLParameters' element={<SearchPage type='image' setNavigationExpanded={setNavigationExpanded} />} />
           <Route key="route-settings" path='/settings' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
-          <Route key="route-comics" path='/comics/:parm' element={<SearchPage type='comic' setNavigationExpanded={setNavigationExpanded} />} />
+          <Route key="route-comics" path='/comics/:currentURLParameters' element={<SearchPage type='comic' setNavigationExpanded={setNavigationExpanded} />} />
         </Routes>) || <Routes>
           <Route key="route-settings" path='/*' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
         </Routes>}

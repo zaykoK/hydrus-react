@@ -181,16 +181,8 @@ function ResultComponent(props: ResultComponentProps) {
 
     return <Fragment><div
         className={getComponentStyle(thumblist.length)}
-        /*         onMouseLeave={(e) => { setIsShowingDetails(false) }}
-                onMouseEnter={(e) => { setIsShowingDetails(true) }} */
-        /*         onClick={(e) => {
-                    if (isMobile()) {
-                    }
-                    else {
-                        e.stopPropagation();
-                        // console.log('marking ' + props.result.cover)
-                    }
-                }}  */
+        onClick={(e) => {e.preventDefault();e.stopPropagation(); console.log(`Clicked ${props.result.title}`)}}
+        onDoubleClick={(e) => {e.preventDefault(); console.log(`Double clicked ${props.result.title}`)}}
         onContextMenu={(e) => {
             if (isMobile()) {
                 e.preventDefault()

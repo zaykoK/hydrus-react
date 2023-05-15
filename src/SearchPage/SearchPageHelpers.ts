@@ -85,50 +85,50 @@ function pushToRecentTags(tag:string,tags?:Array<string>) {
 }
 
 
-export function addTag(tag: Array<string> | string, navigate: NavigateFunction, type: string): void {
-    let tags: Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+export function addTag(addedTags: Array<string> | string, navigate: NavigateFunction, pageType: string): void {
+    let currentSearchTags: Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
 
     let recentTags: Array<string> = getRecentTags()
 
     let currentHash = sessionStorage.getItem('currently-displayed-hash') || ''
 
     //If it so happens that tag is string put it into array
-    if (typeof tag === 'string') {
-        tag = [tag]
+    if (typeof addedTags === 'string') {
+        addedTags = [addedTags]
     }
 
-    if (tags) {
+    if (currentSearchTags) {
         //If it's only a single empty string
-        if (tag[0] === '') { return }
-        let newTags = tags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
+        if (addedTags[0] === '') { return }
+        let newTags = currentSearchTags.slice(); //This gives me copy of tags array instead of pointing to array, needed for update process
 
         for (let entry of newTags) {
-            if (JSON.stringify(entry) === JSON.stringify(tag)) { console.log('found tag already exists'); return }
+            if (JSON.stringify(entry) === JSON.stringify(addedTags)) { console.log('found tag already exists'); return }
         }
 
         //TODO process certain unique tags that user shouldn't be able to add
-        newTags.push(tag);
+        newTags.push(addedTags);
 
-        for (let entry of tag) {
+        for (let entry of addedTags) {
             pushToRecentTags(entry,recentTags)
         }
 
-
-        let par = generateSearchURL(newTags, 1, currentHash, type)
-        navigateTo(par, navigate, type)
+        //TODO - This entire pageType thing needs to change, I should move it into generateSearchURL
+        let generatedParameters = generateSearchURL(newTags, 1, currentHash, pageType)
+        navigateTo(generatedParameters, navigate, pageType)
     }
 }
 
-export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: string) {
-    let tags = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+export function removeTag(removedTags: Array<string>, navigate: NavigateFunction, pageType: string) {
+    let currentSearchTags:Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
 
     let currentHash = sessionStorage.getItem('currently-displayed-hash') || ''
 
-    if (tags) {
+    if (currentSearchTags) {
         let i = 0;
-        let stringified = JSON.stringify(tag)
-        for (let entry in tags) {
-            if (JSON.stringify(tags[entry]) === stringified) {
+        let stringified = JSON.stringify(removedTags)
+        for (let entry in currentSearchTags) {
+            if (JSON.stringify(currentSearchTags[entry]) === stringified) {
                 //console.log('found the tag ' + stringified + ' its on position' + entry)
                 i = parseInt(entry)
                 break
@@ -136,14 +136,14 @@ export function removeTag(tag: Array<string>, navigate: NavigateFunction, type: 
         }
 
         if (i === -1) {
-            console.warn("Didn't find tag " + tag + ' inside ' + tags)
+            console.warn("Didn't find tag " + removedTags + ' inside ' + currentSearchTags)
             return
         }
-        let afterRemove = tags?.slice();
+        let afterRemove = currentSearchTags?.slice();
         afterRemove.splice(i, 1);
 
-        let par = generateSearchURL(afterRemove, 1, currentHash, type)
-        navigateTo(par, navigate, type)
+        let generatedParameters = generateSearchURL(afterRemove, 1, currentHash, pageType)
+        navigateTo(generatedParameters, navigate, pageType)
     }
 }
 
@@ -192,7 +192,7 @@ export function createListOfUniqueTags(responses: Array<MetadataResponse>): Map<
 
     //console.time('merge')
     for (let element of responses) {
-        let tags = API.getTagsFromMetadata(element, 'ImportedTags',servicesData)
+        let tags = API.getTagsFromMetadata(element, 'all known tags',servicesData)
         mergeTagMaps(merged, tags)
     }
     //console.timeEnd('merge')
@@ -219,5 +219,17 @@ export function getAllTagsServiceKey():string {
 export function getTagsFromService(serviceKey:string) {
 
 }
+
+export function responseSizeToString(responseSize:number):string {
+    if (responseSize > 1024 * (512)) { //MB
+      return (responseSize * 2).toLocaleString().slice(0, -5) + ' MB'
+    }
+    else if (responseSize > 512) { //KB
+      return (responseSize * 2).toLocaleString().slice(0, -5) + ' kB'
+    }
+    else {
+      return (responseSize * 2).toLocaleString() + ' B'
+    }
+  }
 
 

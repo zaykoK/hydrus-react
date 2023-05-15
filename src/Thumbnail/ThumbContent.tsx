@@ -21,12 +21,12 @@ function returnFilePageURL(hash: string, urlParameters: string | undefined, type
   }
 
 function ThumbContent(props: ThumbContentProps) {
-    let { parm } = useParams<string>()
+    let { currentURLParameters } = useParams<string>()
     const [loaded,setLoaded] = useState<boolean>(false)
 
 
     function determineThumbNavigation(replace: boolean) {
-        props.navigate(returnFilePageURL(props.hash, parm, props.type), { replace: replace })
+        props.navigate(returnFilePageURL(props.hash, currentURLParameters, props.type), { replace: replace })
     }
 
     function getThumbStyle(type: string): string {

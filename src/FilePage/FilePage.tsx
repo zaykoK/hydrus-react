@@ -42,7 +42,7 @@ export function FilePage(props: FilePageProps) {
     hash: string | undefined;
   }
   const fileHash = props.hash;
-  const { parm } = useParams();
+  const { currentURLParameters } = useParams();
   const [metadata, setMetaData] = React.useState<MetadataResponse>()
   const [tags, setTags] = React.useState<Map<string,Array<TagTools.Tuple>>>(new Map())
 
@@ -68,7 +68,7 @@ export function FilePage(props: FilePageProps) {
   }
 
   function closeImageWindow() {
-    let params = readParams(parm)
+    let params = readParams(currentURLParameters)
 
     let url = generateSearchURL(params.tags, parseInt(params.page), '', params.type)
 
@@ -250,8 +250,8 @@ export function FilePage(props: FilePageProps) {
 
       <div className={getTopBarStyle()}>
         <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onContextMenu={(e) => { e.preventDefault() }} onClick={() => { switchRelatedVisible() }} />
-        <img src={IconLeft} alt='previous' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); PreviousSearchImage(fileHash, navigate, false, parm) }} onClick={() => { PreviousImage(fileHash, navigate, parm) }} />
-        <img src={IconRight} alt='next' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); NextSearchImage(fileHash, navigate, parm) }} onClick={() => { NextImage(fileHash, navigate, parm) }} />
+        <img src={IconLeft} alt='previous' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); PreviousSearchImage(fileHash, navigate, false, currentURLParameters) }} onClick={() => { PreviousImage(fileHash, navigate, currentURLParameters) }} />
+        <img src={IconRight} alt='next' className="topBarButton" onContextMenu={(e) => { e.preventDefault(); NextSearchImage(fileHash, navigate, currentURLParameters) }} onClick={() => { NextImage(fileHash, navigate, currentURLParameters) }} />
         <img src={Info} alt='sidebar switch' onContextMenu={(e) => { e.preventDefault() }} className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
 
       </div>
@@ -279,10 +279,10 @@ export function FilePage(props: FilePageProps) {
       <img src={IconBack} alt='back' className={getRelatedButtonStyle(true)} onClick={() => { closeImageWindow() }} />
       <img src={IconRelated} alt='related switch' className={getRelatedButtonStyle(relatedVisible)} onClick={() => { switchRelatedVisible() }} />
       <img src={Info} alt='sidebar switch' onContextMenu={(e) => { e.preventDefault() }} className={getButtonSidebarToggleStyle(sidebarVisible)} onClick={() => { switchSidebar() }} />
-      <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash, navigate, false, parm) }} />
-      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash, navigate, parm) }} />
-      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash, navigate, parm) }} />
-      <img src={IconDoubleRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash, navigate, parm) }} />
+      <img src={IconDoubleLeft} alt='previousGroup' className="topBarButton" onClick={() => { PreviousSearchImage(fileHash, navigate, false, currentURLParameters) }} />
+      <img src={IconLeft} alt='previous' className="topBarButton" onClick={() => { PreviousImage(fileHash, navigate, currentURLParameters) }} />
+      <img src={IconRight} alt='next' className="topBarButton" onClick={() => { NextImage(fileHash, navigate, currentURLParameters) }} />
+      <img src={IconDoubleRight} alt='nextGroup' className="topBarButton" onClick={() => { NextSearchImage(fileHash, navigate, currentURLParameters) }} />
 
     </div>
     <div className={getFilePageStyle(isMobile(), isLandscapeMode())}>

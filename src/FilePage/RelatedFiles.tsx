@@ -185,9 +185,9 @@ export function RelatedFiles(props: RelatedFilesProps) {
         let style = 'relatedTextStyle'
         if (isMobile()) {
             style += ' mobile'
-            if (landscape) {
+            /* if (landscape) {
                 style += ' landscape'
-            }
+            } */
         }
         return style
     }
@@ -200,7 +200,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     function getRelatedThumbsStyle(landscape: boolean): string {
         if (isMobile()) {
-            if (landscape) { return "relatedThumbnails mobile landscape" }
+            //if (landscape) { return "relatedThumbnails mobile landscape" }
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"
@@ -210,9 +210,9 @@ export function RelatedFiles(props: RelatedFilesProps) {
         let style = 'relatedStyleThumbsWrapper'
         if (isMobile()) {
             style += ' mobile'
-            if (landscape) {
+            /* if (landscape) {
                 style += ' landscape'
-            }
+            } */
         }
         if (expanded) {
             style += ' expanded'
