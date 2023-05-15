@@ -9,15 +9,15 @@ function ApiTestButton() {
 
     async function buttonClick() {
         let response = await API.api_verify_access_key()
-        //console.log(response.data)
-        //console.log(response.data.human_description)
         setMessage(response.data)
     }
 
     function returnPermissionArray() {
         const elementArray = []
-        for (let element of message.basic_permissions) {
+        const fullSet = [0,1,2,3,4,5,6,7,8]
+        for (let element of fullSet) {
             let label = ''
+
             switch (element) {
                 case 0: label = 'Import and Edit URLs';break;
                 case 1: label = 'Import and Delete Files';break;
@@ -30,8 +30,15 @@ function ApiTestButton() {
                 case 8: label = 'Manage File Relationships';break;
             }
 
-            elementArray.push(<div key={label} className='permissionBlob'>{label}</div>)
+            if (message.basic_permissions.includes(element)) {
+                elementArray.push(<div key={label} className='permissionBlob'>{label}</div>)
+            }
+            else {
+                elementArray.push(<div key={label} className='permissionBlob denied'>{label}</div>)
+            }
+            
         }
+
         return <div className='permissionWrapper'>{elementArray}</div>
     }
 
