@@ -6,7 +6,7 @@ import IconHamburger from '../assets/menu-burger.svg'
 
 import './SettingsPage.css'
 
-import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings, getTranscodeFileDomain, setTranscodeFileDomain, getTranscodeFileNamespace, setTranscodeFileNamespace, getTranscodeEnabled, setTranscodeEnabled, setBlacklistedNamespaces, setRelatedNamespaces } from '../StorageUtils'
+import { getAPIKey, getComicNamespace, getGroupNamespace, getMaxResults, getServerAddress, setAPIKey, setComicNamespace, setGroupNamespace, setMaxResults, setServerAddress, exportSettings, getTranscodeFileDomain, setTranscodeFileDomain, getTranscodeFileNamespace, setTranscodeFileNamespace, getTranscodeEnabled, setTranscodeEnabled, setBlacklistedNamespaces, setRelatedNamespaces, setExperimentalHydrusAPI,getExperimentalHydrusAPI } from '../StorageUtils'
 import SettingInputSingle from './SettingsInputSingle';
 import { isLandscapeMode, isMobile } from '../styleUtils';
 import { useState } from 'react';
@@ -124,10 +124,19 @@ export function SettingsPage(props: SettingsPageProps) {
 
 export function TranscodeSettings() {
   const [enabled, setEnabled] = useState(getTranscodeEnabled())
+  const [experimentalEnabled,setExperimental] = useState(getExperimentalHydrusAPI())
   function switchEnabledTranscoding() {
     setTranscodeEnabled(!enabled)
     setEnabled(!enabled)
   }
+
+  //Quick and dirty experimental funciton
+
+  function switchEnabledExperimental() {
+    setExperimentalHydrusAPI(!experimentalEnabled)
+    setExperimental(!experimentalEnabled)
+  }
+
   function getTranscodeButtonStyle(enabled: boolean): string {
     let style = 'transcodeEnabledButton tagEntry blob'
     if (enabled) { style += ' enabled' }
@@ -135,6 +144,7 @@ export function TranscodeSettings() {
   }
 
   return <>
+    <button className={getTranscodeButtonStyle(enabled)} onClick={switchEnabledExperimental} >Enable Experimental Hydrus API</button>
     <button className={getTranscodeButtonStyle(enabled)} onClick={switchEnabledTranscoding} >Enable transcoded image support</button>
     <SettingInputSingle initialValue={getTranscodeFileDomain} type="text" label="Transcode file domain" setFunction={setTranscodeFileDomain} disabled={!enabled} />
     <SettingInputSingle initialValue={getTranscodeFileNamespace} type="text" label="Transcode file namespace" setFunction={setTranscodeFileNamespace} disabled={!enabled} />

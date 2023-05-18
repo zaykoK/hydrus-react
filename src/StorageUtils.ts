@@ -152,6 +152,15 @@ export function getTranscodeEnabled():boolean {
   return currentOption
 }
 
+export function setExperimentalHydrusAPI(value:boolean) {
+  localStorage.setItem('hydrus-extended-api',JSON.stringify(value))
+}
+export function getExperimentalHydrusAPI():boolean {
+  let currentOption:boolean = JSON.parse(localStorage.getItem('hydrus-extended-api') || 'false')
+  return currentOption
+}
+
+
 export function exportSettings() {
   // Server address
   // Server Key
