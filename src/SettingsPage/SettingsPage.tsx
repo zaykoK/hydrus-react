@@ -144,7 +144,7 @@ export function TranscodeSettings() {
   }
 
   return <>
-    <button className={getTranscodeButtonStyle(enabled)} onClick={switchEnabledExperimental} >Enable Experimental Hydrus API</button>
+    <button className={getTranscodeButtonStyle(experimentalEnabled)} onClick={switchEnabledExperimental} >Enable Experimental Hydrus API</button>
     <button className={getTranscodeButtonStyle(enabled)} onClick={switchEnabledTranscoding} >Enable transcoded image support</button>
     <SettingInputSingle initialValue={getTranscodeFileDomain} type="text" label="Transcode file domain" setFunction={setTranscodeFileDomain} disabled={!enabled} />
     <SettingInputSingle initialValue={getTranscodeFileNamespace} type="text" label="Transcode file namespace" setFunction={setTranscodeFileNamespace} disabled={!enabled} />
