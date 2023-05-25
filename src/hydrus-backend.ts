@@ -7,7 +7,7 @@ import { APIResponseGetService, APIResponseMetadata, APIResponseSearch, Metadata
 const axios = setupCache(Axios)
 
 // Hydrus API version target
-const API_TARGET = 44
+const API_TARGET = 45
 // Flag for custom changed build of hydrus with additional settings for api calls
 const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api')||'false');
 
