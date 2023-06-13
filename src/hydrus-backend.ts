@@ -7,11 +7,14 @@ import { APIResponseGetService, APIResponseMetadata, APIResponseSearch, Metadata
 const axios = setupCache(Axios)
 
 // Hydrus API version target
-const API_TARGET = 45
+const API_TARGET = 46
 // Flag for custom changed build of hydrus with additional settings for api calls
 const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api')||'false');
 
 const server_address = localStorage.getItem('hydrus-server-address');
+
+// TODO
+// Move session key verification from index to here
 const session_key = sessionStorage.getItem('hydrus-session-key');
 
 export function api_version_clear() {
