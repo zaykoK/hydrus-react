@@ -32,10 +32,11 @@ function TagLookupResultToTuple(tags: Array<TagLookupResult>, currentSearch: str
         }
 
         // END
+        const isNotSearchingForNamespacedTag = currentNamespace.length === 1
         if (splitted.length > 1) {
             const isNotBlacklisted = !blacklist.includes(splitted[0])
             const isSameNamespaceAsSearched = splitted[0] === currentNamespace[0]
-            const isNotSearchingForNamespacedTag = currentNamespace.length === 1
+            
 
             if (isSameNamespaceAsSearched || (isNotSearchingForNamespacedTag && isNotBlacklisted)) {
                 filteredTags.push({
@@ -48,7 +49,6 @@ function TagLookupResultToTuple(tags: Array<TagLookupResult>, currentSearch: str
         else {
             // If there is a namespace in search but tag doesn't have one, skip it
             //console.log(!currentNamespace[1])
-            const isNotSearchingForNamespacedTag = currentNamespace.length === 1
             if (isNotSearchingForNamespacedTag) {
                 filteredTags.push({
                     namespace: '',
@@ -84,12 +84,11 @@ function TagInput(props: TagInputProps) {
         event.preventDefault(); //necessary to not reload page after submit
 
         let split = tag.split(' OR ')
-        let splitLength = split.length
 
         //This is technically buggy, as the intent was to sent queries that don't do OR as string but it actually works really nice
-        if (splitLength > 0) {
+        if (split.length > 0) {
             let inside = []
-            for (let i = 0; i < splitLength; i++) {
+            for (let i = 0; i < split.length; i++) {
                 inside.push(split[i].toLowerCase())
             }
             addTag(inside, navigate, props.type)

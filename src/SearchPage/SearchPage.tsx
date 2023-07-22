@@ -431,7 +431,7 @@ export function SearchPage(props: SearchPageProps) {
 
       let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
       for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-        let response: CacheAxiosResponse<APIResponseMetadata> | undefined = await API.api_get_file_metadata({ tag_services: ['all known tags'], only_file_tags: true, tags: ['group-title:', 'doujin-title:'], hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
+        let response: CacheAxiosResponse<APIResponseMetadata> | undefined = await API.api_get_file_metadata({ tag_services: ['all known tags'], only_file_tags: true, tags: ['creator:','group-title:', 'doujin-title:'], hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
         if (response) {
           responses.push(...response.data.metadata);
           responseSize += JSON.stringify(response).length

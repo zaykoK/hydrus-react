@@ -29,6 +29,7 @@ interface ImageThumbnailProps {
   size?: number;
   navigate: NavigateFunction;
   hideWidgetCount?: boolean;
+  disableLink?: boolean;
 }
 
 const EMPTYSTRING = ''
@@ -276,6 +277,7 @@ function ImageThumbnail(props: ImageThumbnailProps) {
         thumbnail={thumbnail}
         hash={props.hash}
         currentImage={props.currentImage}
+        disableLink={props.disableLink}
       />
     </div>
   );

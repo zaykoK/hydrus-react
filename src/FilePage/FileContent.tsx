@@ -11,7 +11,6 @@ interface FileContentProps {
 }
 
 export function FileContent(props: FileContentProps) {
-
   function getContentWrapperStyle(): string {
     let style = 'contentWrapper'
     if (isMobile()) {

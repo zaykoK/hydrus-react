@@ -1,21 +1,23 @@
 
-import Axios, { AxiosError, AxiosResponse } from 'axios';
+import Axios, { AxiosError, AxiosResponse, AxiosStatic } from 'axios';
 //@ts-ignore
 import { AxiosCacheInstance, CacheAxiosResponse, setupCache } from 'axios-cache-interceptor'
 import { APIResponseGetService, APIResponseMetadata, APIResponseSearch, MetadataResponse } from './MetadataResponse';
+import LocalSessionStorage from './LocalSessionStorage';
 
-const axios = setupCache(Axios)
+const axios: AxiosStatic = setupCache(Axios)
 
 // Hydrus API version target
-const API_TARGET = 46
+const API_TARGET = 48
 // Flag for custom changed build of hydrus with additional settings for api calls
-const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api')||'false');
+const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api') || 'false');
 
 const server_address = localStorage.getItem('hydrus-server-address');
 
 // TODO
 // Move session key verification from index to here
-const session_key = sessionStorage.getItem('hydrus-session-key');
+//const session_key = sessionStorage.getItem('hydrus-session-key');
+const localSessionStorage = new LocalSessionStorage();
 
 export function api_version_clear() {
   sessionStorage.removeItem('hydrus-api-version');
@@ -25,17 +27,24 @@ export function api_version_clear() {
 export function api_verify_access_key() {
   return axios.get(server_address + '/verify_access_key', {
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey()
     }
   })
 }
 
-export function api_version() {
-  axios.get(server_address + '/api_version', {
+export function get_api_version() {
+  return axios.get(server_address + '/api_version', {
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey()
     }
   })
+}
+export function extract_api_version(response: Promise<AxiosResponse<any, any>>) {
+  console.log(response)
+}
+
+export function api_version() {
+  get_api_version()
     .then(function (response: AxiosResponse) {
       // handle success
       sessionStorage.setItem("hydrus-client-version", response.data.hydrus_version);
@@ -65,7 +74,7 @@ export function api_version() {
 export async function api_get_services() {
   axios.get(server_address + '/get_services', {
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key")
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey()
     }
   })
     .then(function (response: AxiosResponse) {
@@ -101,7 +110,7 @@ export async function api_add_tags_search_tags(props: ApiSearchTagsProps) {
   return axios.get(server_address + '/add_tags/search_tags', {
     signal: props.abortController.signal,
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
       "search": props.search,
       "tag_service_key": props.tag_service_key,
       "tag_service_name": props.tag_service_name,
@@ -113,7 +122,7 @@ export async function api_add_tags_search_tags(props: ApiSearchTagsProps) {
 export async function api_get_clean_tags(search: string) {
   return axios.get(server_address + '/add_tags/clean_tags', {
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
       "tags": JSON.stringify(search)
     }
   });
@@ -180,7 +189,9 @@ export async function api_get_files_search_files(props: APISearchFilesProps): Pr
         break;
       }
     }
-    if (!hasLimit && (Array.isArray(sentTags[0]) || sentTags.length === 0)) { sentTags.push('system:limit=' + localStorage.getItem('hydrus-max-results')) }
+    if (!hasLimit && (Array.isArray(sentTags[0]) || sentTags.length === 0)) { 
+      sentTags.push('system:limit=' + localStorage.getItem('hydrus-max-results')) 
+    }
 
   }
   else {
@@ -191,7 +202,7 @@ export async function api_get_files_search_files(props: APISearchFilesProps): Pr
   return axios.get(server_address + '/get_files/search_files', {
     signal: props.abortController?.signal,
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
       "tags": JSON.stringify(sentTags),
       "file_service_name": props.file_service_name || 'my files',
       "file_service_key": JSON.stringify(props.file_service_key),
@@ -217,7 +228,7 @@ export async function api_get_file(props: APIGetFileProps) {
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
     },
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
       "file_id": props.file_id,
       "hash": props.hash
     },
@@ -229,7 +240,7 @@ export function api_get_file_address(hash: string | undefined) {
   if (!hash) { return }
   let server = server_address
 
-  let sessionKey = session_key
+  let sessionKey = localSessionStorage.getApiKey()
   if (!sessionKey) { sessionKey = '' }
 
   let params = new URLSearchParams({
@@ -239,11 +250,52 @@ export function api_get_file_address(hash: string | undefined) {
   return server + '/get_files/file?' + params
 }
 
+interface APIAddTagProps {
+  file_id?: number;
+  file_ids?: Array<number>;
+  hash?: string;
+  hashes?: Array<string>;
+  service_keys_to_actions_to_tags: {
+    [serviceKey: string]: {
+      [actionId: number]: Array<string>
+    }
+  }
+  abortController?: AbortController
+}
+
+enum TagAction {
+  AddTag = 0,
+  DeleteTag,
+  PendToTagRepository,
+  RescindAPendFromRepository,
+  PetitionFromATagRepository,
+  RescindAPetitionFromATagRepository
+}
+
+export function add_tags_add_tag(props: APIAddTagProps) {
+  /* I don't stringify anything here because axios already does this when passing object as body */
+  const params = {
+    "file_id": props.file_id,
+    "file_ids": props.file_ids,
+    "hash": props.hash,
+    "hashes": props.hashes,
+    'service_keys_to_actions_to_tags': props.service_keys_to_actions_to_tags
+  }
+  return axios.post(server_address + '/add_tags/add_tags', { ...params }, {
+    headers: {
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey() || '',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+    }
+  }
+  )
+}
+
 //Instead of downloading blob give img or video api file adress
 export function api_get_file_thumbnail_address(hash: string | undefined) {
   if (!hash) { return }
   let server = server_address
-  let sessionKey = session_key
+  let sessionKey = localSessionStorage.getApiKey()
 
   if (!sessionKey) { sessionKey = '' }
 
@@ -271,19 +323,19 @@ interface APIGetFileMetadataProps {
 }
 
 type MetadataParams = {
-  "Hydrus-Client-API-Session-Key": string|null;
-  "file_id"?: number|undefined;
-  "file_ids"?: string|undefined;
-  "hash"?: string|undefined;
-  "hashes"?: string|undefined;
-  'create_new_file_ids'?: boolean|undefined;
-  'only_return_identifiers'?: boolean|undefined;
-  'only_return_basic_information'?: boolean|undefined;
-  'detailed_url_information'?: boolean|undefined;
-  'include_notes'?: boolean|undefined;
-  'tags'?: string|undefined;
-  'only_file_tags'?: boolean|undefined;
-  'service_name'?: string|undefined;
+  "Hydrus-Client-API-Session-Key": string | null;
+  "file_id"?: number | undefined;
+  "file_ids"?: string | undefined;
+  "hash"?: string | undefined;
+  "hashes"?: string | undefined;
+  'create_new_file_ids'?: boolean | undefined;
+  'only_return_identifiers'?: boolean | undefined;
+  'only_return_basic_information'?: boolean | undefined;
+  'detailed_url_information'?: boolean | undefined;
+  'include_notes'?: boolean | undefined;
+  'tags'?: string | undefined;
+  'only_file_tags'?: boolean | undefined;
+  'service_name'?: string | undefined;
 }
 
 
@@ -291,8 +343,8 @@ type MetadataParams = {
 export async function api_get_file_metadata(props: APIGetFileMetadataProps): Promise<CacheAxiosResponse<APIResponseMetadata> | undefined> {
   if (!props.file_id && !props.file_ids && !props.hash && !props.hashes) { return }
 
-  let params:MetadataParams = {
-    "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"),
+  let params: MetadataParams = {
+    "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
     "file_id": props.file_id,
     "file_ids": JSON.stringify(props.file_ids),
     "hash": props.hash,
@@ -377,7 +429,7 @@ export async function api_get_file_relationships(props: FileRelationshipProps) {
       'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
     },
     params: {
-      "Hydrus-Client-API-Session-Key": sessionStorage.getItem("hydrus-session-key"), //This might be bad for performance, need to check this on some functions (thumbnails especiialy)
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(), //This might be bad for performance, need to check this on some functions (thumbnails especiialy)
       "file_id": props.file_id,
       "file_ids": JSON.stringify(props.file_ids),
       "hash": props.hash,
@@ -385,6 +437,51 @@ export async function api_get_file_relationships(props: FileRelationshipProps) {
     }
   })
 }
+export enum PotentialsSearchType {
+  OneFileMatchesSearch1 = 0,
+  BothFilesMatchesSearch1,
+  OneFileMatchesSearch1TheOther2
+}
+export enum PixelDuplicates {
+  MustBePixedDuplicates = 0,
+  CanBePixelDuplicate,
+  MustNotBePixelDuplicate
+}
+
+interface GetPotentialsCountProps {
+  file_domain?: string;
+  tag_service_key_1?: string;
+  tags_1?: string[];
+  tag_service_key_2?: string;
+  tags_2?: string[];
+  potentials_search_type?: PotentialsSearchType;
+  pixel_duplicates?: PixelDuplicates;
+  max_hamming_distance?: number;
+  abortController?: AbortController;
+}
+
+export async function api_get_potentials_count(props: GetPotentialsCountProps) {
+  return axios.get(server_address + '/manage_file_relationships/get_potentials_count', {
+    signal: props.abortController?.signal,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+    },
+    params: {
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(), //This might be bad for performance, need to check this on some functions (thumbnails especiialy)
+      "file_domain":props.file_domain,
+      "tag_service_key1":props.tag_service_key_1,
+      "tags_1":JSON.stringify(props.tags_1),
+      "tags_service_key2":props.tag_service_key_2,
+      "tags_2":props.tags_2,
+      "potential_search_type":props.potentials_search_type,
+      "pixel_duplicates":props.pixel_duplicates,
+      "max_hamming_distance":props.max_hamming_distance
+    }
+  })
+}
+
+
 
 // Wrapper functions
 

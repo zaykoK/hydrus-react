@@ -21,10 +21,40 @@ interface ImageWallProps {
   thumbnailSize?: number;
 }
 
+export type SelectedResult = {
+  hash:string;
+  result:ResultGroup;
+  returnFunction:Function;
+}
+
+export type ResultListElement = {
+  result:ResultGroup;
+  deactivateFunction:Function;
+  activateFunction:Function;
+}
+
+export type SelectionVariables = {
+  allElements:Array<ResultListElement>;
+  selectedItems:Array<SelectedResult>;
+  lastSelected:string;
+}
+
 export function ImageWall(props: ImageWallProps) {
   const [thumbs, setThumbs] = React.useState<JSX.Element[]>([])
 
   const navigate = useNavigate()
+
+  //const selectedItems:Array<SelectedResult> = []
+
+  //const 
+
+  const selectionVariables:SelectionVariables = {
+    allElements:[],
+    selectedItems: [],
+    lastSelected:''
+  }
+
+  //let lastClickedElement:string = ''
 
 
   function CreateNewThumbnailList() {
@@ -52,6 +82,7 @@ export function ImageWall(props: ImageWallProps) {
         list.push(
           <ResultComponent key={key}
             navigate={navigate} result={result} type={props.type} grouping={props.grouping}
+            selectionVariables={selectionVariables}// selectedItems={selectedItems} allElements={allElements}
           />
         )
       }

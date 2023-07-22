@@ -1,21 +1,27 @@
-
 .ResultComponent {
+    box-sizing: border-box;
+    border-width: 0px;
+    border-style: solid;
     position: relative;
     width: calc(var(--CELL_SIZE));
     height: calc(var(--CELL_SIZE));
-    transition: transform 0.12s ease-out;
+    transition: transform 0.12s ease-out,border-width ease-in-out 0.05s;
     overflow: auto;
-    grid-row:span 1;
+    grid-row: span 1;
     grid-column: span 1;
     border-radius: 5px;
     scrollbar-width: none;
     background-color: var(--COLOR2);
+    border-color: transparent;
 }
+
 .ResultComponent.active {
-    background-color: pink;
+    border-width: 3px;
+    background-color: var(--COLORACCENT);
 }
+
 .ResultComponent.mobile.active {
-    box-shadow: inset 0px 0px 10px 3px pink;
+    box-shadow: inset 0px 0px 10px 3px var(--COLORACCENT);
 }
 
 .ResultComponentWrapper {
@@ -28,9 +34,10 @@
     height: inherit;
     overflow: hidden;
     pointer-events: auto;
-    gap:4px;
+    gap: 4px;
     scrollbar-width: none;
 }
+
 .ResultComponentWrapper.bigger.scrollable {
     overflow: auto;
     pointer-events: auto;
@@ -39,6 +46,7 @@
 .ResultComponent::-webkit-scrollbar {
     display: none;
 }
+
 .ResultComponentWrapper::-webkit-scrollbar {
     display: none;
 }
@@ -46,7 +54,7 @@
 .ResultComponent.mobile {
     width: var(--CELL_SIZE_MOBILE);
     height: var(--CELL_SIZE_MOBILE);
-    overflow:hidden;
+    overflow: hidden;
     border-radius: 0px;
 }
 
@@ -64,7 +72,7 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: subgrid;
     grid-auto-rows: calc(var(--CELL_SIZE)/2);
-    gap:0px;
+    gap: 0px;
     pointer-events: none;
 }
 
@@ -78,7 +86,7 @@
     grid-auto-rows: var(--CELL_SIZE_MOBILE);
     grid-template-rows: subgrid;
     grid-auto-rows: calc(var(--CELL_SIZE_MOBILE)/2);
-    gap:0px;
+    gap: 0px;
 }
 
 .ResultComponent .ResultComponentCover {
@@ -89,6 +97,7 @@
 .ResultComponent:hover .ResultComponentTopBar {
     transform: translateY(0%);
 }
+
 .ResultComponent:hover .ResultComponentTopBar.mobile {
     transform: translateY(-175%);
 }
@@ -101,10 +110,10 @@
 .ResultComponentCover {
     position: absolute;
     transition: transform 0.12s ease-out;
-    top:0px;
-    bottom:0px;
-    left:0px;
-    right:0px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
     z-index: 1;
     height: inherit;
     width: inherit;
@@ -113,9 +122,11 @@
     user-select: none;
     -webkit-user-drag: none;
 }
+
 .ResultComponentCover.mobile {
     pointer-events: all;
 }
+
 .ResultDetailsInfo .thumbnailWrapper {
     animation-name: none;
 }
@@ -126,9 +137,9 @@
     background-color: rgba(0, 0, 0, 0.76);
     font-size: medium;
     position: absolute;
-    top:0px;
-    left:0px;
-    right:0px;
+    top: 0px;
+    left: 0px;
+    right: 0px;
     text-align: center;
     width: auto;
     margin: auto;
@@ -142,70 +153,76 @@
 
 .ResultComponentCountWidget {
     background-color: rgba(0, 0, 0, 0.74);
-    position:absolute;
+    position: absolute;
     z-index: 2;
-    right:0.3em;
+    right: 0.3em;
     bottom: 0.3em;
     border-radius: 5px;
-    padding-left:1em;
+    padding-left: 1em;
     padding-right: 1em;
-    transition:background-color 0.2s ease-in-out;
-    cursor:pointer;
+    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
 }
+
 .ResultComponentCountWidget:hover {
     background-color: rgba(53, 53, 53, 1);
 }
 
-.ResultComponentCountWidget.mobile{ 
+.ResultComponentCountWidget.mobile {
     font-size: x-small;
 }
 
 .ResultDetails {
-    padding:0.1em;
+    padding: 0.1em;
     background-color: var(--COLOR2);
     border-radius: 5px;
-    grid-column:1/-1;
-    display:block;
+    grid-column: 1/-1;
+    display: block;
     max-height: 90vh;
     grid-template-columns: 24% auto;
     gap: 5px;
     overflow: auto;
 }
+
 .ResultDetails span {
     word-wrap: normal;
     max-width: 100%;
 }
+
 .ResultDetails.mobile {
     max-height: 75vh;
-    padding-left:0px;
-    padding-right:0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
+
 .ResultDetailsInfo {
     background-color: var(--COLOR2);
-    padding:0.5em 1em 0em 1em;
+    padding: 0.5em 1em 0em 1em;
 }
+
 .ResultDetailsThumbnails {
     border-radius: 5px;
     overflow: auto;
-    display:grid;
+    display: grid;
     grid-template-columns: repeat(auto-fill, var(--CELL_SIZE));
     padding: 0px;
-    padding-top:10px;
-    padding-bottom:10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border-radius: 15px;
-    gap:10px;
+    gap: 10px;
     grid-auto-flow: row dense;
     justify-content: center;
 }
 
 .ResultDetailsThumbnails.mobile {
-    overflow-y:hidden;
+    overflow-y: hidden;
     overflow-x: auto;
     grid-template-columns: repeat(auto-fill, calc(var(--CELL_SIZE_MOBILE)));
     grid-auto-flow: row;
-    gap:0px;
-    justify-content:start;
+    gap: 0px;
+    justify-content: start;
 }
+
 .ResultDetailsThumbnails.mobile.horizontal {
     grid-template-columns: repeat(auto-fill, calc(var(--CELL_SIZE_MOBILE)));
     grid-auto-flow: column;
@@ -216,9 +233,9 @@
     min-width: var(--CELL_SIZE);
     min-height: var(--CELL_SIZE);
     height: auto;
-    width:auto;
+    width: auto;
     background-color: var(--COLOR3);
-    border-radius:5px;
+    border-radius: 5px;
 }
 
 .ResultDetailsThumbnails.mobile .thumbnailWrapper {
@@ -228,6 +245,7 @@
     height: calc(var(--CELL_SIZE_MOBILE));
     border-radius: 0px;
 }
+
 .ResultDetailsThumbnails.mobile .thumbnail {
     object-fit: cover;
 }

@@ -14,7 +14,7 @@ interface TagComponentsWrapperProps {
     limit?: number;
     sortOrder?: number;
     tags?:Array<string>;
-
+    fullPage?:boolean;
 }
 
 export function TagComponentsWrapper(props: TagComponentsWrapperProps) {
@@ -63,8 +63,20 @@ export function TagComponentsWrapper(props: TagComponentsWrapperProps) {
         if (sortOrder === 1) {
             sortByName(tags)
         }
-
+        //let i = 0
         for (let element of tags) {
+            
+            /* if (i < 10) {
+                let count = await API.api_get_potentials_count({
+                    tags_1:[element.value],
+                    potentials_search_type:API.PotentialsSearchType.BothFilesMatchesSearch1,
+                    pixel_duplicates:API.PixelDuplicates.CanBePixelDuplicate
+    
+                })
+                console.log(element.value,count.data)
+                i++;
+            } */
+        
             tagElements.push(
                 <TagComponent key={element.value} tag={element} size={props.size} allowed={true} navigate={navigate} />
             )
@@ -120,7 +132,7 @@ export function TagComponentsWrapper(props: TagComponentsWrapperProps) {
 
     function getListStyle() {
         let style = 'TagComponentsWrapper'
-        if (active) { style += ' active' }
+        if (active || props.fullPage) { style += ' active' }
         return style
     }
 
@@ -135,13 +147,13 @@ export function TagComponentsWrapper(props: TagComponentsWrapperProps) {
 
     function getTagComponentListWrapperStyle() {
         let style = 'TagComponentListWrapper'
-        if (large) { style += ' large' }
+        if (large || props.fullPage) { style += ' large' }
         return style
     }
 
     function getTagComponentListStyle() {
         let style = 'TagComponentList'
-        if (large) { style += ' large' }
+        if (large || props.fullPage) { style += ' large' }
         return style
     }
 

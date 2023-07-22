@@ -11,6 +11,7 @@ interface ThumbContentProps {
     replace: boolean;
     currentImage?: boolean;
     navigate: NavigateFunction;
+    disableLink?:boolean;
 }
 
 function returnFilePageURL(hash: string, urlParameters: string | undefined, type: string) {
@@ -26,7 +27,11 @@ function ThumbContent(props: ThumbContentProps) {
 
 
     function determineThumbNavigation(replace: boolean) {
-        props.navigate(returnFilePageURL(props.hash, currentURLParameters, props.type), { replace: replace })
+        const isAllowedToAnchor = !props.disableLink
+        if (isAllowedToAnchor) {
+            props.navigate(returnFilePageURL(props.hash, currentURLParameters, props.type), { replace: replace })
+        }
+        
     }
 
     function getThumbStyle(type: string): string {
@@ -49,6 +54,7 @@ function ThumbContent(props: ThumbContentProps) {
     }
 
     return <img
+        draggable={false}
         className={getThumbStyle(props.type)}
         onContextMenu={(e) => e.preventDefault()}
         onClick={() => { determineThumbNavigation(props.replace) }}

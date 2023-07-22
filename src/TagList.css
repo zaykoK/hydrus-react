@@ -145,13 +145,34 @@
     z-index: 5;
 }
 
+body .TagContextMenuWrapper {
+    font-size: smaller;
+    -webkit-font-smoothing:antialiased;
+    text-rendering: optimizeLegibility;
+    color: white;
+    position: fixed;
+    min-width: 13em;
+    background-color: var(--COLOR2);
+    border-radius: 5px;
+    gap:5px;
+    z-index: 5000;
+    filter:drop-shadow(0px 0px 10px black);
+    font-family: verdana,sans-serif,helvetica;
+    overflow: hidden;
+    /* transform: translate(-50%, -50%); */
+}
+.TagContextMenuWrapper:focus {
+    outline: none;
+}
 .TagContextMenuWrapper
 
 .TagContextMenuEntry {
     background-color: inherit;
     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-    padding:1em;
-    border-radius: 5px;
+    padding:0.5em;
+    padding-left: 1em;
+    padding-right: 2em;
+    border-radius: 0px;
     cursor: pointer;
 }
 .TagContextMenuEntry:hover {
@@ -159,7 +180,10 @@
 }
 
 .TagContextMenuTitle {
-    padding:1em;
+    padding:0.5em;
+    overflow: hidden;
+    word-wrap: normal;
+    text-align: center;
 }
 
 .gridStyleList.active.mobile:has(.tagContentSection) .tagContentSection {
