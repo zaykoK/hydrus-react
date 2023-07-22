@@ -19,8 +19,8 @@
     "alwaysStrict": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "module": "esNext",
-    "moduleResolution": "nodenext"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
   "include": ["src"]
 }
