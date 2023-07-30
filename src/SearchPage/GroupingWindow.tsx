@@ -12,7 +12,7 @@ interface GroupingWindowProps {
     exitFunction:Function;
 }
 
-function GroupingWindow(props: GroupingWindowProps) {
+function GroupingWindow(props: GroupingWindowProps):JSX.Element {
 
     const creatorElements = []
     const dateElements = []
@@ -27,7 +27,7 @@ function GroupingWindow(props: GroupingWindowProps) {
 
 
     if (props.proposedObject === null) {
-        return
+        return <></>
     }
     if (props.proposedObject.creators) {
         for (let creator of props.proposedObject.creators) {
