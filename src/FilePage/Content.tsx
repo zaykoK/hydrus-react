@@ -2,7 +2,7 @@ import * as API from '../hydrus-backend';
 import * as React from 'react';
 
 import { isLandscapeMode, isMobile } from '../styleUtils';
-import { TransformComponent, TransformWrapper } from "@pronestor/react-zoom-pan-pinch"
+import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { NextImage, NextSearchImage, PreviousImage, PreviousSearchImage, GoToFirstImage, GoToLastImage } from './ImageControls';
