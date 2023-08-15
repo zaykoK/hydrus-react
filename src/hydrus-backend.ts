@@ -8,7 +8,7 @@ import LocalSessionStorage from './LocalSessionStorage';
 const axios: AxiosStatic = setupCache(Axios)
 
 // Hydrus API version target
-const API_TARGET = 48
+const API_TARGET = 49
 // Flag for custom changed build of hydrus with additional settings for api calls
 const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api') || 'false');
 
@@ -303,7 +303,7 @@ export function api_get_file_thumbnail_address(hash: string | undefined) {
     "Hydrus-Client-API-Session-Key": sessionKey,
     "hash": hash
   })
-  return server + '/get_files/thumbnail?' + params
+  return `${server}/get_files/thumbnail?${params}`
 }
 
 interface APIGetFileMetadataProps {
@@ -437,12 +437,12 @@ export async function api_get_file_relationships(props: FileRelationshipProps) {
     }
   })
 }
-export enum PotentialsSearchType {
+export const enum PotentialsSearchType {
   OneFileMatchesSearch1 = 0,
   BothFilesMatchesSearch1,
   OneFileMatchesSearch1TheOther2
 }
-export enum PixelDuplicates {
+export const enum PixelDuplicates {
   MustBePixedDuplicates = 0,
   CanBePixelDuplicate,
   MustNotBePixelDuplicate
@@ -479,6 +479,22 @@ export async function api_get_potentials_count(props: GetPotentialsCountProps) {
       "max_hamming_distance":props.max_hamming_distance
     }
   })
+}
+
+interface FilesProps {
+  file?:number;
+  files:number[];
+  hash:string;
+  hashes:string[];
+}
+
+
+interface DeleteFileProps extends FilesProps {
+  reason?:string;
+}
+
+export async function api_delete_file(props:DeleteFileProps) {
+  return axios.post
 }
 
 
