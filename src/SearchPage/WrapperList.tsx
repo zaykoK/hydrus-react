@@ -31,7 +31,7 @@ function WrapperList(props: WrapperListProps) {
             setDisplayedThumbs(props.thumbs.slice(0, Math.min(COMICSTEP, props.thumbs.length)))
         }
         else {
-            setDisplayedThumbs(props.thumbs.slice(0, Math.min(3*IMAGESTEP, props.thumbs.length)))
+            setDisplayedThumbs(props.thumbs.slice(0, Math.min(3 * IMAGESTEP, props.thumbs.length)))
         }
     }, [props.thumbs])
 
@@ -55,7 +55,7 @@ function WrapperList(props: WrapperListProps) {
             pageStart={0}
             loadMore={moreData}
             hasMore={hasMore}
-            loader={<div className='infiniteLoader' key='infiniteloader'>Loading</div>}
+            loader={<LoadingNotification />}
             threshold={250}
             className={getWrapperListStyle()}
         >
@@ -64,6 +64,14 @@ function WrapperList(props: WrapperListProps) {
         || <div className={getWrapperListStyle() + ' loading'}><p>LOADING</p><p>{props.loadingProgress}</p></div>
     );
 }
+
+
+function LoadingNotification() {
+    return <div className='infiniteLoader' key='infiniteloader'>
+        Loading
+    </div>
+}
+
 
 export default WrapperList
 export const MemoWrapperList = React.memo(WrapperList)
