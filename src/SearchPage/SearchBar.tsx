@@ -141,6 +141,13 @@ function TagInput(props: TagInputProps) {
         if (isMobile()) { style += " mobile" }
         return style
     }
+
+    function getRecommendedTagsStyle() {
+        let style = 'recommendedTags'
+        if (isMobile()) { style += ' mobile'}
+        return style
+    }
+
     return <div className={getSearchBarStyle()}>
         <TagDisplay key={props.tags.toString()} tags={props.tags} navigate={navigate} type={props.type} />
         <form className="searchForm" onSubmit={submitTag}>
@@ -156,15 +163,15 @@ function TagInput(props: TagInputProps) {
         {(tag && helpTagsVisible) ? <div className='emptyButton' onClick={() => setTimeout(() => { setHelpTagsVisible(false); setTag(''); setHelpTags([]) }, 100)}>X</div> : null}
         <div className={getHelpTagsListStyle(helpTagsVisible)}>
             {(helpTags.length === 0) ? <div className="recommendedTagsContainer">
-                <div className='recommendedTags'>
+                <div className={getRecommendedTagsStyle()}>
                     <p>Rating</p>
                     <TagList keyPrefix="recRating" tags={[{ namespace: 'rating', value: 'safe', count: 0 }, { namespace: 'rating', value: 'questionable', count: 0 }, { namespace: 'rating', value: 'explicit', count: 0 },]} visibleCount={false} type={'image'} searchBar={true} />
                 </div>
-                <div className='recommendedTags'>
+                <div className={getRecommendedTagsStyle()}>
                     <p>Medium</p>
                     <TagList keyPrefix="recMedium" tags={[{ namespace: 'medium', value: '2d', count: 0 }, { namespace: 'medium', value: '3d', count: 0 }, { namespace: 'medium', value: 'photo', count: 0 }]} visibleCount={false} type={'image'} searchBar={true} />
                 </div>
-                {(recentTags.length === 0) ? null : <div className='recommendedTags'>
+                {(recentTags.length === 0) ? null : <div className={getRecommendedTagsStyle()}>
                     <p>Recent</p>
                     <TagList keyPrefix="recRecent" tags={recentTags} visibleCount={false} type={'image'} searchBar={true} />
                 </div>}

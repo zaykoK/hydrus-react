@@ -158,6 +158,10 @@
     background-color: var(--COLOR1);
     border-radius: 5px;
     padding:0.5em;
+
+}
+.recommendedTags.mobile {
+    flex-grow: 1;
 }
 
 .recommendedTags p {
@@ -178,5 +182,7 @@
 
 .recommendedTagsContainer {
     display:flex;
-    gap:1em;
+    gap:0.3em;
+    flex-wrap: wrap;
+    padding:0.5em;
 }
