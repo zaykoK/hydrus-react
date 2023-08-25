@@ -23,7 +23,7 @@ function ResultDetails(props: ResultDetailsProps) {
     }
     return <div className={getResultDetailsStyle()}>
         <div className='ResultDetailsInfo'>
-            <span>{props.result.title}</span>
+            <span>{isMyTitleScheme(props.result.title)}</span>
         </div>
 
         {/*         <div className='ResultDetailsInfo'>
@@ -36,5 +36,13 @@ function ResultDetails(props: ResultDetailsProps) {
 
     </div>
 }
+
+export function isMyTitleScheme(title:string) {
+    //This regex is supposed to match '[{creatorName}] {year} {month} '
+    const replacementRegex = /\[(.*?)\] [0-9]{4} [0-9]{2}/
+
+    return title.replace(replacementRegex, '')
+}
+
 
 export default ResultDetails

@@ -17,7 +17,7 @@ import { CacheAxiosResponse } from "axios-cache-interceptor/dist/cache/axios.js"
 import * as TagTools from '../TagTools'
 import ContextMenu from "../ContextMenu";
 import { createPortal } from "react-dom";
-import ResultDetails from "./ResultDetails";
+import ResultDetails, { isMyTitleScheme } from "./ResultDetails";
 import { getGroupName } from "./GroupingFunctions";
 import GroupingWindow from "./GroupingWindow";
 
@@ -30,7 +30,7 @@ interface ResultComponentProps {
 }
 
 /* TESTING */
-class MediaSelection {
+export class MediaSelection {
     selectedElements: Array<SelectedResult>
     static instance: MediaSelection | null = null
     constructor() {
@@ -96,7 +96,33 @@ function ResultComponent(props: ResultComponentProps) {
         result.cover = sortedList[0].cover
 
         for (let subgroup of sortedList) {
-            let thumb = <ImageThumbnail
+            subgroup.entries.sort((a,b) => a.time_modified_details['local'] - b.time_modified_details['local'] )
+            subgroup.cover = subgroup.entries[0].hash
+
+            for (let subgroupEntry of subgroup.entries) {
+                let thumb = <ImageThumbnail
+                navigate={props.navigate}
+                loadMeta={false}
+                type={props.type}
+                key={subgroupEntry.hash}
+                hash={subgroupEntry.hash}
+                replace={false}
+                metadata={[subgroupEntry]}
+                size={4}
+                hideWidgetCount={true}
+                disableLink={false}
+            />
+            tempThumbs.push(thumb)
+            }
+        }
+
+        const coverElement = []
+
+        const MAXITERATIONS = 4
+        let iteration = 0
+        for (let subgroup of sortedList) {
+            if (iteration < MAXITERATIONS)
+            coverElement.push(<ImageThumbnail
                 navigate={props.navigate}
                 loadMeta={false}
                 type={props.type}
@@ -107,9 +133,12 @@ function ResultComponent(props: ResultComponentProps) {
                 size={4}
                 hideWidgetCount={true}
                 disableLink={true}
-            />
-            tempThumbs.push(thumb)
+            />)
+            iteration += 1
         }
+
+        /* let delay = `${(Math.random()*5).toString()}s` */
+
         setCover(<ImageThumbnail
             navigate={props.navigate}
             loadMeta={false}
@@ -122,7 +151,23 @@ function ResultComponent(props: ResultComponentProps) {
             hideWidgetCount={false}
             disableLink={true}
         />)
+        setCover(<div /* style={{animationDelay:delay}} */ className={getCoverElementsStyle(coverElement.length)}>{coverElement}</div>)
         return tempThumbs
+    }
+
+    function getCoverElementsStyle(length:number):string {
+        let style = 'coverElements'
+        if (length === 2) {
+            style += ' duo'
+        }
+        if (length === 3) {
+            style += ' trio'
+        }
+        if (length >= 4) {
+            style += ' four'
+            //style += ' four alternative'
+        }
+        return style
     }
 
     function processFlat(result: ResultGroup) {
@@ -141,7 +186,7 @@ function ResultComponent(props: ResultComponentProps) {
                 metadata={[entry]}
                 size={4}
                 hideWidgetCount={false}
-                disableLink={true}
+                disableLink={false}
             />
             tempThumbs.push(thumb)
             setCover(<ImageThumbnail
@@ -211,7 +256,7 @@ function ResultComponent(props: ResultComponentProps) {
 
     function getTopText(): string {
         if (props.result.title !== props.result.cover) {
-            return props.result.title
+            return isMyTitleScheme(props.result.title)
         }
         return ''
     }

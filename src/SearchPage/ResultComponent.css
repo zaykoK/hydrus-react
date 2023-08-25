@@ -5,7 +5,7 @@
     position: relative;
     width: calc(var(--CELL_SIZE));
     height: calc(var(--CELL_SIZE));
-    transition: transform 0.12s ease-out,border-width ease-in-out 0.05s;
+    transition: transform 0.12s ease-out, border-width ease-in-out 0.05s;
     overflow: auto;
     grid-row: span 1;
     grid-column: span 1;
@@ -248,4 +248,254 @@
 
 .ResultDetailsThumbnails.mobile .thumbnail {
     object-fit: cover;
+}
+
+.coverElements {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: inherit;
+    height: inherit;
+    transition: all 5s;
+    animation-duration: 24s;
+    animation-iteration-count: infinite;
+}
+
+
+
+.coverElements.duo {
+    grid-template-columns: 1fr 1fr;
+    animation-duration: 12s;
+    /* animation-name: animateCoverDuo; */
+}
+
+.coverElements.duo:hover {
+    animation-name: animateCoverDuo;
+}
+
+.coverElements.trio {
+    grid-template-columns: 1fr 1fr 1fr;
+    animation-duration: 18s;
+    /* animation-name: animateCoverTrio; */
+}
+
+.coverElements.trio:hover {
+    animation-name: animateCoverTrio;
+}
+
+.coverElements.four {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    /* animation-name: animateCoverFourSlides; */
+}
+.coverElements.four.alternative {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    /* animation-name: animateCoverFourAlternative; */
+}
+
+.coverElements.four:hover {
+    animation-name: animateCoverFourSlides;
+}
+.coverElements.four.alternative:hover {
+    animation-name: animateCoverFourAlternative;
+}
+
+.coverElements .thumbnailWrapper {
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+}
+
+.coverElements .thumbnailWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes animateCoverDuo {
+    0% {
+        grid-template-columns: 1fr 1fr
+    }
+
+    33% {
+        grid-template-columns: 9fr 1fr
+    }
+
+    /* 
+    25% {
+        grid-template-columns: 1fr 1fr
+    }
+ */
+    66% {
+        grid-template-columns: 1fr 9fr
+    }
+
+    100% {
+        grid-template-columns: 1fr 1fr
+    }
+}
+
+@keyframes animateCoverTrio {
+    0% {
+        grid-template-columns: 1fr 1fr 1fr
+    }
+
+    25% {
+        grid-template-columns: 9fr 1fr 1fr
+    }
+
+    /* 
+    25% {
+        grid-template-columns: 1fr 1fr 1fr 
+    }
+ */
+    50% {
+        grid-template-columns: 1fr 9fr 1fr
+    }
+
+    /* 
+    50% {
+        grid-template-columns: 1fr 1fr 1fr 
+    }
+ */
+    75% {
+        grid-template-columns: 1fr 1fr 9fr
+    }
+
+    100% {
+        grid-template-columns: 1fr 1fr 1fr
+    }
+
+}
+
+@keyframes animateCoverFour {
+    0% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+
+    12% {
+        grid-template-columns: 9fr 1fr 1fr 1fr
+    }
+
+    /* 
+    25% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+ */
+    37% {
+        grid-template-columns: 1fr 9fr 1fr 1fr
+    }
+
+    /* 
+    50% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+ */
+    62% {
+        grid-template-columns: 1fr 1fr 9fr 1fr
+    }
+
+    /* 
+    75% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+ */
+    88% {
+        grid-template-columns: 1fr 1fr 1fr 9fr
+    }
+
+    100% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+}
+
+@keyframes animateCoverFourSlides {
+    0% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+
+    20% {
+        grid-template-columns: 1fr 0fr 0fr 0fr
+    }
+
+    /* 
+    25% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+ */
+    40% {
+        grid-template-columns: 0fr 1fr 0fr 0fr 
+    }
+
+    /* 
+    50% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+ */
+    60% {
+        grid-template-columns: 0fr 0fr 1fr 0fr
+    }
+
+    /* 
+    75% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+ */
+    80% {
+        grid-template-columns: 0fr 0fr 0fr 1fr
+    }
+
+    100% {
+        grid-template-columns: 1fr 1fr 1fr 1fr
+    }
+}
+
+
+@keyframes animateCoverFourAlternative {
+    0% {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    12% {
+        grid-template-columns: 9fr 0fr;
+        grid-template-rows: 9fr 0fr;
+    }
+
+    /* 
+    25% {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+ */
+    37% {
+        grid-template-columns: 0fr 9fr;
+        grid-template-rows: 9fr 0fr;
+    }
+
+    /* 
+    50% {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+ */
+    62% {
+        grid-template-columns: 9fr 0fr;
+        grid-template-rows: 0fr 9fr;
+    }
+
+    /* 
+    75% {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+ */
+    88% {
+        grid-template-columns: 0fr 9fr;
+        grid-template-rows: 0fr 9fr;
+    }
+
+    100% {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
 }
