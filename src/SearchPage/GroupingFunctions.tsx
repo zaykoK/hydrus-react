@@ -6,7 +6,7 @@ import { SelectedResult } from './ImageWall'
 import { createListOfUniqueTags, getAllTagsServiceKey, loadServiceData } from './SearchPageHelpers'
 
 function getMostRelevantCreatorTag(tags: TagTools.Tuple[] | undefined): string {
-    if (tags === undefined) { return '' }
+    if (tags === undefined || tags.length === 0) { return '' }
     tags?.sort((a, b) => { return b.count - a.count })
     return tags[0].value
 }
