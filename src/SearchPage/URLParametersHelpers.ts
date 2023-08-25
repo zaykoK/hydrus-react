@@ -1,4 +1,5 @@
 import { tagArrayToNestedArray } from '../TagTools';
+import { decodeInvalidURLCharacters } from './SearchPageHelpers';
 
 function setDefaultSearch(): Array<Array<string>> {
     return []
@@ -16,7 +17,7 @@ export function readParams(par: string | undefined): { tags: Array<Array<string>
         //Bring back invalid URL characters
         for (let tagArray in tags) {
             for (let tag in tags[tagArray]) {
-                tags[tagArray][tag] = tags[tagArray][tag].replace('!ANDS', '&').replace('!PLUSSYMBOL', '+')
+                tags[tagArray][tag] =  decodeInvalidURLCharacters(tags[tagArray][tag])
             }
         }
 

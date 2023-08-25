@@ -21,25 +21,38 @@ export function generateSearchURL(tags: Array<Array<string>> | undefined, page: 
                 tagString += innerElement + ' OR '
             }
             tagString = tagString.slice(0, -4)
-            //Potential replacements that will be necessary
-            // &
-            // +
-            // /
-            // \
-            // :
-            //Question is which one are already replaced by URLEncode
-            //So far those 2 definetely broke searches
-            //Decoding happens in SearchPage readParams function
-            tagString = tagString.replace('&', '!ANDS')
-            tagString = tagString.replace('+', '!PLUSSYMBOL')
-            //tagString = tagString.replace('/', '!FRWDSLASH')
-            //tagString = tagString.replace('\\', '!BCKSLASH')
-            //tagString = tagString.replace(':', '!DDOTS')
+
+            tagString = encodeInvalidURLCharacters(tagString)
 
             parameters.append('tags', tagString)
         }
     }
     return parameters
+}
+
+const URLCharacterMap: { [key: string]: string } = {
+    "&": '!ANDS',
+    '+': '!PLUSSYMBOL',
+    //'/': '!FRWDSLASH',
+    //'\\': '!BCKSLASH',
+    //':': '!DDOTS'
+}
+
+
+export function encodeInvalidURLCharacters(value: string): string {
+    //Decoding happens in SearchPage readParams function
+    for (let key in URLCharacterMap) {
+        value = value.replace(key, URLCharacterMap[key])
+    }
+    return value
+}
+
+export function decodeInvalidURLCharacters(value:string):string {
+    //Decoding happens in SearchPage readParams function
+    for (let key in URLCharacterMap) {
+        value = value.replace(URLCharacterMap[key], key)
+    }
+    return value
 }
 
 export function navigateTo(parameters: URLSearchParams, navigate: NavigateFunction, type: string = 'image') {
@@ -61,16 +74,16 @@ export function getRecentTags() {
     if (tags === null) {
         return []
     }
-    let returned:Array<string> = JSON.parse(tags)
+    let returned: Array<string> = JSON.parse(tags)
     return returned
 }
 
-function saveRecentTags(tags:Array<string>) {
-    sessionStorage.setItem('recent-tags',JSON.stringify(tags))
+function saveRecentTags(tags: Array<string>) {
+    sessionStorage.setItem('recent-tags', JSON.stringify(tags))
 }
 
-function pushToRecentTags(tag:string,tags?:Array<string>) {
-    let recentTags:Array<string> = []
+function pushToRecentTags(tag: string, tags?: Array<string>) {
+    let recentTags: Array<string> = []
     if (tags) {
         recentTags = tags;
     }
@@ -110,7 +123,7 @@ export function addTag(addedTags: Array<string> | string, navigate: NavigateFunc
         newTags.push(addedTags);
 
         for (let entry of addedTags) {
-            pushToRecentTags(entry,recentTags)
+            pushToRecentTags(entry, recentTags)
         }
 
         //TODO - This entire pageType thing needs to change, I should move it into generateSearchURL
@@ -120,7 +133,7 @@ export function addTag(addedTags: Array<string> | string, navigate: NavigateFunc
 }
 
 export function removeTag(removedTags: Array<string>, navigate: NavigateFunction, pageType: string) {
-    let currentSearchTags:Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
+    let currentSearchTags: Array<Array<string>> = JSON.parse(sessionStorage.getItem('current-search-tags') || '[]')
 
     let currentHash = sessionStorage.getItem('currently-displayed-hash') || ''
 
@@ -164,14 +177,14 @@ function mergeTagMaps(current: Map<string, Array<string>>, second: Map<string, A
     })
 }
 
-export function loadServiceData():APIResponseGetService|null {
+export function loadServiceData(): APIResponseGetService | null {
     let sessionData = sessionStorage.getItem('hydrus-services')
-    
+
     if (sessionData === null) {
         console.warn('No service data in memory, try refreshing.')
         return null
     }
-    let servicesData:APIResponseGetService = JSON.parse(sessionData)
+    let servicesData: APIResponseGetService = JSON.parse(sessionData)
     return servicesData
 }
 
@@ -179,7 +192,7 @@ export function createListOfUniqueTags(responses: Array<MetadataResponse>): Map<
     let merged: Map<string, Array<string>> = new Map()
 
     let servicesData = loadServiceData()
-    if (servicesData === null) {return new Map()}
+    if (servicesData === null) { return new Map() }
 
     // TODO
     // This thing is slow, ~250ms on my pc with 5000 result limit
@@ -192,7 +205,7 @@ export function createListOfUniqueTags(responses: Array<MetadataResponse>): Map<
 
     //console.time('merge')
     for (let element of responses) {
-        let tags = API.getTagsFromMetadata(element, 'all known tags',servicesData)
+        let tags = API.getTagsFromMetadata(element, 'all known tags', servicesData)
         mergeTagMaps(merged, tags)
     }
     //console.timeEnd('merge')
@@ -209,27 +222,27 @@ export function createListOfUniqueTags(responses: Array<MetadataResponse>): Map<
     return final
 }
 
-export function getAllTagsServiceKey():string {
-    let services:APIResponseGetService = JSON.parse( sessionStorage.getItem('hydrus-services') || '')
+export function getAllTagsServiceKey(): string {
+    let services: APIResponseGetService = JSON.parse(sessionStorage.getItem('hydrus-services') || '')
     let allKnownTags = services.all_known_tags[0].service_key
 
     return allKnownTags
 }
 
-export function getTagsFromService(serviceKey:string) {
+export function getTagsFromService(serviceKey: string) {
 
 }
 
-export function responseSizeToString(responseSize:number):string {
+export function responseSizeToString(responseSize: number): string {
     if (responseSize > 1024 * (512)) { //MB
-      return (responseSize * 2).toLocaleString().slice(0, -5) + ' MB'
+        return (responseSize * 2).toLocaleString().slice(0, -5) + ' MB'
     }
     else if (responseSize > 512) { //KB
-      return (responseSize * 2).toLocaleString().slice(0, -5) + ' kB'
+        return (responseSize * 2).toLocaleString().slice(0, -5) + ' kB'
     }
     else {
-      return (responseSize * 2).toLocaleString() + ' B'
+        return (responseSize * 2).toLocaleString() + ' B'
     }
-  }
+}
 
 
