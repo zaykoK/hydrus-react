@@ -55,7 +55,7 @@ function WrapperList(props: WrapperListProps) {
             pageStart={0}
             loadMore={moreData}
             hasMore={hasMore}
-            loader={<LoadingNotification />}
+            loader={<LoadingNotification key='infiniteLoader' />}
             threshold={250}
             className={getWrapperListStyle()}
         >
