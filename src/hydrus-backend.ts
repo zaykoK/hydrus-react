@@ -8,7 +8,7 @@ import LocalSessionStorage from './LocalSessionStorage';
 const axios: AxiosStatic = setupCache(Axios)
 
 // Hydrus API version target
-const API_TARGET = 49
+const API_TARGET = 51
 // Flag for custom changed build of hydrus with additional settings for api calls
 const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api') || 'false');
 
@@ -272,7 +272,7 @@ enum TagAction {
   RescindAPetitionFromATagRepository
 }
 
-export function add_tags_add_tag(props: APIAddTagProps) {
+export function add_tags_add_tags(props: APIAddTagProps) {
   /* I don't stringify anything here because axios already does this when passing object as body */
   const params = {
     "file_id": props.file_id,
@@ -525,4 +525,23 @@ export async function getAllTags(props: getAllTagsProps) {
     }
   })
   return finalArray
+}
+
+interface getSiblingProps {
+  abortController:AbortController;
+  tags:Array<string>;
+}
+
+export async function api_add_tags_get_siblings_and_parent(props:getSiblingProps) {
+  return axios.get(server_address + '/add_tags/get_siblings_and_parents', {
+    signal: props.abortController?.signal,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+    },
+    params: {
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
+      "tags":JSON.stringify(props.tags)
+    }
+  })
 }
