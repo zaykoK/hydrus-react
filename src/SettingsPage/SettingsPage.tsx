@@ -98,11 +98,11 @@ export function SettingsPage(props: SettingsPageProps) {
       <img src={IconHamburger} alt='related switch' className='topBarButton' onClick={() => { props.setNavigationExpanded(true) }} />
     </div>
     <div className={getSettingsPageStyle()}>
-      <SettingInputSingle initialValue={getServerAddress} type="text" label="Input Hydrus Server address:" setFunction={setServerAddress} />
-      <SettingInputSingle initialValue={getAPIKey} type="password" label="Input API-key:" setFunction={setAPIKey} />
-      <SettingInputSingle initialValue={getComicNamespace} type="text" label="Input comic-title namespace:" setFunction={setComicNamespace} />
-      <SettingInputSingle initialValue={getGroupNamespace} type="text" label="Input grouping namespace:" setFunction={setGroupNamespace} />
-      <SettingInputSingle initialValue={getMaxResults} type="number" label="Input max results for searches :" setFunction={setMaxResults} />
+      <SettingInputSingle initialValue={getServerAddress} type="text" label="Hydrus Server address:" setFunction={setServerAddress} />
+      <SettingInputSingle initialValue={getAPIKey} type="password" label="API-key:" setFunction={setAPIKey} />
+      <SettingInputSingle initialValue={getComicNamespace} type="text" label="Comic-title namespace:" setFunction={setComicNamespace} />
+      <SettingInputSingle initialValue={getGroupNamespace} type="text" label="Grouping namespace:" setFunction={setGroupNamespace} />
+      <SettingInputSingle initialValue={getMaxResults} type="number" label="Max results for searches :" setFunction={setMaxResults} />
       <ApiTestButton />
       <RelatedGroupsInput />
       <BlacklistedTagsInput />
