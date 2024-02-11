@@ -5,7 +5,7 @@ import { AxiosCacheInstance, CacheAxiosResponse, setupCache } from 'axios-cache-
 import { APIResponseGetService, APIResponseMetadata, APIResponseSearch, MetadataResponse } from './MetadataResponse';
 import LocalSessionStorage from './LocalSessionStorage';
 
-const axios: AxiosStatic = setupCache(Axios)
+const axios = setupCache(Axios)
 
 // Hydrus API version target
 const API_TARGET = 54
