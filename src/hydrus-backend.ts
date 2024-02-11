@@ -8,7 +8,7 @@ import LocalSessionStorage from './LocalSessionStorage';
 const axios: AxiosStatic = setupCache(Axios)
 
 // Hydrus API version target
-const API_TARGET = 51
+const API_TARGET = 54
 // Flag for custom changed build of hydrus with additional settings for api calls
 const HYDRUS_API_EXTEND = JSON.parse(localStorage.getItem('hydrus-extended-api') || 'false');
 
@@ -544,4 +544,26 @@ export async function api_add_tags_get_siblings_and_parent(props:getSiblingProps
       "tags":JSON.stringify(props.tags)
     }
   })
+}
+
+interface testProps {
+  abortController:AbortController;
+  hashes:string[];
+  timestamp:number;
+}
+
+export async function api_get_file_test(props:testProps) {
+  return axios.get(server_address + '/get_files/set_date', {
+    signal: props.abortController?.signal,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+    },
+    params: {
+      "Hydrus-Client-API-Session-Key": localSessionStorage.getApiKey(),
+      "hashes": JSON.stringify(props.hashes),
+      "datestamp":props.timestamp
+    }
+  })
+
 }

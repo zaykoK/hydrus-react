@@ -21,6 +21,11 @@ import { APIResponseMetadata, MetadataResponse } from '../MetadataResponse'
 import { CacheAxiosResponse } from 'axios-cache-interceptor'
 import { TagComponentsWrapper } from './TagComponentWrapper'
 
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../ReduxStore'
+import { setCurrentSearch } from '../ReduxSlicer'
+
+
 interface SearchPageProps {
   type: string;
   setNavigationExpanded: Function;
@@ -70,6 +75,11 @@ export function SearchPage(props: SearchPageProps) {
   const searchType = useRef<string>(props.type)
 
   const AbortControllerSearch = useRef<AbortController | undefined>()
+
+  //Context
+  const currentSearch = useSelector((state: RootState) => state.currentHashes.currentSearch)
+  const dispatch = useDispatch()
+
 
   //const navigate = useNavigate()
 
@@ -362,12 +372,6 @@ export function SearchPage(props: SearchPageProps) {
       return
     }
 
-    //console.log(previousSearchSortType.current )
-    //console.log(sortType.current )
-    //console.log(previousSearchSortType.current  === sortType.current )
-    //console.log('are searches equal?')
-    //console.log(JSON.stringify(tags) === JSON.stringify(previousSearch.current))
-
     if ((previousSearchSortType.current === sortType.current) && (JSON.stringify(tags) === JSON.stringify(previousSearch.current)) && ((searchType.current === params.type))) {
       //console.log("not doing anything same search")
       return
@@ -379,6 +383,9 @@ export function SearchPage(props: SearchPageProps) {
     }
     AbortControllerSearch.current = new AbortController()
 
+    //console.log(await API.api_get_file_test({abortController:AbortControllerSearch.current,hashes:['17bab81bae5fa9a460914cd8f1ad700645886d9fd7191a2c2ac0f38fd3c2afc3'],timestamp:1500000000}))
+
+
     previousSearch.current = tags.slice()
     previousSearchSortType.current = sortType.current
     let searchTags = tags.slice()
@@ -389,7 +396,7 @@ export function SearchPage(props: SearchPageProps) {
     }
     //console.log('actually searching')
     //console.log(sortType.current)
-    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false, file_sort_type: sortType.current, abortController: AbortControllerSearch.current });
+    let response = await API.api_get_files_search_files({ tags: searchTags, return_hashes: true, return_file_ids: false,  abortController: AbortControllerSearch.current });
     let responseHashes: Array<string> = response?.data.hashes || []
 
     //searchArtists(AbortControllerSearch.current)
@@ -431,7 +438,7 @@ export function SearchPage(props: SearchPageProps) {
 
       let hashesLength = hashes.length //Apparantely it's a good practice and is faster to do it this way
       for (let i = 0; i < Math.min(i + STEP, hashesLength); i += STEP) {
-        let response: CacheAxiosResponse<APIResponseMetadata> | undefined = await API.api_get_file_metadata({ tag_services: ['all known tags'], only_file_tags: true, tags: ['creator:','group-title:', 'doujin-title:'], hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
+        let response: CacheAxiosResponse<APIResponseMetadata> | undefined = await API.api_get_file_metadata({ tag_services: ['all known tags'], only_file_tags: true, tags: ['creator:', 'group-title:', 'doujin-title:'], hashes: hashes.slice(i, Math.min(i + STEP, hashes.length)), abortController: AbortControllerSearch.current })
         if (response) {
           responses.push(...response.data.metadata);
           responseSize += JSON.stringify(response).length
@@ -443,7 +450,7 @@ export function SearchPage(props: SearchPageProps) {
       setLoadingProgress(`${hashes.length}/${hashes.length} (${responseSizeToString(responseSize)})`)
 
       tempFileTags = createListOfUniqueTags(responses)
-      let groupedHashes:string[]
+      let groupedHashes: string[]
       if (params.type === 'comic') {
         groupedHashes = groupImages(responses, hashes, getComicNamespace())
       }
@@ -453,6 +460,7 @@ export function SearchPage(props: SearchPageProps) {
 
       //This exists for Previous/Next Image controls
       sessionStorage.setItem('hashes-search', JSON.stringify(groupedHashes))
+      dispatch(setCurrentSearch(groupedHashes))
       setLoaded(true)
     }
     setFileTags(tempFileTags)
@@ -553,6 +561,16 @@ export function SearchPage(props: SearchPageProps) {
     return style
   }
 
+  function runOnHashSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget
+    let formData = new FormData(form)
+    let hashesString = formData.get("HashInputList")?.toString() || ''
+    console.log(hashesString.split('\n'))
+  }
+
+
+
   //Assertions
   const isDisplayingFile = params.hash !== ''
   const isNotComic = params.type !== 'comic'
@@ -588,9 +606,17 @@ export function SearchPage(props: SearchPageProps) {
   }
   /* Desktop Layout */
   return <>
+
     <div className={getTopBarPaddingStyle()} />
     {(tags) && <TagSearchBar type={params.type} setNavigationExpanded={props.setNavigationExpanded} infoAction={toggleSideBar} sortTypeChange={changeSortType} groupAction={changeGrouping} tags={tags} />}
     <div className={getContentStyle()}>
+      <form onSubmit={runOnHashSubmit}>
+        <label>
+          Paste hashes from hydrus:
+          <textarea name="HashInputList" />
+        </label>
+        <button type="submit">Search</button>
+      </form>
       {(isNotComic) && <div className={getGridStyleList()}>
         {(thereAreFileTags && loaded) && <>
           <TagListTabs

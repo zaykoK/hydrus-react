@@ -49,6 +49,7 @@ function RelatedFilesList(props: RelatedFilesListProps) {
         let returnedTags: Array<Array<string>> = []
         //if (props.metadata == undefined) { return returned }
         let spaces = getRelatedNamespaces()
+        console.log(spaces)
         let i = 0
         let shouldBeExpanded = true
 
@@ -56,18 +57,19 @@ function RelatedFilesList(props: RelatedFilesListProps) {
             //If no tags in namespace, don't add to the list
             //@ts-ignore
             let tags = returnTagsFromNamespace(dataTags.get(getAllTagsServiceKey()), element) || []
+            console.log(tags)
             // Split subgroups and sort
             const SplitSymbol = '/'
             for (let groupTag of tags) {
                 let splitted = groupTag.split(SplitSymbol)
                 // Right now this just displays all images from each group, not just the subgroup
 
-                let newElement =
-                <RelatedFiles
+                let newElement = <RelatedFiles
                     id={'relatedElements' + element}
                     currentHash={dataHash}
                     key={element + groupTag}
                     tags={[splitted[0]+'/*']}
+                    /* tags={[groupTag]} */
                     space={element}
                     initiallyExpanded={shouldBeExpanded}
                     landscape={props.landscape}
@@ -100,7 +102,7 @@ interface RelatedFilesSideBarProps {
 
 export function RelatedFilesSideBar(props: RelatedFilesSideBarProps) {
     function getRelatedStyle(visible: boolean,landscape:boolean): string {
-        let className = 'relatedStyle'
+        let className = 'relatedSidebar'
         if (isMobile()) {
             className += ' mobile'
             if (landscape) { className += ' landscape' }

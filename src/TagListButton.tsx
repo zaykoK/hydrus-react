@@ -5,6 +5,8 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import ContextMenu from './ContextMenu'
 import { createPortal } from 'react-dom'
 
+import * as API from './hydrus-backend'
+
 //Add a popup window allowing some advanced tag operations like
 //Add tag
 //Add tag exclusion
@@ -35,6 +37,12 @@ interface TagListButtonProps {
     visibleNamespace: boolean;
 }
 
+async function TEST_showParents(tags:string[]) {
+    let result = await API.api_add_tags_get_siblings_and_parent({abortController:new AbortController(),tags:tags})
+
+    console.log(result.data.tags)
+}
+
 export function TagListButton(props: TagListButtonProps) {
     const [contextVisible, setContextVisible] = useState<boolean>(false)
     const [contextCoordinates, setContextCoordinates] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
@@ -60,8 +68,9 @@ export function TagListButton(props: TagListButtonProps) {
             coordinates={contextCoordinates}
             actions={[{ action: () => { addTag(displayTagString(props.tag, true), props.navigate, props.type) }, label: 'Add Tag' },
             { action: () => { addTag("-" + displayTagString(props.tag, true), props.navigate, props.type) }, label: 'Exclude Tag' },
-            { action: () => { console.log("Renaming") }, label: 'Rename Tag' },
-            { action: () => { console.log("Remove tag") }, label: 'Remove Tag' },
+            { action: () => { console.log("Renaming") }, label: ' TEST Rename Tag' },
+            { action: () => { console.log("Remove tag") }, label: 'TEST Remove Tag' },
+            { action: () => { TEST_showParents([props.tag.namespace+":"+props.tag.value]) }, label: 'TEST Search Siblings' },
             ]}
             namespace={props.tag.namespace}
             autoclose={true}

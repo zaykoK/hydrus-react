@@ -64,6 +64,10 @@ function Navigation(props: NavigationProps) {
         <img src={IconComics} alt='comic page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Comics</div>
       </NavLink>
+      <NavLink key={'navLink-tagList'} className={getNavLinkStyle()} to="/tagList/namespace=creator">
+        <img src={IconComics} alt='tag list' className={getNavButtonStyle()} />
+        <div className="navButtonLabel">Tag List</div>
+      </NavLink>
       <NavLink key={'navLink-settings'} className={getNavLinkStyle()} to="/settings">
         <img src={IconSettings} alt='settings page' className={getNavButtonStyle()} />
         <div className="navButtonLabel">Settings</div>

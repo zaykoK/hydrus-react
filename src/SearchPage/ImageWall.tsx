@@ -6,7 +6,7 @@ import './ImageWall.css'
 import { ResultGroup } from './ResultGroup';
 import { MemoWrapperList as WrapperList } from './WrapperList';
 import { useNavigate } from 'react-router-dom';
-import ResultComponent from './ResultComponent';
+import ResultComponent, { MediaSelection } from './ResultComponent';
 import { Fragment } from 'react';
 
 interface ImageWallProps {
@@ -43,6 +43,8 @@ export function ImageWall(props: ImageWallProps) {
   const [thumbs, setThumbs] = React.useState<JSX.Element[]>([])
 
   const navigate = useNavigate()
+
+  const mediaSelection = new MediaSelection()
 
   //const selectedItems:Array<SelectedResult> = []
 
@@ -116,7 +118,7 @@ export function ImageWall(props: ImageWallProps) {
   const sm = getHashSlice(props.results)
 
   return (
-    <div className='imageWall' >
+    <div className='imageWall' onClick={() => {console.log('background click');mediaSelection.selectedElements.length = 0}} >
       {(props.empty) ? 
       <div className='emptyStyle'>No results</div> 
       : <Fragment>
@@ -127,7 +129,7 @@ export function ImageWall(props: ImageWallProps) {
           loadingProgress={props.loadingProgress}
           loaded={props.loaded}
         />
-        <ResultCounter count={props.results.length} />
+        <ResultCounter key={'counter' + props.results.length} count={props.results.length} />
         </Fragment>}
     </div>
   );

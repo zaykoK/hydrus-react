@@ -13,6 +13,9 @@ import { AxiosError } from 'axios';
 import TagListPage from './TagListPage';
 import LocalSessionStorage from './LocalSessionStorage';
 
+import { store } from './ReduxStore';
+import { Provider } from 'react-redux';
+
 
 function App() {
   const [token, setToken] = useState<boolean>(false)
@@ -21,7 +24,7 @@ function App() {
   const [navigationExpanded, setNavigationExpanded] = useState(false)
 
   assignColorVariables()
-  
+
   async function sessionKeyRoutine() {
     const localSessionStorage = new LocalSessionStorage()
     //If no settings, automatically move to settings page
@@ -32,9 +35,9 @@ function App() {
     }
     setSettings(true)
     //If session key exist, verify it
-    
+
     if (localSessionStorage.getApiKey() !== '') {
-      API.api_verify_access_key().catch(function (error:AxiosError) {
+      API.api_verify_access_key().catch(function (error: AxiosError) {
         if (error.response?.status === 419) { //Expired Session
           console.log('Invalid key')
           localSessionStorage.setApiKey('')
@@ -71,26 +74,33 @@ function App() {
 
   const defaultURLParameters = '/search/tags=&page=1'
 
-  return <div className="app">
-    {(token) && <Router>
-      <MemoNavigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
-      {((settings) &&
-        <Routes>
-          <Route key="route-main" path='/' element={<Navigate replace to={defaultURLParameters} />} />
-          <Route key="route-search" path='/search/:currentURLParameters' element={<SearchPage type='image' setNavigationExpanded={setNavigationExpanded} />} />
-          <Route key="route-settings" path='/settings' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
-          <Route key="route-comics" path='/comics/:currentURLParameters' element={<SearchPage type='comic' setNavigationExpanded={setNavigationExpanded} />} />
-          <Route key="route-taglist" path='/tagList/:currentURLParameters' element={<TagListPage />} />
-        </Routes>) || <Routes>
-          <Route key="route-settings" path='/*' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
-        </Routes>}
-    </Router>}
-  </div>
+
+
+
+  return <Provider store={store}>
+    <div className="app">
+      {(token) && <Router>
+        <MemoNavigation expanded={navigationExpanded} setNavigationExpanded={setNavigationExpanded} />
+        {((settings) &&
+          <Routes>
+            <Route key="route-main" path='/' element={<Navigate replace to={defaultURLParameters} />} />
+            <Route key="route-search" path='/test/home/:currentURLParameters' element={<SearchPage type='image' setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-search" path='/search/:currentURLParameters' element={<SearchPage type='image' setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-settings" path='/settings' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-comics" path='/comics/:currentURLParameters' element={<SearchPage type='comic' setNavigationExpanded={setNavigationExpanded} />} />
+            <Route key="route-taglist" path='/tagList/:currentURLParameters' element={<TagListPage />} />
+          </Routes>) || <Routes>
+            <Route key="route-settings" path='/*' element={<SettingsPage setNavigationExpanded={setNavigationExpanded} />} />
+          </Routes>}
+      </Router>}
+    </div>
+  </Provider>
 }
 
 const rootElement = document.getElementById('root')
 
 if (rootElement !== null) {
   const root = ReactDOM.createRoot(rootElement);
+
   root.render(<App />);
 }

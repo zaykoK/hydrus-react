@@ -36,6 +36,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
     const navigate = useRef(useNavigate())
 
     useEffect(() => {
+        //console.time('RelatedFilesSearch')
         async function Search() {
             if (AbortControllerSearch.current) {
                 AbortControllerSearch.current.abort()
@@ -107,6 +108,7 @@ export function RelatedFiles(props: RelatedFilesProps) {
         if (JSON.stringify(currentTags) !== JSON.stringify(props.tags)) {
             Search()
         }
+        //console.timeEnd('RelatedFilesSearch')
 
     }, [props.tags])
 
@@ -155,39 +157,13 @@ export function RelatedFiles(props: RelatedFilesProps) {
             }
             setThumbs(temp)
         }
-/*         if (isMobile() && !isLandscapeMode()) {
-            setScrollOffset((currentIndex * thumbHeight))
-        }
-        else {
-            setScrollOffset((currentIndex * thumbHeight))
-        } */
 
     }, [relatedHashes, props.currentHash])
-
-    // useEffect(() => {
-    //     if (expanded === false) { return }
-    //     //This scrolls the div with every image change
-    //     //const el = document.querySelector('.relatedStyleThumbsWrapper')
-    //     const el = document.querySelector('#' + props.space)
-    //     //Scroll vertically
-    //     if (isMobile() && !isLandscapeMode()) {
-    //         el?.scrollTo({ left: scrollOffset, top: 0, behavior: 'smooth' })
-    //     }
-    //     //Scroll horizontally
-    //     else {
-    //         el?.scrollTo({ left: 0, top: scrollOffset, behavior: 'smooth' })
-    //     }
-
-
-    // }, [thumbs, scrollOffset])
 
     function getRelatedTextStyle(landscape: boolean): string {
         let style = 'relatedTextStyle'
         if (isMobile()) {
             style += ' mobile'
-            /* if (landscape) {
-                style += ' landscape'
-            } */
         }
         return style
     }
@@ -200,7 +176,6 @@ export function RelatedFiles(props: RelatedFilesProps) {
 
     function getRelatedThumbsStyle(landscape: boolean): string {
         if (isMobile()) {
-            //if (landscape) { return "relatedThumbnails mobile landscape" }
             return "relatedThumbnails mobile"
         }
         return "relatedThumbnails"
@@ -210,9 +185,6 @@ export function RelatedFiles(props: RelatedFilesProps) {
         let style = 'relatedStyleThumbsWrapper'
         if (isMobile()) {
             style += ' mobile'
-            /* if (landscape) {
-                style += ' landscape'
-            } */
         }
         if (expanded) {
             style += ' expanded'

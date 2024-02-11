@@ -4,6 +4,14 @@ import { NavigateFunction } from "react-router-dom"
 import { generateSearchURL } from "../SearchPage/SearchPageHelpers"
 import { readParams } from "../SearchPage/URLParametersHelpers"
 
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../ReduxStore'
+
+//Context
+//const currentSearch = useSelector((state: RootState) => state.currentHashes.currentSearch)
+const currentSearch = JSON.parse(getSessionStorage('hashes-search'))
+//const dispatch = useDispatch()
+
 function returnFileLink(hash: string, parm: string | undefined): string {
     if (parm === undefined) { console.warn("URLParameters didn't properly load, settings empty to try and fix it"); parm = '' }
     let params = readParams(parm)
@@ -34,7 +42,8 @@ function getSessionStorage(key: string, defaultValue = '[]'): string {
 
 export function PreviousImage(fileHash: string | undefined, navigate: NavigateFunction, parm: string | undefined): void {
     if (fileHash === undefined) { return }
-    if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage(fileHash, navigate, false, parm) }
+    //if (sessionStorage.getItem('group-hashes') === null) { return PreviousSearchImage(fileHash, navigate, false, parm) }
+    if (currentSearch === null) { return PreviousSearchImage(fileHash, navigate, false, parm) }
     let searchList: Array<string> = JSON.parse(getSessionStorage('hashes-search'))
     let elementList: Array<string> = JSON.parse(getSessionStorage('group-hashes'))
     let index = elementList.indexOf(fileHash || '')

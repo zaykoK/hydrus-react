@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import * as TagTools from '../TagTools'
 import './GroupingWindow.css'
+import * as API from '../hydrus-backend'
+import { SelectedResult } from './ImageWall';
 
 interface GroupingWindowProps {
     proposedObject: {
@@ -10,6 +12,7 @@ interface GroupingWindowProps {
         titles: TagTools.Tuple[] | undefined
     } | null;
     exitFunction:Function;
+    hashes:SelectedResult[];
 }
 
 function GroupingWindow(props: GroupingWindowProps):JSX.Element {
@@ -53,8 +56,28 @@ function GroupingWindow(props: GroupingWindowProps):JSX.Element {
         setProposedTitle(e)
     }
 
+    async function addTagFunction(tags:string[]) {
+        let hashes:string[]=[]
+        for (let result of props.hashes) {
+            hashes.push(result.hash)
+        }
+        console.log(hashes)
+        console.log(`Adding ${tags} to ${hashes.length} files`)
 
-    return <div className="GroupingWindow" onBlur={() => {props.exitFunction()}}>
+        let response = await API.add_tags_add_tags({
+            hashes: hashes,
+            service_keys_to_actions_to_tags: {
+                "6c6f63616c2074616773":{
+                    0:tags
+                }
+            }
+        })
+        console.log(response)
+        if (response.status === 200) {props.exitFunction()}
+    }
+
+
+    return <div className="GroupingWindow" /* onBlur={(e) => {if (!e.currentTarget.contains(e.relatedTarget)) { props.exitFunction()}}} */>
         <div className="GroupWindowsTopBar">
             <button onClick={() => {props.exitFunction()}}>X</button>
         </div>
@@ -74,6 +97,9 @@ function GroupingWindow(props: GroupingWindowProps):JSX.Element {
         </div>
         <div className="GroupingWindowNameEntry">
             <input type="text" placeholder="Title" onChange={(e) => {editProposedTitle(e.target.value)}} value={proposedTitle} />
+        </div>
+        <div>
+            <button onClick={() => {addTagFunction([proposedTitle])}}>Add Tag</button>
         </div>
     </div>
 }

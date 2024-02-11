@@ -15,7 +15,7 @@
 /* Devices smaller than this get 3 images in row */
 @media (max-width: 425px) {
     .WrapperList {
-        --CELL_SIZE_MOBILE: calc(100vw/3);
+        --CELL_SIZE_MOBILE: calc(100vw/4);
     }
 }
 
@@ -76,6 +76,10 @@
     grid-column: 2;
     margin: 0px 0px 30px 0px;
 }
+
+/* .app:has(.fullscreenWrapper) .imageWall {
+    display:none;
+} */
 
 .emptyStyle {
     margin: auto auto auto auto;

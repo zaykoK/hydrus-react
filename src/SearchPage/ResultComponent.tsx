@@ -457,6 +457,17 @@ function ResultComponent(props: ResultComponentProps) {
 
     }
 
+    function getResultType() {
+        let type:number = 0 // 0 -image, 1 - video, 2 -other
+
+        if (props.result.entries[0].duration != null) {
+            return 'v'
+        }
+        else {
+            return 'i'
+        }
+    }
+
 
     function testFunction() {
         const Selects = new MediaSelection()
@@ -506,6 +517,9 @@ function ResultComponent(props: ResultComponentProps) {
                     toggleDetails()
                 }
             }} >{getResultCount()}</div>
+           {/*  <div className={"result-filetype"}>
+                {getResultType()}
+            </div> */}
         </div>}
     </div>
         {(isShowingDetails) ? <ResultDetails result={props.result} navigate={props.navigate} cover={cover} thumblist={thumblist} /> : null}
@@ -521,6 +535,7 @@ function ResultComponent(props: ResultComponentProps) {
             autoclose={true}
             setVisible={setContextVisible} />, document.body) : null}
         {(groupingWindowVisible) ? createPortal(<GroupingWindow
+            hashes={props.selectionVariables.selectedItems}
             proposedObject={groupingObject} exitFunction={() => {setGroupingWindowVisible(false)}} />, document.body) : null}
     </Fragment>
 }

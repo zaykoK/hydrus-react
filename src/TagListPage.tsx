@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { TagComponentsWrapper } from "./SearchPage/TagComponentWrapper";
+import { TagComponentsWrapper } from "./SearchPage/TagComponentWrapper.tsx";
 import { useEffect, useState } from "react";
 
 function TagListPage() {
